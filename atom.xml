@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>串一串</title>
+  
+  <subtitle>断舍离</subtitle>
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://luxiaowan.github.io/"/>
+  <updated>2019-10-21T15:47:13.957Z</updated>
+  <id>http://luxiaowan.github.io/</id>
+  
+  <author>
+    <name>cc</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Git Stash用法</title>
+    <link href="http://luxiaowan.github.io/2019/10/21/git%20stash%E5%91%BD%E4%BB%A4/"/>
+    <id>http://luxiaowan.github.io/2019/10/21/git stash命令/</id>
+    <published>2019-10-21T14:10:13.841Z</published>
+    <updated>2019-10-21T15:47:13.957Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="创建仓库"><a class="markdownIt-Anchor" href="#创建仓库"></a> 创建仓库</h3><ol><li>git init</li><li>echo 123 &gt; test.txt</li><li>git add .</li><li>git commit -m “add test file”</li><li>git remote add origin git@git.xx.xx.xx:xxx/xxx.git</li><li>git push origin master</li></ol><p><em>以上内容比较简单，就不作详细讲述，如果上面的内容看不懂，下面的请放弃</em></p><h3 id="使用git-stash暂存"><a class="markdownIt-Anchor" href="#使用git-stash暂存"></a> 使用git stash暂存</h3><ol><li><p>随意修改test.txt文件的内容，比如：画个心形，你正热火朝天修改中……</p></li><li><p>这时领导走过来拍了拍你的肩膀说到：”小伙子啊，创建个<code>朕.txt</code>文件提交上来，内容就写<code>我还想再活五百年</code>，test.txt文件这一版不作修改“。</p></li><li><p><strong>你面露笑容的回答：“好的，没问题！”，内心却是：“MMP,MMP,MMP……”</strong></p></li><li><p>辛辛苦苦修改的<code>test.txt</code>文件怎么办？眼瞅着就要完成了，难道复制出去，然后等解决领导需求后再粘贴回来？low不low？肯定<code>不low</code>啊，一个文件而已，这种方法很简单，*但是当你实际项目中修改了几十个文件的时候呢？*挨个儿复制出去？累傻小子呐？！！！！！</p></li><li><p><code>git stash</code>命令帮你解决问题，stash是存储的意思，也就是将当前工作区内的所有东西都存储起来，然后工作区所有文件恢复到修改之前的状态(并不是最新状态，不会和仓库中进行自动同步，需要你自己去pull)，然后你就可以继续完成任务了。(<font color="red">在执行git stash之前需要先执行git add命令</font>)</p><p>stash可以进行多次操作，每次操作都会将当前工作区的文件情况暂存起来，stash是类栈存储，每次stash的序号都为0，此次之前stash的序号会自动+1</p></li></ol><h3 id="使用git-stash-pop取出"><a class="markdownIt-Anchor" href="#使用git-stash-pop取出"></a> 使用git stash pop取出</h3><ol><li><code>git stash pop</code>取出栈顶元素，也就是序号为0的那个，即最近一次执行<code>git stash</code>保存的内容。pop之后，暂存列表中就会自动将其清除掉，这个时候你再执行<code>git stash list</code>会发现毛都没有</li><li>这个时候可能就会纳闷了，我保存了好几次，但是我这次是想使用最开始stash的那份内容，怎么办？一直pop，直到最后一次？当然不行，上面刚讲过pop之后暂存列表中就没有stash的信息了，已经被pop出去的就找不回来了，等于是自杀式攻击，那咋整呢？</li><li><code>git stash apply stash@{序号}</code>可以将指定序号的stash内容弹出到工作区，此时工作区里文件的状态就和<code>stash@{序号}</code>里的一致了，但是这个命令<strong>无法将stash记录从暂存列表中删除，仅仅只是将文件恢复而已</strong></li><li><code>git stash drop stash@{序号}</code>来丢弃暂存列表中的记录，可以配合apply使用</li></ol><h3 id="查看暂存记录中的信息"><a class="markdownIt-Anchor" href="#查看暂存记录中的信息"></a> 查看暂存记录中的信息</h3><ol><li>查看暂存列表：<code>git stash list</code>查看当前stash的列表</li><li>查看暂存内容：<code>git stash show stash@{序号}</code>查看指定序号的stash的内容</li></ol><h3 id="git-stash-save-msg"><a class="markdownIt-Anchor" href="#git-stash-save-msg"></a> git stash save ‘msg’</h3><p>等于是在stash的时候打了个标签，妖娆！！！！</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;创建仓库&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#创建仓库&quot;&gt;&lt;/a&gt; 创建仓库&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;git init&lt;/li&gt;
+&lt;li&gt;echo 123 &amp;gt; test.txt&lt;/li&gt;
+&lt;li&gt;git add .&lt;
+      
+    
+    </summary>
+    
+    
+      <category term="Git" scheme="http://luxiaowan.github.io/categories/Git/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Hash索引相关</title>
+    <link href="http://luxiaowan.github.io/2019/10/12/Hash%E7%B4%A2%E5%BC%95%E7%9B%B8%E5%85%B3/"/>
+    <id>http://luxiaowan.github.io/2019/10/12/Hash索引相关/</id>
+    <published>2019-10-12T15:42:43.000Z</published>
+    <updated>2019-10-21T15:48:05.043Z</updated>
+    
+    <content type="html"><![CDATA[<p>hash索引结构使用方式较为局限，仅适用于=、IN和&lt;=&gt;三种，但是由于通过hash可以直接查找到具体的值，而不用像BT那样每次都从root节点开始遍历，所以在通常情况下，hash的查找效率要比BT高。</p><p>hash的缺陷：</p><h6 id="1-hash不能进行范围查找"><a class="markdownIt-Anchor" href="#1-hash不能进行范围查找"></a> 1. hash不能进行范围查找</h6><p>值在计算hash后，并不能保证计算后的hash值和计算前的大小排列一样，所以hash不适用于范围查找</p><h6 id="2-hash不能进行排序查询"><a class="markdownIt-Anchor" href="#2-hash不能进行排序查询"></a> 2. hash不能进行排序查询</h6><p>值计算后的hash值无法保证与原值大小顺序一样，所以无法进行排序</p><h6 id="3-组合索引不能使用部分字段查询"><a class="markdownIt-Anchor" href="#3-组合索引不能使用部分字段查询"></a> 3. 组合索引不能使用部分字段查询</h6><p>组合索引的hash值是所有索引字段的值组合在一起进行计算的，若仅使用部分字段进行查询的话，计算出的hash值基本不会与索引的hash值相同</p><h6 id="4-hash在出现大量值碰撞的时候性能会降低"><a class="markdownIt-Anchor" href="#4-hash在出现大量值碰撞的时候性能会降低"></a> 4. hash在出现大量值碰撞的时候，性能会降低</h6><p>hash出现大量的值相等的时候，需要进行表扫描以进行精确匹配，效率较低</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;hash索引结构使用方式较为局限，仅适用于=、IN和&amp;lt;=&amp;gt;三种，但是由于通过hash可以直接查找到具体的值，而不用像BT那样每次都从root节点开始遍历，所以在通常情况下，hash的查找效率要比BT高。&lt;/p&gt;
+&lt;p&gt;hash的缺陷：&lt;/p&gt;
+&lt;h6 id=&quot;1
+      
+    
+    </summary>
+    
+    
+      <category term="Java" scheme="http://luxiaowan.github.io/categories/Java/"/>
+    
+    
+      <category term="Java基础知识" scheme="http://luxiaowan.github.io/tags/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Char和varchar简单介绍</title>
+    <link href="http://luxiaowan.github.io/2019/10/12/char%E4%B8%8Evarchar%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/"/>
+    <id>http://luxiaowan.github.io/2019/10/12/char与varchar简单介绍/</id>
+    <published>2019-10-12T04:10:43.000Z</published>
+    <updated>2019-10-21T15:48:35.131Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="1-数据长度"><a class="markdownIt-Anchor" href="#1-数据长度"></a> 1. 数据长度</h2><h3 id="1-char最大长度255个字节"><a class="markdownIt-Anchor" href="#1-char最大长度255个字节"></a> 1) char(<code>最大长度255个字节</code>)</h3><p>长度固定（字段存入数据长度始终等于字段长度）</p><h3 id="2-varchar最大长度65535个字节"><a class="markdownIt-Anchor" href="#2-varchar最大长度65535个字节"></a> 2) varchar(<code>最大长度65535个字节</code>)</h3><p>可变长度，存入数据长度为N个字节，则实际使用了N+1(255以上长度则+2)个字节的空间，多出来的1字节是用来存储数据实际长度。</p><ul><li>存入数据对比<ul><li>存入<code>&quot;ab&quot;</code><ul><li>char查询出<code>&quot;ab&quot;</code></li><li>varchar查询出<code>&quot;ab&quot;</code></li></ul></li><li>存入<code>&quot;ab &quot;</code>，<code>ab</code>后面有两个空格，<ul><li>char查询出<code>&quot;ab&quot;</code></li><li>varchar查询出<code>&quot;ab &quot;</code></li></ul></li></ul></li></ul><hr><blockquote><p>解析：</p></blockquote><p>​在入库时，数据库会自动在ab后面添加两位空格，让入库的数据长度保证等于4 <em><code>char(4)</code></em> ，这种操作很容易理解，但是如果你去数据表里面去查这条数据，会发现表中数据并没有空格，所以可以推断出这里是逻辑追加，所以在查询数据的时候会并不会出现引擎自动添加的空格。</p><hr><h2 id="2-实操技术一定要font-colorred实操font"><a class="markdownIt-Anchor" href="#2-实操技术一定要font-colorred实操font"></a> 2. 实操(技术一定要**<font color="red">实操</font>**)</h2><h4 id="1无空格数据"><a class="markdownIt-Anchor" href="#1无空格数据"></a> 1）无空格数据</h4><blockquote><p>先创建一张表</p></blockquote><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create table cv(c char(4), v varchar(4));</span><br></pre></td></tr></table></figure><blockquote><p>插入数据</p></blockquote><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">insert into cv values(&quot;ab&quot;, &quot;ab&quot;);</span><br></pre></td></tr></table></figure><blockquote><p>查询数据</p></blockquote><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select concat(&apos;(&apos;, c, &apos;)&apos;) AS c, concat(&apos;(&apos;, v, &apos;)&apos;) AS v from cv;</span><br></pre></td></tr></table></figure><blockquote><p>结果</p></blockquote><p><img src="/images/image-20191012152503483.png" alt="image-20191012152503483"></p><blockquote><blockquote><p>结果中char和varchar均查出来为无空格的ab</p></blockquote></blockquote><p>####2）有空格数据</p><blockquote><p>插入数据</p></blockquote><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">insert into cv values(&quot;ab  &quot;, &quot;ab  &quot;);</span><br></pre></td></tr></table></figure><blockquote><p>查询数据</p></blockquote><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select concat(&apos;(&apos;, c, &apos;)&apos;) AS c, concat(&apos;(&apos;, v, &apos;)&apos;) AS v from cv;</span><br></pre></td></tr></table></figure><blockquote><p>结果</p></blockquote><p><img src="/images/image-20191012152809508.png" alt="image-20191012152809508"></p><blockquote><blockquote><p>结果中可以看出，char类型将数据后面的空格自动去掉了，varchar则保留了所有的空格</p></blockquote></blockquote>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;1-数据长度&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#1-数据长度&quot;&gt;&lt;/a&gt; 1. 数据长度&lt;/h2&gt;
+&lt;h3 id=&quot;1-char最大长度255个字节&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#
+      
+    
+    </summary>
+    
+    
+      <category term="Java" scheme="http://luxiaowan.github.io/categories/Java/"/>
+    
+    
+      <category term="Java基础知识" scheme="http://luxiaowan.github.io/tags/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>MySQL使用查询缓存</title>
+    <link href="http://luxiaowan.github.io/2019/10/11/MySQL%E4%BD%BF%E7%94%A8%E6%9F%A5%E8%AF%A2%E7%BC%93%E5%AD%98/"/>
+    <id>http://luxiaowan.github.io/2019/10/11/MySQL使用查询缓存/</id>
+    <published>2019-10-11T05:01:23.000Z</published>
+    <updated>2019-10-21T15:48:59.282Z</updated>
+    
+    <content type="html"><![CDATA[<ol><li><p>查询服务是否已开启缓存</p><blockquote><p>执行<code>show variables like '%query_cache%';</code>查看缓存状态</p></blockquote><blockquote><blockquote><p><img src="/images/image-20191011131957961.png" alt="image-20191011131957961"></p></blockquote></blockquote><p>Variable_name: query_cache_type为缓存状态，ON表示开启，OFF表示关闭</p></li><li><p>开启/关闭使用查询缓存</p><blockquote><p>修改my.cnf文件进行开启和关闭</p></blockquote><p>[mysqld]中添加/修改：<br>query_cache_size = 20M<br>query_cache_type = ON/OFF</p><blockquote><p>**修改完成后重启MySQL服务：<code>service mysql restart/systemctl mysql restart</code> **</p></blockquote></li><li><p>查询缓存使用情况</p><blockquote><p>执行<code>show status like 'qcache%';</code>查询缓存使用情况</p><blockquote><p><img src="/images/image-20191011132634921.png" alt="image-20191011132634921"></p></blockquote></blockquote><p>因为本机MySQL未开启查询缓存，所以此处和使用相关的属性均为0</p><hr><p><em><strong>属性解释:</strong></em></p><table><thead><tr><th>属性</th><th>释义</th></tr></thead><tbody><tr><td>Qcache_free_blocks</td><td>缓存中相邻内存块的个数。数目大说明可能有碎片。FLUSH QUERY CACHE会对缓存中的碎片进行整理，从而得到一个空闲块。</td></tr><tr><td>Qcache_free_memory</td><td>缓存中空闲内存大小</td></tr><tr><td>Qcache_hits</td><td>缓存命中次数，命中一次就+1</td></tr><tr><td>Qcache_inserts</td><td>查询次数，命中次数/查询次数=缓存命中率</td></tr><tr><td>Qcache_lowmem_prunes</td><td>缓存出现内存不足并且必须要进行清理以便为更多查询提供空间的次数，如果数字不断增长，就可能碎片非常严重，或者内存很少，通过Qcache_free_blocks、Qcache_free_memory来分析具体情况</td></tr><tr><td>Qcache_not_cached</td><td>不适合进行缓存的查询的数量</td></tr><tr><td>Qcache_queries_in_cache</td><td>当前缓存的查询(和响应)的数量</td></tr><tr><td>Qcache_total_blocks</td><td>缓存中块的数量</td></tr></tbody></table></li></ol>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;查询服务是否已开启缓存&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;执行&lt;code&gt;show variables like &#39;%query_cache%&#39;;&lt;/code&gt;查看缓存状态&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;blockquote&gt;
+&lt;block
+      
+    
+    </summary>
+    
+    
+      <category term="MySQL" scheme="http://luxiaowan.github.io/categories/MySQL/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Java基础面试题</title>
+    <link href="http://luxiaowan.github.io/2019/10/10/%E8%9A%82%E8%9A%81Java%E5%9F%BA%E7%A1%80%E9%9D%A2%E8%AF%95%E9%A2%98/"/>
+    <id>http://luxiaowan.github.io/2019/10/10/蚂蚁Java基础面试题/</id>
+    <published>2019-10-10T15:21:56.000Z</published>
+    <updated>2019-10-21T15:49:27.313Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="一"><a class="markdownIt-Anchor" href="#一"></a> 一</h3><ol start="2"><li><p>map怎么实现hashcode和equals,为什么重写equals必须重写hashcode</p></li><li><p>使用过concurrent包下的哪些类，使用场景等等。</p></li><li><p>concurrentHashMap怎么实现？concurrenthashmap在1.8和1.7里面有什么区别</p></li><li><p>CountDownLatch、LinkedHashMap、AQS实现原理</p></li><li><p>线程池有哪些RejectedExecutionHandler,分别对应的使用场景</p></li><li><p>多线程的锁？怎么优化的？偏向锁、轻量级锁、重量级锁？</p></li><li><p>组合索引？B+树如何存储的？</p></li><li><p>为什么缓存更新策略是先更新数据库后删除缓存</p></li><li><p>OOM说一下？怎么排查？哪些会导致OOM?</p></li><li><p><code>OSI七层结构</code>，每层结构都是干什么的？</p></li><li><p>java的线程安全queue需要注意的点</p></li><li><p>死锁的原因，如何避免</p></li></ol><h3 id="二"><a class="markdownIt-Anchor" href="#二"></a> 二</h3><ol><li><p>jvm虚拟机老年代什么情况下会发生gc，给你一个场景，一台4核8G的服务器，每隔两个小时就要出现一次老年代gc，现在有日志，怎么分析是哪里出了问题</p></li><li><p>数据库索引有哪些？底层怎么实现的？数据库怎么优化？</p></li><li><p>数据库的事务，四个性质说一下，分别有什么用，怎么实现的？</p></li><li><p>服务器如何负载均衡，有哪些算法，哪个比较好，一致性哈希原理，怎么避免DDOS攻击请求打到少数机器</p></li><li><p>volatile讲讲</p></li><li><p>哪些设计模式？装饰器、代理讲讲？</p></li><li><p>redis集群会吗？</p></li><li><p>mysql存储引擎</p></li><li><p>事务隔离级别</p></li><li><p>不可重复度和幻读，怎么避免，底层怎么实现（行锁表锁）</p></li></ol><h3 id="三"><a class="markdownIt-Anchor" href="#三"></a> 三</h3><ol><li><p>项目介绍</p></li><li><p>分布式锁是怎么实现的</p></li><li><p>MySQL有哪几种join方式，底层原理是什么</p></li><li><p>Redis有哪些数据结构？底层的编码有哪些？有序链表采用了哪些不同的编码？</p></li><li><p>Redis扩容，失效key清理策略</p></li><li><p>Redis的持久化怎么做，aof和rdb，有什么区别，有什么优缺点。</p></li><li><p>MySQL数据库怎么实现分库分表，以及数据同步？</p></li><li><p>单点登录如何是实现？</p></li><li><p>谈谈SpringBoot和SpringCloud的理解</p></li><li><p>未来的技术职业怎么规划？</p></li><li><p>为什么选择我们公司？</p></li></ol>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;一&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#一&quot;&gt;&lt;/a&gt; 一&lt;/h3&gt;
+&lt;ol start=&quot;2&quot;&gt;
+&lt;li&gt;
+&lt;p&gt;map怎么实现hashcode和equals,为什么重写equals必须重写hashcode&lt;/p&gt;
+&lt;/li
+      
+    
+    </summary>
+    
+    
+      <category term="Java" scheme="http://luxiaowan.github.io/categories/Java/"/>
+    
+    
+      <category term="面试" scheme="http://luxiaowan.github.io/tags/%E9%9D%A2%E8%AF%95/"/>
+    
+      <category term="阿里" scheme="http://luxiaowan.github.io/tags/%E9%98%BF%E9%87%8C/"/>
+    
+  </entry>
+  
+</feed>
