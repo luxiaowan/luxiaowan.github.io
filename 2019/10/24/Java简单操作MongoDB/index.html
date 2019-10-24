@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>Java简单操作MongoDB | 串一串</title>
+  <meta name="description" content="前面已经掌握了mongo最基本的一些命令，对各个命令也都实操过，理解各命令的意思，也对mongo有了最基本的理解，但大部分猿还是想使用Java去连接mongo，串串也不例外    在pom.xml中加入mongodb-java-driver.jar的依赖   Maven项目依赖 12345&amp;lt;dependency&amp;gt;  &amp;lt;groupId&amp;gt;org.mongodb&amp;lt;/gro">
+<meta name="keywords" content="Java与MongoDB">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java简单操作MongoDB">
+<meta property="og:url" content="http://luxiaowan.github.io/2019/10/24/Java简单操作MongoDB/index.html">
+<meta property="og:site_name" content="串一串">
+<meta property="og:description" content="前面已经掌握了mongo最基本的一些命令，对各个命令也都实操过，理解各命令的意思，也对mongo有了最基本的理解，但大部分猿还是想使用Java去连接mongo，串串也不例外    在pom.xml中加入mongodb-java-driver.jar的依赖   Maven项目依赖 12345&amp;lt;dependency&amp;gt;  &amp;lt;groupId&amp;gt;org.mongodb&amp;lt;/gro">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-10-24T13:20:12.762Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java简单操作MongoDB">
+<meta name="twitter:description" content="前面已经掌握了mongo最基本的一些命令，对各个命令也都实操过，理解各命令的意思，也对mongo有了最基本的理解，但大部分猿还是想使用Java去连接mongo，串串也不例外    在pom.xml中加入mongodb-java-driver.jar的依赖   Maven项目依赖 12345&amp;lt;dependency&amp;gt;  &amp;lt;groupId&amp;gt;org.mongodb&amp;lt;/gro">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://luxiaowan.github.io/2019/10/24/Java简单操作MongoDB/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="../../../../css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/luxiaowan" target="_blank">
+          <img class="img-circle img-rotate" src="../../../../images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">串一串</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">浪人</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Suzhou, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="../../../../.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="../../../../archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="../../../../repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="../../../../books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="../../../../links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="../../../../about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>断舍离!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Git/">Git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Java/">Java</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MongoDB/">MongoDB</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MySQL/">MySQL</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/SpringBoot/">SpringBoot</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java与MongoDB/">Java与MongoDB</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java基础知识/">Java基础知识</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MongoDB错误记录/">MongoDB错误记录</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基本指令/">基本指令</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基础应用/">基础应用</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/监控/">监控</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/阿里/">阿里</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/面试/">面试</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="../../../../tags/Java与MongoDB/" style="font-size: 13px;">Java与MongoDB</a> <a href="../../../../tags/Java基础知识/" style="font-size: 13px;">Java基础知识</a> <a href="../../../../tags/MongoDB错误记录/" style="font-size: 13px;">MongoDB错误记录</a> <a href="../../../../tags/基本指令/" style="font-size: 13px;">基本指令</a> <a href="../../../../tags/基础应用/" style="font-size: 13px;">基础应用</a> <a href="../../../../tags/监控/" style="font-size: 13px;">监控</a> <a href="../../../../tags/阿里/" style="font-size: 13px;">阿里</a> <a href="../../../../tags/面试/" style="font-size: 13px;">面试</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/10/">十月 2019</a><span class="archive-list-count">11</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled ">
+        
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../Spring-Session和Redis实现Session共享/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/SpringBoot/">SpringBoot</a>
+              </p>
+              <p class="item-title">
+                <a href="../Spring-Session和Redis实现Session共享/" class="title">Spring-Session和Redis实现Session共享</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-10-24T11:30:00.000Z" itemprop="datePublished">2019-10-24</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/MongoDB/">MongoDB</a>
+              </p>
+              <p class="item-title">
+                <a href="" class="title">Java简单操作MongoDB</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-10-24T02:16:00.000Z" itemprop="datePublished">2019-10-24</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../MongoDB监控、分片及备份恢复/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/MongoDB/">MongoDB</a>
+              </p>
+              <p class="item-title">
+                <a href="../MongoDB监控、分片及备份恢复/" class="title">MongoDB监控、分片及备份恢复</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-10-23T16:00:00.000Z" itemprop="datePublished">2019-10-24</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../23/MongoDB基础应用/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/MongoDB/">MongoDB</a>
+              </p>
+              <p class="item-title">
+                <a href="../../23/MongoDB基础应用/" class="title">MongoDB基础应用</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-10-22T16:00:00.000Z" itemprop="datePublished">2019-10-23</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../23/MongoDB连接报错java.lang.NoSuchFieldError-ACKNOWLEDGED/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/MongoDB/">MongoDB</a>
+              </p>
+              <p class="item-title">
+                <a href="../../23/MongoDB连接报错java.lang.NoSuchFieldError-ACKNOWLEDGED/" class="title">MongoDB连接报错java.lang.NoSuchFieldError ACKNOWLEDGED</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-10-22T16:00:00.000Z" itemprop="datePublished">2019-10-23</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-Java简单操作MongoDB" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Java简单操作MongoDB
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="" class="article-date">
+	  <time datetime="2019-10-24T02:16:00.000Z" itemprop="datePublished">2019-10-24</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="../../../../categories/MongoDB/">MongoDB</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="../../../../tags/Java与MongoDB/">Java与MongoDB</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1.5k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 7(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <blockquote>
+<p>前面已经掌握了mongo最基本的一些命令，对各个命令也都实操过，理解各命令的意思，也对mongo有了最基本的理解，但大部分猿还是想使用Java去连接mongo，串串也不例外</p>
+</blockquote>
+<ul>
+<li>
+<p>在pom.xml中加入mongodb-java-driver.jar的依赖</p>
+<ul>
+<li>
+<p>Maven项目依赖</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">  &lt;groupId&gt;org.mongodb&lt;/groupId&gt;</span><br><span class="line">  &lt;artifactId&gt;mongo-java-driver&lt;/artifactId&gt;</span><br><span class="line">  &lt;version&gt;3.0.4&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>SpringBoot项目依赖</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">  &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">  &lt;artifactId&gt;spring-boot-starter-data-mongodb&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li>
+<p>连接mongo</p>
+<ul>
+<li>
+<p>认证连接</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建验证信息，根据加密方式选择MongoCredential内对应的加密方式</span></span><br><span class="line">List&lt;MongoCredential&gt; credentials = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">MongoCredential credential = MongoCredential.createCredential(<span class="string">"admin"</span>, <span class="string">"test1"</span>, <span class="string">"admin"</span>.toCharArray());</span><br><span class="line">credentials.add(credential);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 创建mongo服务地址</span></span><br><span class="line">ServerAddress serverAddress = <span class="keyword">new</span> ServerAddress(<span class="string">"localhost"</span>, <span class="number">27017</span>);</span><br><span class="line">MongoClient mongoClient = <span class="keyword">new</span> MongoClient(serverAddress, credentials);</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>无需认证连接</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MongoClient client = <span class="keyword">new</span> MongoClient(<span class="string">"localhost"</span>, <span class="number">27017</span>);</span><br></pre></td></tr></table></figure>
+<p>然后就可以通过MongoClient的实例方法对mongo进行相关操作了</p>
+</li>
+</ul>
+</li>
+<li>
+<p>创建数据库连接</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MongoDatabase db = client.getDatabase(<span class="string">"test1"</span>);</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>mongo特性是不管数据库事先是否存在，都可以正常创建数据库连接，不会像MySQL一样报错，连接成功后，在mongo服务器上执行<code>show dbs</code>，会发现仍然查不到我们连接的这个数据库，这是正常情况，只有在数据库中有数据的时候，才会查得出来，<code>client.getDatabase(&quot;test&quot;) === use test命令</code></p>
+</blockquote>
+</li>
+<li>
+<p>创建集合</p>
+<ul>
+<li>使用数据库连接实例方法创建一个空的集合</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">db.createCollection(<span class="string">"base_info"</span>);</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">  命令：db.createCollection(<span class="string">"base_info"</span>)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>直接向创建的集合中插入数据</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">MongoCollection&lt;Document&gt; collection = db.getCollection(<span class="string">"base_info"</span>);</span><br><span class="line">collection.insertOne(<span class="keyword">new</span> Document(<span class="string">"name"</span>, <span class="string">"lxl"</span>));</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">  命令：db.base_info.insert(&#123;<span class="string">"name"</span>: <span class="string">"lxl"</span>&#125;)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>以上两种方式均可创建一个集合，区别在于第一种方式创建的是空集合，</p>
+</blockquote>
+</li>
+<li>
+<p>删除集合</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">collection.drop();</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">  命令：db.base_info.drop()</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="对集合的crud"><a class="markdownIt-Anchor" href="#对集合的crud"></a> 对集合的CRUD</h4>
+<ul>
+<li>
+<p>新增数据</p>
+<ul>
+<li>
+<p>单条新增</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Document document = <span class="keyword">new</span> Document().append(<span class="string">"name"</span>,<span class="string">"cc"</span>).append(<span class="string">"age"</span>,<span class="number">30</span>).append(<span class="string">"location"</span>,<span class="string">"SZ"</span>);</span><br><span class="line">collection.insertOne(document);</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>批量新增</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Document&gt; documentList = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1000</span>; i++) &#123;</span><br><span class="line">  Document doc = <span class="keyword">new</span> Document().append(<span class="string">"name"</span>, <span class="string">"cc"</span> + i).append(<span class="string">"age"</span>, <span class="keyword">new</span> Random().nextInt(<span class="number">100</span>)).append(<span class="string">"location"</span>, <span class="string">"SZ"</span>);</span><br><span class="line">  documentList.add(doc);</span><br><span class="line">&#125;</span><br><span class="line">collection.insertMany(documentList);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<blockquote>
+<p>insertOne(Document)方法每次插入一条数据</p>
+<p>insertMany(List<document>)方法批量插入数据，并且可以通过参数InsertManyOptions设置是否排序</document></p>
+</blockquote>
+</li>
+<li>
+<p>删除数据</p>
+<ul>
+<li>删除第一条匹配的数据</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Bson condition = Filters.eq(<span class="string">"age"</span>, <span class="number">99</span>);</span><br><span class="line">collection.deleteOne(condition);</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">  命令：db.base_info.deleteOne(&#123;<span class="string">"age"</span>: <span class="number">99</span>&#125;)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>删除所有匹配数据</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Bson condition = Filters.eq(<span class="string">"age"</span>, <span class="number">99</span>);</span><br><span class="line">collection.deleteMany(condition);</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">  命令：db.base_info.deleteMany(&#123;<span class="string">"ag"</span>: <span class="number">99</span>&#125;)</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>查询数据</p>
+<ul>
+<li>
+<p>查询返回第一条匹配的数据</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Bson condition = Filters.eq(<span class="string">"age"</span>, <span class="number">16</span>);</span><br><span class="line">FindIterable&lt;Document&gt; vals = collection.find(condition);</span><br><span class="line">Document document = vals.first();</span><br><span class="line">System.out.println(document.toJson());</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>通过调用FindIterable的实例方法first()取第一条数据</p>
+</blockquote>
+</li>
+<li>
+<p>查询返回所有匹配数据</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Bson condition = Filters.eq(<span class="string">"age"</span>, <span class="number">16</span>);</span><br><span class="line">FindIterable&lt;Document&gt; vals = collection.find(condition);</span><br><span class="line"><span class="keyword">for</span> (Document val : vals) &#123;</span><br><span class="line">  System.out.println(val.toJson());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>find()方法返回所有匹配数据</p>
+</blockquote>
+</li>
+<li>
+<p>分页查询</p>
+<p>分页查询是我们日常开发中经常用到的功能，尤其是mongo这种量级较大的存储，分页使用limit()和skip()两个方法来实现，limit指定查询的条数，skip进行分页，参数为从第几条开始，需要使用当前页码和分页条数进行计算(pageNo - 1) * pageSize</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Bson condition = Filters.lt(<span class="string">"age"</span>, <span class="number">2</span>);</span><br><span class="line">FindIterable&lt;Document&gt; vals = collection.find(condition).limit(<span class="number">10</span>).skip(<span class="number">10</span>).sort(Sorts.descending(<span class="string">"age"</span>));</span><br><span class="line"><span class="keyword">for</span> (Document val : vals) &#123;</span><br><span class="line">  System.out.println(val.toJson());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>limit(10): 每页取10条数据</p>
+<p>skip(10): 从第11条开始查询，起始位置为0</p>
+<p>sort(Sorts.descending(“age”)): 以列age倒序</p>
+<blockquote>
+<p>对应MySQL：select * from base_info where age &lt; 2 order by age desc limit 7, 7</p>
+</blockquote>
+</blockquote>
+</li>
+</ul>
+</li>
+<li>
+<p>更新数据</p>
+<ul>
+<li>
+<p>更新第一条匹配数据中的某些字段</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Bson condition = Filters.eq(<span class="string">"age"</span>, <span class="number">15</span>);</span><br><span class="line">Document document = <span class="keyword">new</span> Document(<span class="string">"$set"</span>, <span class="keyword">new</span> Document(<span class="string">"location"</span>, <span class="string">"XZ"</span>));</span><br><span class="line">collection.updateOne(condition, document);</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注意这里有一个<code>$set</code>，这个指令是必须的，相对应的指令还有<code>$inc</code></p>
+</blockquote>
+</li>
+<li>
+<p>替换第一条匹配数据全部内容</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Bson condition = Filters.eq(<span class="string">"age"</span>, <span class="number">15</span>);</span><br><span class="line">Document document = <span class="keyword">new</span> Document(<span class="string">"location"</span>, <span class="string">"XZ"</span>);</span><br><span class="line">collection.updateOne(condition, document);</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>没有<code>$set</code>指令,则表示使用参数document替换掉第一条匹配到的数据</p>
+</blockquote>
+</li>
+<li>
+<p>第一条匹配的数据中指定字段数量+1</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Bson condition = Filters.eq(<span class="string">"location"</span>, <span class="string">"XZ"</span>);</span><br><span class="line">Document document = <span class="keyword">new</span> Document(<span class="string">"$inc"</span>, <span class="keyword">new</span> Document(<span class="string">"age"</span>, <span class="number">1</span>));</span><br><span class="line">collection.updateOne(condition, document);</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>更新所有匹配数据</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Bson condition = Filters.eq(<span class="string">"age"</span>, <span class="number">15</span>);</span><br><span class="line">Document document = <span class="keyword">new</span> Document(<span class="string">"$set"</span>, <span class="keyword">new</span> Document(<span class="string">"location"</span>, <span class="string">"XZ"</span>));</span><br><span class="line">collection.updateMany(condition, document);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="全部代码"><a class="markdownIt-Anchor" href="#全部代码"></a> 全部代码</h3>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.bson.Document;</span><br><span class="line"><span class="keyword">import</span> org.bson.conversions.Bson;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.mongodb.MongoClient;</span><br><span class="line"><span class="keyword">import</span> com.mongodb.client.FindIterable;</span><br><span class="line"><span class="keyword">import</span> com.mongodb.client.MongoCollection;</span><br><span class="line"><span class="keyword">import</span> com.mongodb.client.MongoDatabase;</span><br><span class="line"><span class="keyword">import</span> com.mongodb.client.model.Filters;</span><br><span class="line"><span class="keyword">import</span> com.mongodb.client.model.Sorts;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: cc</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MongoConnectTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        MongoClient client = <span class="keyword">new</span> MongoClient(<span class="string">"localhost"</span>, <span class="number">27017</span>);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">/*</span></span><br><span class="line"><span class="comment">            // 创建验证信息，根据加密方式选择MongoCredential内对应的加密方式</span></span><br><span class="line"><span class="comment">            List&lt;MongoCredential&gt; credentials = new ArrayList&lt;&gt;();</span></span><br><span class="line"><span class="comment">            MongoCredential credential = MongoCredential.createCredential("admin", "test", "".toCharArray());</span></span><br><span class="line"><span class="comment">            credentials.add(credential);</span></span><br><span class="line"><span class="comment">            </span></span><br><span class="line"><span class="comment">            // 创建mongo服务地址</span></span><br><span class="line"><span class="comment">            ServerAddress serverAddress = new ServerAddress("localhost", 27017);</span></span><br><span class="line"><span class="comment">            MongoClient mongoClient = new MongoClient(serverAddress, credentials);*/</span></span><br><span class="line"></span><br><span class="line">            MongoDatabase db = client.getDatabase(<span class="string">"test1"</span>);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 创建集合</span></span><br><span class="line">            <span class="comment">// 方式1</span></span><br><span class="line">            <span class="comment">// db.createCollection("base_info2");</span></span><br><span class="line">            <span class="comment">// 方式2</span></span><br><span class="line">            MongoCollection&lt;Document&gt; collection = db.getCollection(<span class="string">"base_info"</span>);</span><br><span class="line">            <span class="comment">// collection.insertOne(new Document("name", "lxl"));</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// 删除集合</span></span><br><span class="line">            <span class="comment">// collection.drop();</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// 新增数据</span></span><br><span class="line">            <span class="comment">// 单条新增</span></span><br><span class="line">            <span class="comment">/*Document document = new Document().append("name", "cc").append("age", 30).append("location", "SZ");</span></span><br><span class="line"><span class="comment">            collection.insertOne(document);</span></span><br><span class="line"><span class="comment">            // 批量新增</span></span><br><span class="line"><span class="comment">            List&lt;Document&gt; documentList = new ArrayList&lt;&gt;();</span></span><br><span class="line"><span class="comment">            for (int i = 0; i &lt; 1000; i++) &#123;</span></span><br><span class="line"><span class="comment">                Document doc = new Document().append("name", "cc" + i).append("age", new Random().nextInt(100))</span></span><br><span class="line"><span class="comment">                        .append("location", "SZ");</span></span><br><span class="line"><span class="comment">                documentList.add(doc);</span></span><br><span class="line"><span class="comment">            &#125;</span></span><br><span class="line"><span class="comment">            collection.insertMany(documentList);*/</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// 删除数据</span></span><br><span class="line">            <span class="comment">// 删除第一条匹配数据</span></span><br><span class="line">            <span class="comment">/*Bson condition = Filters.eq("age", 99);</span></span><br><span class="line"><span class="comment">            collection.deleteOne(condition);</span></span><br><span class="line"><span class="comment">            // 删除所有匹配数据</span></span><br><span class="line"><span class="comment">            collection.deleteMany(condition);*/</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// 修改数据</span></span><br><span class="line">            <span class="comment">// 修改第一条匹配数据</span></span><br><span class="line">            <span class="comment">/*Bson condition = Filters.eq("age", 15);</span></span><br><span class="line"><span class="comment">            Document document = new Document("$set", new Document("location", "XZ"));</span></span><br><span class="line"><span class="comment">            collection.updateOne(condition, document);</span></span><br><span class="line"><span class="comment">            collection.updateMany(condition, document);*/</span></span><br><span class="line">            <span class="comment">// 年龄+1</span></span><br><span class="line">            <span class="comment">/*Bson condition = Filters.eq("location", "XZ");</span></span><br><span class="line"><span class="comment">            Document document = new Document("$inc", new Document("age", 1));</span></span><br><span class="line"><span class="comment">            collection.updateOne(condition, document);*/</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">// 查询返回第一条匹配数据</span></span><br><span class="line">            Bson condition = Filters.lt(<span class="string">"age"</span>, <span class="number">2</span>);</span><br><span class="line">            FindIterable&lt;Document&gt; vals = collection.find(condition).sort(Sorts.descending(<span class="string">"age"</span>)).limit(<span class="number">7</span>).skip(<span class="number">7</span>);</span><br><span class="line">            <span class="comment">// Document document = vals.first();</span></span><br><span class="line">            <span class="comment">// System.out.println(document.toJson());</span></span><br><span class="line">            <span class="keyword">for</span> (Document val : vals) &#123;</span><br><span class="line">                System.out.println(val.toJson());</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://luxiaowan.github.io/2019/10/24/Java简单操作MongoDB/" title="Java简单操作MongoDB" target="_blank" rel="external">http://luxiaowan.github.io/2019/10/24/Java简单操作MongoDB/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/luxiaowan" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="../../../../images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/luxiaowan" target="_blank"><span class="text-dark">串一串</span><small class="ml-1x">浪人</small></a></h3>
+        <div>断舍离</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="../Spring-Session和Redis实现Session共享/" title="Spring-Session和Redis实现Session共享"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="../MongoDB监控、分片及备份恢复/" title="MongoDB监控、分片及备份恢复"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2019 cc
+        
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="../../../../js/plugin.min.js"></script>
+<script src="../../../../js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '../../../../content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="../../../../js/insight.js"></script>
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+
+
+
+
+
+
+</body>
+</html>
