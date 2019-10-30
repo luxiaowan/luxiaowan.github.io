@@ -27,7 +27,7 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://luxiaowan.github.io/images/image-20191024193415981.png">
 <meta property="og:image" content="http://luxiaowan.github.io/images/image-20191024223839113.png">
-<meta property="og:updated_time" content="2019-10-24T15:09:42.022Z">
+<meta property="og:updated_time" content="2019-10-24T15:18:45.220Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spring-Session和Redis实现Session共享">
 <meta name="twitter:description" content="需求  现在大部分服务都以集群负载均衡的方式部署，几乎很难再遇到单点部署的项目，因为大家都要保证最基本的HA，说到HA，第一要考虑的就是各系统之间的Session共享的问题，如何解决呢？负载均衡当前使用Nginx     分析      不同的POD之间如果需要达到数据共享的目的，那么则需要使用同一个存储媒介，一开始想到使用MySQL来存储登录session，但是每次请求都去MySQL中查询数据">
@@ -193,7 +193,7 @@
   <div class="widget">
     <h3 class="widget-title">分类</h3>
     <div class="widget-body">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Git/">Git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Java/">Java</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MongoDB/">MongoDB</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MySQL/">MySQL</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/SpringBoot/">SpringBoot</a><span class="category-list-count">1</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Git/">Git</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Java/">Java</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MongoDB/">MongoDB</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MySQL/">MySQL</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Redis/">Redis</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/SpringBoot/">SpringBoot</a><span class="category-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -222,7 +222,7 @@
   <div class="widget">
     <h3 class="widget-title">归档</h3>
     <div class="widget-body">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/10/">十月 2019</a><span class="archive-list-count">11</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/10/">十月 2019</a><span class="archive-list-count">14</span></li></ul>
     </div>
   </div>
 
@@ -234,6 +234,81 @@
     <div class="widget-body">
       <ul class="recent-post-list list-unstyled ">
         
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../29/Redis基本命令使用—string篇/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Redis/">Redis</a>
+              </p>
+              <p class="item-title">
+                <a href="../../29/Redis基本命令使用—string篇/" class="title">Redis基本命令使用::string篇</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-10-29T15:55:00.000Z" itemprop="datePublished">2019-10-29</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../29/Redis数据在内存中是如何存储的/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Redis/">Redis</a>
+              </p>
+              <p class="item-title">
+                <a href="../../29/Redis数据在内存中是如何存储的/" class="title">Redis数据在内存中是如何存储的</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-10-29T08:50:00.000Z" itemprop="datePublished">2019-10-29</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../28/MySQL索引什么时候用hash/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/MySQL/">MySQL</a>
+              </p>
+              <p class="item-title">
+                <a href="../../28/MySQL索引什么时候用hash/" class="title">MySQL索引什么时候用hash</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-10-28T11:06:00.000Z" itemprop="datePublished">2019-10-28</time>
+              </p>
+            </div>
+          </li>
+          
           <li>
             
             <div class="item-thumb">
@@ -280,81 +355,6 @@
               </p>
               <p class="item-date">
                 <time datetime="2019-10-24T02:16:00.000Z" itemprop="datePublished">2019-10-24</time>
-              </p>
-            </div>
-          </li>
-          
-          <li>
-            
-            <div class="item-thumb">
-              <a href="../MongoDB监控、分片及备份恢复/" class="thumb">
-    
-    
-        <span class="thumb-image thumb-none"></span>
-    
-</a>
-
-            </div>
-            
-            <div class="item-inner">
-              <p class="item-category">
-                <a class="category-link" href="../../../../categories/MongoDB/">MongoDB</a>
-              </p>
-              <p class="item-title">
-                <a href="../MongoDB监控、分片及备份恢复/" class="title">MongoDB监控、分片及备份恢复</a>
-              </p>
-              <p class="item-date">
-                <time datetime="2019-10-23T16:00:00.000Z" itemprop="datePublished">2019-10-24</time>
-              </p>
-            </div>
-          </li>
-          
-          <li>
-            
-            <div class="item-thumb">
-              <a href="../../23/MongoDB基础应用/" class="thumb">
-    
-    
-        <span class="thumb-image thumb-none"></span>
-    
-</a>
-
-            </div>
-            
-            <div class="item-inner">
-              <p class="item-category">
-                <a class="category-link" href="../../../../categories/MongoDB/">MongoDB</a>
-              </p>
-              <p class="item-title">
-                <a href="../../23/MongoDB基础应用/" class="title">MongoDB基础应用</a>
-              </p>
-              <p class="item-date">
-                <time datetime="2019-10-22T16:00:00.000Z" itemprop="datePublished">2019-10-23</time>
-              </p>
-            </div>
-          </li>
-          
-          <li>
-            
-            <div class="item-thumb">
-              <a href="../../23/MongoDB连接报错java.lang.NoSuchFieldError-ACKNOWLEDGED/" class="thumb">
-    
-    
-        <span class="thumb-image thumb-none"></span>
-    
-</a>
-
-            </div>
-            
-            <div class="item-inner">
-              <p class="item-category">
-                <a class="category-link" href="../../../../categories/MongoDB/">MongoDB</a>
-              </p>
-              <p class="item-title">
-                <a href="../../23/MongoDB连接报错java.lang.NoSuchFieldError-ACKNOWLEDGED/" class="title">MongoDB连接报错java.lang.NoSuchFieldError ACKNOWLEDGED</a>
-              </p>
-              <p class="item-date">
-                <time datetime="2019-10-22T16:00:00.000Z" itemprop="datePublished">2019-10-23</time>
               </p>
             </div>
           </li>
@@ -411,7 +411,7 @@
         <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
         
 	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 601(字)</span>
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 569(字)</span>
 	
 	
 		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 2(分)</span>
@@ -450,34 +450,24 @@
 <hr>
 <blockquote>
 <p>实现</p>
-<blockquote>
+</blockquote>
 <ol>
 <li>修改pom.xml文件，引入我们需要的jar包</li>
 </ol>
 <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">  &lt;groupId&gt;org.springframework.session&lt;/groupId&gt;</span><br><span class="line">  &lt;artifactId&gt;spring-session&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">  &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">  &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">  &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">  &lt;artifactId&gt;spring-boot-starter-data-redis&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-</blockquote>
-</blockquote>
-<blockquote>
-<blockquote>
 <ol start="2">
 <li>修改application.yml文件，配置redis信息</li>
 </ol>
-<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt; &gt; spring<span class="selector-class">.redis</span><span class="selector-class">.database</span>=<span class="number">0</span></span><br><span class="line">&gt; &gt; spring<span class="selector-class">.redis</span><span class="selector-class">.host</span>=localhost</span><br><span class="line">&gt; &gt; spring<span class="selector-class">.redis</span><span class="selector-class">.port</span>=<span class="number">6379</span></span><br><span class="line">&gt; &gt; spring<span class="selector-class">.redis</span><span class="selector-class">.password</span>=<span class="number">123456</span></span><br><span class="line">&gt; &gt;</span><br></pre></td></tr></table></figure>
-</blockquote>
-</blockquote>
-<blockquote>
-<blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">spring.redis.database=<span class="number">0</span></span><br><span class="line">spring.redis.host=localhost</span><br><span class="line">spring.redis.port=<span class="number">6379</span></span><br><span class="line">spring.redis.password=<span class="number">123456</span></span><br></pre></td></tr></table></figure>
 <ol start="3">
 <li>创建配置类</li>
 </ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&gt; &gt; <span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line">&gt; &gt; <span class="keyword">import</span> org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;</span><br><span class="line">&gt; &gt; </span><br><span class="line">&gt; &gt; <span class="meta">@Configuration</span></span><br><span class="line">&gt; &gt; <span class="meta">@EnableRedisHttpSession</span></span><br><span class="line">&gt; &gt; <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisHttpSessionConfig</span> </span>&#123;</span><br><span class="line">&gt; &gt; &#125;</span><br><span class="line">&gt; &gt;</span><br></pre></td></tr></table></figure>
-</blockquote>
-</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"><span class="keyword">import</span> org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableRedisHttpSession</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisHttpSessionConfig</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>到此，我们使用Redis实现Session共享的所有配置和代码都已经写完了，可以看到我们没有侵入到任何业务代码中，从头到尾也很简单。</p>
 <blockquote>
 <p>扩展</p>
 </blockquote>
-<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">@EnableGemFireHttpSession</span></span><br><span class="line"><span class="variable">@EnableSpringHttpSession</span></span><br><span class="line"><span class="variable">@EnableMongoHttpSession</span></span><br><span class="line"><span class="variable">@EnableJdbcHttpSession</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@EnableGemFireHttpSession</span></span><br><span class="line"><span class="meta">@EnableSpringHttpSession</span></span><br><span class="line"><span class="meta">@EnableMongoHttpSession</span></span><br><span class="line"><span class="meta">@EnableJdbcHttpSession</span></span><br></pre></td></tr></table></figure>
       
     </div>
     <div class="article-footer">
@@ -529,6 +519,10 @@
   <div class="bar-inner">
   
   <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="../../28/MySQL索引什么时候用hash/" title="MySQL索引什么时候用hash"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
     
     
     <li class="next">
