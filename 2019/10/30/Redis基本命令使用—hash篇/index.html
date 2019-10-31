@@ -17,21 +17,20 @@
   <meta http-equiv="window-target" content="_top">
   
   
-  <title>Hash索引相关 | 串一串</title>
-  <meta name="description" content="hash索引结构使用方式较为局限，仅适用于=、IN和&amp;lt;=&amp;gt;三种，但是由于通过hash可以直接查找到具体的值，而不用像BT那样每次都从root节点开始遍历，所以在通常情况下，hash的查找效率要比BT高。 hash的缺陷：  1. hash不能进行范围查找 值在计算hash后，并不能保证计算后的hash值和计算前的大小排列一样，所以hash不适用于范围查找  2. hash不能进行排序查">
-<meta name="keywords" content="Java基础知识">
+  <title>Redis基本命令使用::hash篇 | 串一串</title>
+  <meta name="description" content="Redis有6大基本类型，分别是字符串(String)、列表(List)、集合(set)、哈希结构(hash)、有序集合(zset)和基数(HyperLogLog)  redis在线体验地址：http://try.redis.io/  哈希(Hash)  介绍:  Redis hash 是一个存储多个键值对的映射表，适用于存储对象的属性，比如存储用户信息、用户Session信息等。在实际项目中使">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hash索引相关">
-<meta property="og:url" content="http://luxiaowan.github.io/2019/10/12/Hash索引相关/index.html">
+<meta property="og:title" content="Redis基本命令使用::hash篇">
+<meta property="og:url" content="http://luxiaowan.github.io/2019/10/30/Redis基本命令使用—hash篇/index.html">
 <meta property="og:site_name" content="串一串">
-<meta property="og:description" content="hash索引结构使用方式较为局限，仅适用于=、IN和&amp;lt;=&amp;gt;三种，但是由于通过hash可以直接查找到具体的值，而不用像BT那样每次都从root节点开始遍历，所以在通常情况下，hash的查找效率要比BT高。 hash的缺陷：  1. hash不能进行范围查找 值在计算hash后，并不能保证计算后的hash值和计算前的大小排列一样，所以hash不适用于范围查找  2. hash不能进行排序查">
+<meta property="og:description" content="Redis有6大基本类型，分别是字符串(String)、列表(List)、集合(set)、哈希结构(hash)、有序集合(zset)和基数(HyperLogLog)  redis在线体验地址：http://try.redis.io/  哈希(Hash)  介绍:  Redis hash 是一个存储多个键值对的映射表，适用于存储对象的属性，比如存储用户信息、用户Session信息等。在实际项目中使">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-10-21T15:48:05.043Z">
+<meta property="og:updated_time" content="2019-10-31T16:05:56.510Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hash索引相关">
-<meta name="twitter:description" content="hash索引结构使用方式较为局限，仅适用于=、IN和&amp;lt;=&amp;gt;三种，但是由于通过hash可以直接查找到具体的值，而不用像BT那样每次都从root节点开始遍历，所以在通常情况下，hash的查找效率要比BT高。 hash的缺陷：  1. hash不能进行范围查找 值在计算hash后，并不能保证计算后的hash值和计算前的大小排列一样，所以hash不适用于范围查找  2. hash不能进行排序查">
+<meta name="twitter:title" content="Redis基本命令使用::hash篇">
+<meta name="twitter:description" content="Redis有6大基本类型，分别是字符串(String)、列表(List)、集合(set)、哈希结构(hash)、有序集合(zset)和基数(HyperLogLog)  redis在线体验地址：http://try.redis.io/  哈希(Hash)  介绍:  Redis hash 是一个存储多个键值对的映射表，适用于存储对象的属性，比如存储用户信息、用户Session信息等。在实际项目中使">
   <!-- Canonical links -->
-  <link rel="canonical" href="http://luxiaowan.github.io/2019/10/12/Hash索引相关/index.html">
+  <link rel="canonical" href="http://luxiaowan.github.io/2019/10/30/Redis基本命令使用—hash篇/index.html">
   
     <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
   
@@ -260,7 +259,7 @@
           <li>
             
             <div class="item-thumb">
-              <a href="../../30/Redis基本命令使用—hash篇/" class="thumb">
+              <a href="" class="thumb">
     
     
         <span class="thumb-image thumb-none"></span>
@@ -274,7 +273,7 @@
                 <a class="category-link" href="../../../../categories/Redis/">Redis</a>
               </p>
               <p class="item-title">
-                <a href="../../30/Redis基本命令使用—hash篇/" class="title">Redis基本命令使用::hash篇</a>
+                <a href="" class="title">Redis基本命令使用::hash篇</a>
               </p>
               <p class="item-date">
                 <time datetime="2019-10-30T15:55:00.000Z" itemprop="datePublished">2019-10-30</time>
@@ -370,14 +369,14 @@
   
 <main class="main" role="main">
   <div class="content">
-  <article id="post-Hash索引相关" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+  <article id="post-Redis基本命令使用—hash篇" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
     
     <div class="article-header">
       
         
   
     <h1 class="article-title" itemprop="name">
-      Hash索引相关
+      Redis基本命令使用::hash篇
     </h1>
   
 
@@ -386,21 +385,16 @@
         <span class="article-date">
     <i class="icon icon-calendar-check"></i>
 	<a href="" class="article-date">
-	  <time datetime="2019-10-12T15:42:43.000Z" itemprop="datePublished">2019-10-12</time>
+	  <time datetime="2019-10-30T15:55:00.000Z" itemprop="datePublished">2019-10-30</time>
 	</a>
 </span>
         
   <span class="article-category">
     <i class="icon icon-folder"></i>
-    <a class="article-category-link" href="../../../../categories/Java/">Java</a>
+    <a class="article-category-link" href="../../../../categories/Redis/">Redis</a>
   </span>
 
         
-  <span class="article-tag">
-    <i class="icon icon-tags"></i>
-	<a class="article-tag-link" href="../../../../tags/Java基础知识/">Java基础知识</a>
-  </span>
-
 
         
 	<span class="article-read hidden-xs">
@@ -414,26 +408,208 @@
         <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
         
 	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 286(字)</span>
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 571(字)</span>
 	
 	
-		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 1(分)</span>
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 2(分)</span>
 	
 
       </div>
     </div>
     <div class="article-entry marked-body" itemprop="articleBody">
       
-        <p>hash索引结构使用方式较为局限，仅适用于=、IN和&lt;=&gt;三种，但是由于通过hash可以直接查找到具体的值，而不用像BT那样每次都从root节点开始遍历，所以在通常情况下，hash的查找效率要比BT高。</p>
-<p>hash的缺陷：</p>
-<h6 id="1-hash不能进行范围查找"><a class="markdownIt-Anchor" href="#1-hash不能进行范围查找"></a> 1. hash不能进行范围查找</h6>
-<p>值在计算hash后，并不能保证计算后的hash值和计算前的大小排列一样，所以hash不适用于范围查找</p>
-<h6 id="2-hash不能进行排序查询"><a class="markdownIt-Anchor" href="#2-hash不能进行排序查询"></a> 2. hash不能进行排序查询</h6>
-<p>值计算后的hash值无法保证与原值大小顺序一样，所以无法进行排序</p>
-<h6 id="3-组合索引不能使用部分字段查询"><a class="markdownIt-Anchor" href="#3-组合索引不能使用部分字段查询"></a> 3. 组合索引不能使用部分字段查询</h6>
-<p>组合索引的hash值是所有索引字段的值组合在一起进行计算的，若仅使用部分字段进行查询的话，计算出的hash值基本不会与索引的hash值相同</p>
-<h6 id="4-hash在出现大量值碰撞的时候性能会降低"><a class="markdownIt-Anchor" href="#4-hash在出现大量值碰撞的时候性能会降低"></a> 4. hash在出现大量值碰撞的时候，性能会降低</h6>
-<p>hash出现大量的值相等的时候，需要进行表扫描以进行精确匹配，效率较低</p>
+        <blockquote>
+<p>Redis有6大基本类型，分别是字符串(String)、列表(List)、集合(set)、哈希结构(hash)、有序集合(zset)和基数(HyperLogLog)</p>
+</blockquote>
+<p><strong>redis在线体验地址：<a href="http://try.redis.io/" target="_blank" rel="noopener">http://try.redis.io/</a></strong></p>
+<h2 id="哈希hash"><a class="markdownIt-Anchor" href="#哈希hash"></a> 哈希(Hash)</h2>
+<blockquote>
+<p>介绍:</p>
+</blockquote>
+<p>Redis hash 是一个存储多个键值对的映射表，适用于存储对象的属性，比如存储用户信息、用户Session信息等。在实际项目中使用的频率比较多，之前主要用于存储用户基本信息、用户临时订单信息、产品信息等。</p>
+<blockquote>
+<p>创建缓存</p>
+</blockquote>
+<ol>
+<li>
+<p>创建一个缓存</p>
+<ul>
+<li>
+<p>命令格式：<code>hset key field value</code></p>
+</li>
+<li>
+<blockquote>
+<p>🌰</p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">hset</span> <span class="string">cc</span> <span class="string">name</span> <span class="string">'cc'</span></span><br><span class="line"></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="string">将cc的name属性的值设置为cc</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li>
+<p>批量创建缓存</p>
+<ul>
+<li>
+<p>命令格式：<code>hmset key filed value [field value ...]</code></p>
+</li>
+<li>
+<blockquote>
+<p>🌰</p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">hmset</span> <span class="string">cc</span> <span class="string">name</span> <span class="string">'cc'</span> <span class="string">age</span> <span class="number">19</span> <span class="string">avatar</span> <span class="string">'a.png'</span> <span class="string">status</span> <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="string">设置cc对象的name、age、avatar、status属性的值</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li>
+<p>设置一个key不存在field的value，若field已存在则不设置</p>
+<ul>
+<li>
+<p>命令格式：<code>hsetnx key field value</code></p>
+</li>
+<li>
+<blockquote>
+<p>🌰</p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">hsetnx</span> <span class="string">cc</span> <span class="string">name</span> <span class="string">'yy'</span></span><br><span class="line"></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="string">若对象cc的name属性不存在，则设置cc的name属性值为yy</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>查看缓存</p>
+</blockquote>
+<ol>
+<li>
+<p>查看key下所有属性+值</p>
+<ul>
+<li>
+<p>命令格式：<code>hgetall key</code></p>
+</li>
+<li>
+<blockquote>
+<p>🌰</p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">hgetall</span> <span class="string">cc</span></span><br><span class="line"></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="string">获取对象cc的所有属性，返回数据格式：</span></span><br><span class="line"> <span class="string">field1</span></span><br><span class="line"> <span class="string">value1</span></span><br><span class="line"> <span class="string">field2</span></span><br><span class="line"> <span class="string">value2</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li>
+<p>查看key下所有的值</p>
+<ul>
+<li>
+<p>命令格式：<code>hvals key</code></p>
+</li>
+<li>
+<blockquote>
+<p>🌰</p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">hvals</span> <span class="string">cc</span></span><br><span class="line"></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="string">返回cc对象的所有属性的值，仅返回值，不返回属性名称</span></span><br><span class="line"><span class="string">等同于</span> <span class="string">”hmget</span> <span class="string">key</span> <span class="string">所有field“</span> <span class="string">命令</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li>
+<p>查看key下所有的field名称</p>
+<ul>
+<li>
+<p>命令格式：<code>hkeys key</code></p>
+</li>
+<li>
+<blockquote>
+<p>🌰</p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">hkeys</span> <span class="string">cc</span></span><br><span class="line"></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="string">返回对象cc的所有属性名</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li>
+<p>查看key的某一field的值</p>
+<ul>
+<li>
+<p>命令格式：<code>hget key field</code></p>
+</li>
+<li>
+<blockquote>
+<p>🌰</p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">hget</span> <span class="string">cc</span> <span class="string">name</span></span><br><span class="line"></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="string">返回对象cc的name属性的值，若对象无此属性，则返回nil</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li>
+<p>查看key的多个field的值</p>
+<ul>
+<li>
+<p>命令格式：<code>hmget key field [field ...]</code></p>
+</li>
+<li>
+<blockquote>
+<p>🌰</p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">hmget</span> <span class="string">cc</span> <span class="string">name</span> <span class="string">age</span> <span class="string">status</span></span><br><span class="line"></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="string">返回对象cc的name、age、status属性</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li>
+<p>迭代对象的所有属性(适用于大对象)</p>
+<ul>
+<li>
+<p>命令格式：<code>hscan key course [MATCH pattern] [COUNT num]</code></p>
+</li>
+<li>
+<blockquote>
+<p>🌰</p>
+</blockquote>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hscan cc <span class="number">0</span> MATCH *e COUNT <span class="number">1</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li>
+<p>查看对象的属性数</p>
+<ul>
+<li>
+<p>命令格式：<code>hlen key</code></p>
+</li>
+<li>
+<blockquote>
+<p>🌰</p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">hlen</span> <span class="string">cc</span></span><br><span class="line"></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="string">返回对象cc的属性数量</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>其他命令</p>
+</blockquote>
+<ol>
+<li>
+<p>删除一个/多个属性</p>
+<ul>
+<li>
+<p>命令格式：<code>hdel key field [field ...]</code></p>
+</li>
+<li>
+<blockquote>
+<p>🌰</p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">hdel</span> <span class="string">cc</span> <span class="string">name</span> <span class="string">age</span></span><br><span class="line"></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="string">删除对象cc的name、age属性</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li>
+<p>查看对象属性是否存在</p>
+<ul>
+<li>
+<p>命令格式：<code>hexists key field</code></p>
+</li>
+<li>
+<blockquote>
+<p>🌰</p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">hexists</span> <span class="string">cc</span> <span class="string">name</span></span><br><span class="line"></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="string">对象cc若存在属性name，则返回1，不存在则返回0</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ol>
 
       
     </div>
@@ -443,7 +619,7 @@
     
     <li class="post-copyright-link hidden-xs">
       <strong>本文链接：</strong>
-      <a href="http://luxiaowan.github.io/2019/10/12/Hash索引相关/" title="Hash索引相关" target="_blank" rel="external">http://luxiaowan.github.io/2019/10/12/Hash索引相关/</a>
+      <a href="http://luxiaowan.github.io/2019/10/30/Redis基本命令使用—hash篇/" title="Redis基本命令使用::hash篇" target="_blank" rel="external">http://luxiaowan.github.io/2019/10/30/Redis基本命令使用—hash篇/</a>
     </li>
     
     <li class="post-copyright-license">
@@ -488,12 +664,12 @@
   <ul class="pager pull-left">
     
     <li class="prev">
-      <a href="../../22/git stash命令/" title="Git Stash用法"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+      <a href="../../31/Redis基本命令使用—list篇/" title="Redis基本命令使用::list篇"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
     </li>
     
     
     <li class="next">
-      <a href="../char与varchar简单介绍/" title="Char和varchar简单介绍"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+      <a href="../../29/Redis基本命令使用—string篇/" title="Redis基本命令使用::string篇"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
     </li>
     
     
