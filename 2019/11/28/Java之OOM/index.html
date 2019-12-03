@@ -25,7 +25,7 @@
 <meta property="og:site_name" content="串一串">
 <meta property="og:description" content="java.lang.StackOverflowError 栈溢出错误，这个错误很容易模拟，且看下面的代码： 1234567891011121314151617public static void main(String[] args) &amp;#123;  new StackOverflowTest().test();&amp;#125;private static int high = 0;private">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-12-03T16:02:01.295Z">
+<meta property="og:updated_time" content="2019-12-03T16:04:43.133Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JVM之OOM">
 <meta name="twitter:description" content="java.lang.StackOverflowError 栈溢出错误，这个错误很容易模拟，且看下面的代码： 1234567891011121314151617public static void main(String[] args) &amp;#123;  new StackOverflowTest().test();&amp;#125;private static int high = 0;private">
@@ -424,7 +424,7 @@
 <blockquote>
 <p>释</p>
 </blockquote>
-<p>我们都知道方法的调用是通过入栈和计算出栈来实现的，所以我们在方法递归调用一定次数时，必然会发生栈溢出，栈溢出后，程序自动停止，是一类不可补货和恢复的Error类型的错误，所以我们在使用递归算法时，应当注意递归的深度，防止出现栈溢出错误导致服务错误</p>
+<p>我们都知道方法的调用是通过入栈和计算出栈来实现的，所以我们在方法递归调用一定次数时，必然会发生栈溢出，栈溢出后，程序自动停止，是一类不可捕获和恢复的Error类型的错误，所以我们在使用递归算法时，应当注意递归的深度，防止出现栈溢出错误导致服务错误</p>
 <h4 id="javalangoutofmemoryerrorjava-heap-space"><a class="markdownIt-Anchor" href="#javalangoutofmemoryerrorjava-heap-space"></a> java.lang.OutOfMemoryError:java heap space</h4>
 <p><code>JVM堆空间不足引起的内存溢出错误</code>，这类错误比较常见，此处就不做太多的解释，出现这类错误，你就去看GC日志，看看新生代、老年代、永久代/Metaspace的使用情况，如果是想查看GC的情况，使用如下JVM指令：</p>
 <p><code>-XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:./gclog.log</code>，gc的所有信息都会输出到gclog.log文件中</p>
