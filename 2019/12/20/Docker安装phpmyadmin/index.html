@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>Docker安装phpmyadmin | 串一串</title>
+  <meta name="description" content="我们在云服务器上的MySQL数据库在暴露端口和开启远程连接的情况下，是非常不安全的，昨天我的一台服务器就遭到了勒索病毒的攻击，让我支付0.06比特币赎回我的数据。还好那个库中没有重要数据，只是一个弃用了半年的数据库，密码我自己都忘记了，还好通过手段找回了密码，登上去之后就傻眼了。那么如果我们不想开启远程登录还想操作数据库，怎么办？怎么办？用phpmyadmin就可以解决了，不过phpmyadmin">
+<meta name="keywords" content="MySQL,Docker">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker安装phpmyadmin">
+<meta property="og:url" content="http://luxiaowan.github.io/2019/12/20/Docker安装phpmyadmin/index.html">
+<meta property="og:site_name" content="串一串">
+<meta property="og:description" content="我们在云服务器上的MySQL数据库在暴露端口和开启远程连接的情况下，是非常不安全的，昨天我的一台服务器就遭到了勒索病毒的攻击，让我支付0.06比特币赎回我的数据。还好那个库中没有重要数据，只是一个弃用了半年的数据库，密码我自己都忘记了，还好通过手段找回了密码，登上去之后就傻眼了。那么如果我们不想开启远程登录还想操作数据库，怎么办？怎么办？用phpmyadmin就可以解决了，不过phpmyadmin">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-12-20T15:07:26.882Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Docker安装phpmyadmin">
+<meta name="twitter:description" content="我们在云服务器上的MySQL数据库在暴露端口和开启远程连接的情况下，是非常不安全的，昨天我的一台服务器就遭到了勒索病毒的攻击，让我支付0.06比特币赎回我的数据。还好那个库中没有重要数据，只是一个弃用了半年的数据库，密码我自己都忘记了，还好通过手段找回了密码，登上去之后就傻眼了。那么如果我们不想开启远程登录还想操作数据库，怎么办？怎么办？用phpmyadmin就可以解决了，不过phpmyadmin">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://luxiaowan.github.io/2019/12/20/Docker安装phpmyadmin/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="../../../../css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/luxiaowan" target="_blank">
+          <img class="img-circle img-rotate" src="../../../../images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">串一串</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">浪人</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Suzhou, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="../../../../.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="../../../../archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="../../../../repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="../../../../books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="../../../../links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="../../../../about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>断舍离!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Docker/">Docker</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Git/">Git</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Java/">Java</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MongoDB/">MongoDB</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MySQL/">MySQL</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Nacos/">Nacos</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Redis/">Redis</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/SpringBoot/">SpringBoot</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/杂谈/">杂谈</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Docker/">Docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java/">Java</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java与MongoDB/">Java与MongoDB</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java基础知识/">Java基础知识</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Maven/">Maven</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MongoDB错误记录/">MongoDB错误记录</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MySQL/">MySQL</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基本指令/">基本指令</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基础应用/">基础应用</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/监控/">监控</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/阿里/">阿里</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/面试/">面试</a><span class="tag-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="../../../../tags/Docker/" style="font-size: 13px;">Docker</a> <a href="../../../../tags/Java/" style="font-size: 13px;">Java</a> <a href="../../../../tags/Java与MongoDB/" style="font-size: 13px;">Java与MongoDB</a> <a href="../../../../tags/Java基础知识/" style="font-size: 13px;">Java基础知识</a> <a href="../../../../tags/Maven/" style="font-size: 13px;">Maven</a> <a href="../../../../tags/MongoDB错误记录/" style="font-size: 13px;">MongoDB错误记录</a> <a href="../../../../tags/MySQL/" style="font-size: 13px;">MySQL</a> <a href="../../../../tags/基本指令/" style="font-size: 13px;">基本指令</a> <a href="../../../../tags/基础应用/" style="font-size: 14px;">基础应用</a> <a href="../../../../tags/监控/" style="font-size: 13px;">监控</a> <a href="../../../../tags/阿里/" style="font-size: 14px;">阿里</a> <a href="../../../../tags/面试/" style="font-size: 14px;">面试</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/12/">十二月 2019</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/11/">十一月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/10/">十月 2019</a><span class="archive-list-count">17</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled ">
+        
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../21/工程师和程序员的区别/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/杂谈/">杂谈</a>
+              </p>
+              <p class="item-title">
+                <a href="../../21/工程师和程序员的区别/" class="title">工程师和程序员的区别</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-12-20T17:03:00.000Z" itemprop="datePublished">2019-12-21</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Docker/">Docker</a>
+              </p>
+              <p class="item-title">
+                <a href="" class="title">Docker安装phpmyadmin</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-12-20T09:00:00.000Z" itemprop="datePublished">2019-12-20</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../Nacos基本使用/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Nacos/">Nacos</a>
+              </p>
+              <p class="item-title">
+                <a href="../Nacos基本使用/" class="title">Nacos基本使用</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-12-20T01:30:00.000Z" itemprop="datePublished">2019-12-20</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../忘记MySQL的root用户密码怎么办/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/MySQL/">MySQL</a>
+              </p>
+              <p class="item-title">
+                <a href="../忘记MySQL的root用户密码怎么办/" class="title">忘记MySQL的root用户密码怎么办</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-12-19T16:53:00.000Z" itemprop="datePublished">2019-12-20</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../19/Nacos编译报错Use-STAR-or-POSIX-extensions-to-overcome-this-limit/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Nacos/">Nacos</a>
+              </p>
+              <p class="item-title">
+                <a href="../../19/Nacos编译报错Use-STAR-or-POSIX-extensions-to-overcome-this-limit/" class="title">Nacos编译报错Use STAR or POSIX Extensions to Overcome This Limit</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-12-19T04:23:00.000Z" itemprop="datePublished">2019-12-19</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-Docker安装phpmyadmin" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Docker安装phpmyadmin
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="" class="article-date">
+	  <time datetime="2019-12-20T09:00:00.000Z" itemprop="datePublished">2019-12-20</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="../../../../categories/Docker/">Docker</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="../../../../tags/Docker/">Docker</a>, <a class="article-tag-link" href="../../../../tags/MySQL/">MySQL</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 557(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 2(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <p>我们在云服务器上的MySQL数据库在暴露端口和开启远程连接的情况下，是非常不安全的，昨天我的一台服务器就遭到了勒索病毒的攻击，让我支付0.06比特币赎回我的数据。还好那个库中没有重要数据，只是一个弃用了半年的数据库，密码我自己都忘记了，还好通过手段找回了密码，登上去之后就傻眼了。那么如果我们不想开启远程登录还想操作数据库，怎么办？怎么办？用phpmyadmin就可以解决了，不过phpmyadmin也有一定的风险，下面看下怎么玩。</p>
+<h3 id="使用docker发布phpmyadmin并且连接已经存在的mysql容器"><a class="markdownIt-Anchor" href="#使用docker发布phpmyadmin并且连接已经存在的mysql容器"></a> 使用Docker发布phpmyadmin并且连接已经存在的MySQL容器</h3>
+<ol>
+<li>
+<p>首先下载phpmyadmin的docker镜像</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 先查询镜像仓库里有哪些镜像</span></span><br><span class="line">docker search phpmyadmin</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 拉取star最多的镜像or拉取你想用的镜像</span></span><br><span class="line">docker pull docker.io/phpmyadmin/phpmyadmin</span><br><span class="line"></span><br><span class="line">拉取镜像需要一段时间，这个要看服务器的带宽网速了</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>启动镜像，连接到已存在的MySQL容器</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 启动镜像</span></span><br><span class="line">docker run --name myadmin -p 80:80 -d --link mysql-db:db docker.io/phpmyadmin/phpmyadmin</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 修改容器配置文件</span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 将配置文件复制到宿主机中</span></span></span><br><span class="line">docker cp myadmin:/etc/phpmyadmin/config.inc.php .</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 修改配置文件信息(这里修改的db就是在启动的时候--link后面指定的别名)</span></span></span><br><span class="line"><span class="meta">$</span><span class="bash">cfg[<span class="string">'Servers'</span>][<span class="variable">$i</span>][<span class="string">'host'</span>] = <span class="string">'localhost'</span> ——&gt; <span class="variable">$cfg</span>[<span class="string">'Servers'</span>][<span class="variable">$i</span>][<span class="string">'host'</span>] = <span class="string">'db'</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 将修改后的配置文件复制回容器中</span></span></span><br><span class="line">docker cp ./config.inc.php myadmin:/etc/phpmyadmin/</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 重启phpmyadmin容器</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>此处就可以连接了，当然你也可以修改配置文件限制连接的用户，然后在MySQL中给连接用户授权</p>
+</li>
+</ol>
+<h3 id="使用docker-compose创建"><a class="markdownIt-Anchor" href="#使用docker-compose创建"></a> 使用docker-compose创建</h3>
+<ol>
+<li>
+<p>安装docker-compose，这里就不赘述了，回头专门用篇文章来解释</p>
+</li>
+<li>
+<p>编写docker-compose.yml文件</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">version: "2"</span><br><span class="line">services:</span><br><span class="line">  mysql:</span><br><span class="line">    image: hub.c.163.com/library/mysql</span><br><span class="line">    container_name: test-mysql</span><br><span class="line">    restart: always</span><br><span class="line">    ports:</span><br><span class="line">      - "3306:3306"</span><br><span class="line">    environment:</span><br><span class="line">      MYSQL_USER: "root"</span><br><span class="line">      MYSQL_PASSWORD: "root"</span><br><span class="line">      MYSQL_ROOT_PASSWORD: "root"</span><br><span class="line">    networks:</span><br><span class="line">      - net-mysql</span><br><span class="line"></span><br><span class="line">  phpmyadmin:</span><br><span class="line">    image: docker.io/phpmyadmin/phpmyadmin</span><br><span class="line">    container_name: test-myadmin</span><br><span class="line">    ports:</span><br><span class="line">      - "80:80"</span><br><span class="line">    environment:</span><br><span class="line">      MYSQL_USER: "root"</span><br><span class="line">      MYSQL_PASSWORD: "root"</span><br><span class="line">      MYSQL_ROOT_PASSWORD: "root"</span><br><span class="line">    networks:</span><br><span class="line">      - net-mysql</span><br><span class="line"></span><br><span class="line">networks:</span><br><span class="line">  net-mysql:</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>发布容器</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 使用命令发布容器</span></span><br><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>然后就可以使用了，不需要修改任何配置文件</p>
+</li>
+</ol>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://luxiaowan.github.io/2019/12/20/Docker安装phpmyadmin/" title="Docker安装phpmyadmin" target="_blank" rel="external">http://luxiaowan.github.io/2019/12/20/Docker安装phpmyadmin/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/luxiaowan" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="../../../../images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/luxiaowan" target="_blank"><span class="text-dark">串一串</span><small class="ml-1x">浪人</small></a></h3>
+        <div>断舍离</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="../../21/工程师和程序员的区别/" title="工程师和程序员的区别"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="../Nacos基本使用/" title="Nacos基本使用"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2019 cc
+        
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="../../../../js/plugin.min.js"></script>
+<script src="../../../../js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '../../../../content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="../../../../js/insight.js"></script>
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+
+
+
+
+
+
+</body>
+</html>
