@@ -17,23 +17,16 @@
   <meta http-equiv="window-target" content="_top">
   
   
-  <title>Spring-Session和Redis实现Session共享 | 串一串</title>
-  <meta name="description" content="需求  现在大部分服务都以集群负载均衡的方式部署，几乎很难再遇到单点部署的项目，因为大家都要保证最基本的HA，说到HA，第一要考虑的就是各系统之间的Session共享的问题，如何解决呢？负载均衡当前使用Nginx     分析      不同的POD之间如果需要达到数据共享的目的，那么则需要使用同一个存储媒介，一开始想到使用MySQL来存储登录session，但是每次请求都去MySQL中查询数据">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Spring-Session和Redis实现Session共享">
-<meta property="og:url" content="http://luxiaowan.github.io/2019/10/24/Spring-Session和Redis实现Session共享/index.html">
+  <title>归档: 2019 | 串一串</title>
+  <meta property="og:type" content="website">
+<meta property="og:title" content="串一串">
+<meta property="og:url" content="http://luxiaowan.github.io/archives/2019/page/4/index.html">
 <meta property="og:site_name" content="串一串">
-<meta property="og:description" content="需求  现在大部分服务都以集群负载均衡的方式部署，几乎很难再遇到单点部署的项目，因为大家都要保证最基本的HA，说到HA，第一要考虑的就是各系统之间的Session共享的问题，如何解决呢？负载均衡当前使用Nginx     分析      不同的POD之间如果需要达到数据共享的目的，那么则需要使用同一个存储媒介，一开始想到使用MySQL来存储登录session，但是每次请求都去MySQL中查询数据">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://luxiaowan.github.io/images/image-20191024193415981.png">
-<meta property="og:image" content="http://luxiaowan.github.io/images/image-20191024223839113.png">
-<meta property="og:updated_time" content="2019-10-24T15:18:45.220Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Spring-Session和Redis实现Session共享">
-<meta name="twitter:description" content="需求  现在大部分服务都以集群负载均衡的方式部署，几乎很难再遇到单点部署的项目，因为大家都要保证最基本的HA，说到HA，第一要考虑的就是各系统之间的Session共享的问题，如何解决呢？负载均衡当前使用Nginx     分析      不同的POD之间如果需要达到数据共享的目的，那么则需要使用同一个存储媒介，一开始想到使用MySQL来存储登录session，但是每次请求都去MySQL中查询数据">
-<meta name="twitter:image" content="http://luxiaowan.github.io/images/image-20191024193415981.png">
+<meta name="twitter:title" content="串一串">
   <!-- Canonical links -->
-  <link rel="canonical" href="http://luxiaowan.github.io/2019/10/24/Spring-Session和Redis实现Session共享/index.html">
+  <link rel="canonical" href="http://luxiaowan.github.io/archives/2019/page/4/index.html">
   
     <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
   
@@ -110,7 +103,7 @@
         
         
         <li class="menu-item menu-item-archives">
-          <a href="../../../../archives">
+          <a href="../../..">
             
             <i class="icon icon-archives-fill"></i>
             
@@ -222,7 +215,7 @@
   <div class="widget">
     <h3 class="widget-title">归档</h3>
     <div class="widget-body">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/12/">十二月 2019</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/11/">十一月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/10/">十月 2019</a><span class="archive-list-count">17</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../12/">十二月 2019</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../11/">十一月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../10/">十月 2019</a><span class="archive-list-count">17</span></li></ul>
     </div>
   </div>
 
@@ -237,7 +230,7 @@
           <li>
             
             <div class="item-thumb">
-              <a href="../../../12/25/大厂面试题记录/" class="thumb">
+              <a href="../../../../2019/12/25/大厂面试题记录/" class="thumb">
     
     
         <span class="thumb-image thumb-none"></span>
@@ -251,7 +244,7 @@
                 <a class="category-link" href="../../../../categories/Java/">Java</a>
               </p>
               <p class="item-title">
-                <a href="../../../12/25/大厂面试题记录/" class="title">头条、美团、滴滴、京东等大厂面试题</a>
+                <a href="../../../../2019/12/25/大厂面试题记录/" class="title">头条、美团、滴滴、京东等大厂面试题</a>
               </p>
               <p class="item-date">
                 <time datetime="2019-12-24T16:35:00.000Z" itemprop="datePublished">2019-12-25</time>
@@ -262,7 +255,7 @@
           <li>
             
             <div class="item-thumb">
-              <a href="../../../12/21/工程师和程序员的区别/" class="thumb">
+              <a href="../../../../2019/12/21/工程师和程序员的区别/" class="thumb">
     
     
         <span class="thumb-image thumb-none"></span>
@@ -276,7 +269,7 @@
                 <a class="category-link" href="../../../../categories/杂谈/">杂谈</a>
               </p>
               <p class="item-title">
-                <a href="../../../12/21/工程师和程序员的区别/" class="title">工程师和程序员的区别</a>
+                <a href="../../../../2019/12/21/工程师和程序员的区别/" class="title">工程师和程序员的区别</a>
               </p>
               <p class="item-date">
                 <time datetime="2019-12-20T17:03:00.000Z" itemprop="datePublished">2019-12-21</time>
@@ -287,7 +280,7 @@
           <li>
             
             <div class="item-thumb">
-              <a href="../../../12/20/Docker安装phpmyadmin/" class="thumb">
+              <a href="../../../../2019/12/20/Docker安装phpmyadmin/" class="thumb">
     
     
         <span class="thumb-image thumb-none"></span>
@@ -301,7 +294,7 @@
                 <a class="category-link" href="../../../../categories/Docker/">Docker</a>
               </p>
               <p class="item-title">
-                <a href="../../../12/20/Docker安装phpmyadmin/" class="title">Docker安装phpmyadmin</a>
+                <a href="../../../../2019/12/20/Docker安装phpmyadmin/" class="title">Docker安装phpmyadmin</a>
               </p>
               <p class="item-date">
                 <time datetime="2019-12-20T09:00:00.000Z" itemprop="datePublished">2019-12-20</time>
@@ -312,7 +305,7 @@
           <li>
             
             <div class="item-thumb">
-              <a href="../../../12/20/Nacos基本使用/" class="thumb">
+              <a href="../../../../2019/12/20/Nacos基本使用/" class="thumb">
     
     
         <span class="thumb-image thumb-none"></span>
@@ -326,7 +319,7 @@
                 <a class="category-link" href="../../../../categories/Nacos/">Nacos</a>
               </p>
               <p class="item-title">
-                <a href="../../../12/20/Nacos基本使用/" class="title">Nacos基本使用</a>
+                <a href="../../../../2019/12/20/Nacos基本使用/" class="title">Nacos基本使用</a>
               </p>
               <p class="item-date">
                 <time datetime="2019-12-20T01:30:00.000Z" itemprop="datePublished">2019-12-20</time>
@@ -337,7 +330,7 @@
           <li>
             
             <div class="item-thumb">
-              <a href="../../../12/20/忘记MySQL的root用户密码怎么办/" class="thumb">
+              <a href="../../../../2019/12/20/忘记MySQL的root用户密码怎么办/" class="thumb">
     
     
         <span class="thumb-image thumb-none"></span>
@@ -351,7 +344,7 @@
                 <a class="category-link" href="../../../../categories/MySQL/">MySQL</a>
               </p>
               <p class="item-title">
-                <a href="../../../12/20/忘记MySQL的root用户密码怎么办/" class="title">忘记MySQL的root用户密码怎么办</a>
+                <a href="../../../../2019/12/20/忘记MySQL的root用户密码怎么办/" class="title">忘记MySQL的root用户密码怎么办</a>
               </p>
               <p class="item-date">
                 <time datetime="2019-12-19T16:53:00.000Z" itemprop="datePublished">2019-12-20</time>
@@ -371,177 +364,74 @@
   
   
 <main class="main" role="main">
-  <div class="content">
-  <article id="post-Spring-Session和Redis实现Session共享" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
-    
-    <div class="article-header">
-      
-        
+  	<article class="content article article-archives article-type-list" itemscope="">
+	    <header class="article-header">
+	      <h1 itemprop="title">归档: 2019</h1>
+	      <p class="text-muted">共 1 篇文章</p>
+	    </header>
+	    <div class="article-body">
+	      
   
-    <h1 class="article-title" itemprop="name">
-      Spring-Session和Redis实现Session共享
-    </h1>
-  
-
-      
-      <div class="article-meta">
-        <span class="article-date">
-    <i class="icon icon-calendar-check"></i>
-	<a href="" class="article-date">
-	  <time datetime="2019-10-24T11:30:00.000Z" itemprop="datePublished">2019-10-24</time>
-	</a>
-</span>
-        
-  <span class="article-category">
-    <i class="icon icon-folder"></i>
-    <a class="article-category-link" href="../../../../categories/SpringBoot/">SpringBoot</a>
-  </span>
-
-        
-
-        
-	<span class="article-read hidden-xs">
-	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
-	    <span id="busuanzi_container_page_pv">
-			<span id="busuanzi_value_page_pv">0</span>
-		</span>
-	</span>
-
-
-        <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
-        
-	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 569(字)</span>
-	
-	
-		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 2(分)</span>
-	
-
-      </div>
-    </div>
-    <div class="article-entry marked-body" itemprop="articleBody">
-      
-        <blockquote>
-<p>需求</p>
-<blockquote>
-<p>现在大部分服务都以集群负载均衡的方式部署，几乎很难再遇到单点部署的项目，因为大家都要保证最基本的HA，说到HA，第一要考虑的就是各系统之间的Session共享的问题，如何解决呢？负载均衡当前使用Nginx</p>
-</blockquote>
-</blockquote>
-<hr>
-<blockquote>
-<p>分析</p>
-<blockquote>
-<p><img src="/images/image-20191024193415981.png" alt></p>
-</blockquote>
-<blockquote>
-<ol>
-<li>不同的POD之间如果需要达到数据共享的目的，那么则需要使用同一个存储媒介，一开始想到使用MySQL来存储登录session，但是每次请求都去MySQL中查询数据，开销还是非常大的；然后最近使用MongoDB比较嗨，想着用MongoDB，但是MongoDB查询起来也不方便，况且我们这个Session也不是量级很大的数据集，最终采用了内存级的Redis来解决这个问题。</li>
-<li>使用Redis的基本操作是将jsessionId为key，用户信息为value，使用jedis或者redisTemplate来操作Redis的读写行为。但是这种方式侵入了业务代码，并不是最优解，查了部分资料之后，发现spring-session.jar包中有一个非常有特色的注解@EnableRedisHttpSession，可以不需要侵入业务代码就能使用redis实现session共享的问题。</li>
-</ol>
-</blockquote>
-</blockquote>
-<ul>
-<li>我们看一下@EnableRedisHttpSession的源码是怎么说的：</li>
-</ul>
-<p><img src="/images/image-20191024223839113.png" alt="image-20191024223839113"></p>
-<blockquote>
-<p>将此注释添加到一个单独的类上，该类必须加上@Configuration注解。使用方式在注释里也给出了demo代码。</p>
-</blockquote>
-<hr>
-<blockquote>
-<p>实现</p>
-</blockquote>
-<ol>
-<li>修改pom.xml文件，引入我们需要的jar包</li>
-</ol>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">  &lt;groupId&gt;org.springframework.session&lt;/groupId&gt;</span><br><span class="line">  &lt;artifactId&gt;spring-session&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">  &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">  &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">  &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">  &lt;artifactId&gt;spring-boot-starter-data-redis&lt;/artifactId&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-<ol start="2">
-<li>修改application.yml文件，配置redis信息</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">spring.redis.database=<span class="number">0</span></span><br><span class="line">spring.redis.host=localhost</span><br><span class="line">spring.redis.port=<span class="number">6379</span></span><br><span class="line">spring.redis.password=<span class="number">123456</span></span><br></pre></td></tr></table></figure>
-<ol start="3">
-<li>创建配置类</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"><span class="keyword">import</span> org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableRedisHttpSession</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisHttpSessionConfig</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>到此，我们使用Redis实现Session共享的所有配置和代码都已经写完了，可以看到我们没有侵入到任何业务代码中，从头到尾也很简单。</p>
-<blockquote>
-<p>扩展</p>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@EnableGemFireHttpSession</span></span><br><span class="line"><span class="meta">@EnableSpringHttpSession</span></span><br><span class="line"><span class="meta">@EnableMongoHttpSession</span></span><br><span class="line"><span class="meta">@EnableJdbcHttpSession</span></span><br></pre></td></tr></table></figure>
-      
-    </div>
-    <div class="article-footer">
-      <blockquote class="mt-2x">
-  <ul class="post-copyright list-unstyled">
-    
-    <li class="post-copyright-link hidden-xs">
-      <strong>本文链接：</strong>
-      <a href="http://luxiaowan.github.io/2019/10/24/Spring-Session和Redis实现Session共享/" title="Spring-Session和Redis实现Session共享" target="_blank" rel="external">http://luxiaowan.github.io/2019/10/24/Spring-Session和Redis实现Session共享/</a>
-    </li>
-    
-    <li class="post-copyright-license">
-      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
-    </li>
-  </ul>
-</blockquote>
-
-
-<div class="panel panel-default panel-badger">
-  <div class="panel-body">
-    <figure class="media">
-      <div class="media-left">
-        <a href="https://github.com/luxiaowan" target="_blank" class="img-burn thumb-sm visible-lg">
-          <img src="../../../../images/avatar.jpg" class="img-rounded w-full" alt="">
-        </a>
-      </div>
-      <div class="media-body">
-        <h3 class="media-heading"><a href="https://github.com/luxiaowan" target="_blank"><span class="text-dark">串一串</span><small class="ml-1x">浪人</small></a></h3>
-        <div>断舍离</div>
-      </div>
-    </figure>
-  </div>
-</div>
-
-
-    </div>
-  </article>
   
     
-  <section id="comments">
+    
+      
+      
+      <section class="panel panel-default b-no">
+        <div class="panel-heading" role="tab">
+          <h3 class="panel-title">
+            <a data-toggle="collapse" href="#collapse2019" aria-expanded="true">
+              <i class="icon icon-calendar-plus text-active"></i><i class="icon icon-calendar-minus text"></i>
+              2019
+            </a>
+            <!-- <a href="../.." class="archive-year">2019</a> -->
+          </h3>
+        </div>
+        <div id="collapse2019" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading2019">
+        <div class="panel-body">
+          <div class="collection">
+    
+    
+<a href="../../../../2019/10/10/蚂蚁Java基础面试题/" class="collection-item" target="_blank" itemprop="url">
+  <time datetime="2019-10-10T15:21:56.000Z" itemprop="datePublished">2019-10-10</time>
+  <span>&nbsp;&nbsp;&nbsp;</span> Java基础面试题
+</a>
+
+
+  
+  
+    </div></div></div></section>
+  
+
+	    </div>
+  	</article>
   	
-  </section>
-
-
-  
-</div>
-
-  <nav class="bar bar-footer clearfix" data-stick-bottom>
-  <div class="bar-inner">
-  
-  <ul class="pager pull-left">
     
-    <li class="prev">
-      <a href="../../28/MySQL索引什么时候用hash/" title="MySQL索引什么时候用hash"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
-    </li>
+    <nav class="bar bar-footer clearfix" data-stick-bottom>
+        <div class="bar-inner">
+        <ul class="pager pull-left">
+            
+            <li class="prev">
+                <a href="../3/">
+                    <i class="icon icon-angle-left"></i>
+                    上一页
+                </a>
+            </li>
+            
+            
+            <li class="next disabled">
+                <a href="javascript:;">
+                    下一页
+                    <i class="icon icon-angle-right"></i>                    
+                </a>
+            </li>
+            
+        </ul>
+        <div class="total-article bar-right">Page 4 of 4</div>
+        </div>
+    </nav>
     
-    
-    <li class="next">
-      <a href="../Java简单操作MongoDB/" title="Java简单操作MongoDB"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
-    </li>
-    
-    
-  </ul>
-  
-  
-  
-  <div class="bar-right">
-    
-  </div>
-  </div>
-</nav>
-  
-
-
+ 	
 </main>
 
   <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
@@ -590,14 +480,6 @@ window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
 
 
 
-   
-<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
-
-
-
-
-   
 
 
 
