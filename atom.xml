@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://luxiaowan.github.io/"/>
-  <updated>2020-03-24T03:34:21.444Z</updated>
+  <updated>2020-03-24T04:44:39.771Z</updated>
   <id>http://luxiaowan.github.io/</id>
   
   <author>
@@ -21,16 +21,15 @@
     <link href="http://luxiaowan.github.io/2020/03/24/OLTP%E5%92%8COLAP%E5%8C%BA%E5%88%AB/"/>
     <id>http://luxiaowan.github.io/2020/03/24/OLTP和OLAP区别/</id>
     <published>2020-03-24T03:15:00.000Z</published>
-    <updated>2020-03-24T03:34:21.444Z</updated>
+    <updated>2020-03-24T04:44:39.771Z</updated>
     
-    <content type="html"><![CDATA[<p>我们在《MongoDB和Elasticsearch简单对比》一文中提到了OLAP和OLTP，然后我去问了几个技术人员，基本上知道这两个名词的人少之又少，当然这也情有可原，毕竟IT行业里名词太多了，我们来说一下这两者的区别</p><h3 id="词义"><a class="markdownIt-Anchor" href="#词义"></a> 词义</h3><ol><li>OLTP：on-line Transaction Processing，联机(在线)事务处理</li><li>OLAP：on-line Analytical Processing，联机(在线)分析处理</li></ol><blockquote><p>从名词上我们就可以看出，OLTP主要是执行日常基本的事务处理，OLAP主要是执行日常的数据分析</p></blockquote><h3 id="特点"><a class="markdownIt-Anchor" href="#特点"></a> 特点</h3><ol><li>OLAP<ul><li>实时性不高。比如ES中常见的使用日期检索日志</li><li>数据量大。ES利用其倒排索引的特点强化全文检索能力，即使有大量的日志打到ES中，我们仍然可以很快的查询出对应数据，效率贼高</li><li>动态检索纬度。我们在做数据分析时，数据的检索纬度是非常重要的一个条件，因为我们一般都是需要依据某一纬度做数据分析，这样才能将分析出来的数据提供给决策使用，不同的决策者需要的纬度不同，所以OLAP需要支持动态的检索纬度</li></ul></li><li>OLTP<ul><li>实时性高。既然是联机事务处理，那么对实时性要求肯定是一个高指标要求，会尽量杜绝出现数据变更不实时的情况</li><li>数据量不是很大。数据量过大会影响CRUD的性能</li><li>对确定性的数据进行操作。</li><li>高并发且满足ACID。</li></ul></li></ol><h3 id="其他"><a class="markdownIt-Anchor" href="#其他"></a> 其他</h3><ol><li>OLTP一般是指我们常说的关系型数据库，或者说是支持频繁CRUD的数据存储媒介。</li><li>OLAP一般用于大数据处理和数据仓库，目前OLAP系统内的数据大多是针对OLTP内存储的数据做出进一步分析和应用，然后提供信息支持最终决策，对其大多是查多改少</li></ol>]]></content>
+    <content type="html"><![CDATA[<p>我们在《<a href="http://luxiaowan.github.io/2020/03/24/MongoDB%E5%92%8CElasticsearch%E7%AE%80%E5%8D%95%E5%AF%B9%E6%AF%94/">MongoDB和Elasticsearch简单对比</a>》一文中提到了OLAP和OLTP，然后我去问了几个技术人员，基本上知道这两个名词的人少之又少，当然这也情有可原，毕竟IT行业里名词太多了，我们来说一下这两者的区别</p><h3 id="词义"><a class="markdownIt-Anchor" href="#词义"></a> 词义</h3><ol><li>OLTP：on-line Transaction Processing，联机(在线)事务处理</li><li>OLAP：on-line Analytical Processing，联机(在线)分析处理</li></ol><blockquote><p>从名词上我们就可以看出，OLTP主要是执行日常基本的事务处理，OLAP主要是执行日常的数据分析</p></blockquote><h3 id="特点"><a class="markdownIt-Anchor" href="#特点"></a> 特点</h3><ol><li>OLAP<ul><li>实时性不高。比如ES中常见的使用日期检索日志</li><li>数据量大。ES利用其倒排索引的特点强化全文检索能力，即使有大量的日志打到ES中，我们仍然可以很快的查询出对应数据，效率贼高</li><li>动态检索纬度。我们在做数据分析时，数据的检索纬度是非常重要的一个条件，因为我们一般都是需要依据某一纬度做数据分析，这样才能将分析出来的数据提供给决策使用，不同的决策者需要的纬度不同，所以OLAP需要支持动态的检索纬度</li></ul></li><li>OLTP<ul><li>实时性高。既然是联机事务处理，那么对实时性要求肯定是一个高指标要求，会尽量杜绝出现数据变更不实时的情况</li><li>数据量不是很大。数据量过大会影响CRUD的性能</li><li>对确定性的数据进行操作。</li><li>高并发且满足ACID。</li></ul></li></ol><h3 id="其他"><a class="markdownIt-Anchor" href="#其他"></a> 其他</h3><ol><li>OLTP一般是指我们常说的关系型数据库，或者说是支持频繁CRUD的数据存储媒介。</li><li>OLAP一般用于大数据处理和数据仓库，目前OLAP系统内的数据大多是针对OLTP内存储的数据做出进一步分析和应用，然后提供信息支持最终决策，对其大多是查多改少</li></ol>]]></content>
     
     <summary type="html">
     
       
       
-        &lt;p&gt;我们在《MongoDB和Elasticsearch简单对比》一文中提到了OLAP和OLTP，然后我去问了几个技术人员，基本上知道这两个名词的人少之又少，当然这也情有可原，毕竟IT行业里名词太多了，我们来说一下这两者的区别&lt;/p&gt;
-&lt;h3 id=&quot;词义&quot;&gt;&lt;a class=&quot;
+        &lt;p&gt;我们在《&lt;a href=&quot;http://luxiaowan.github.io/2020/03/24/MongoDB%E5%92%8CElasticsearch%E7%AE%80%E5%8D%95%E5%AF%B9%E6%AF%94/&quot;&gt;MongoDB和Elasticsea
       
     
     </summary>
