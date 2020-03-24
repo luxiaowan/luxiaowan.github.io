@@ -25,7 +25,7 @@
 <meta property="og:site_name" content="串一串">
 <meta property="og:description" content="Dockerfile分为四部分：基础镜像信息、维护者信息、镜像操作指令、容器启动时执行指令。  基础镜像信息：FROM ubutu  格式为FROM或FROM: ，Dockerfile第一条必须为FROM指令，如果一个Dockerfile要指定多个镜像，则每个镜像使用一个FROM指令 2.维护者信息：MAINTAINER xiaolu xiaolu@qq.com 格式为MAINTAINER，指定维">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-03-24T04:49:18.068Z">
+<meta property="og:updated_time" content="2020-03-24T05:11:17.734Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Dockerfile详解">
 <meta name="twitter:description" content="Dockerfile分为四部分：基础镜像信息、维护者信息、镜像操作指令、容器启动时执行指令。  基础镜像信息：FROM ubutu  格式为FROM或FROM: ，Dockerfile第一条必须为FROM指令，如果一个Dockerfile要指定多个镜像，则每个镜像使用一个FROM指令 2.维护者信息：MAINTAINER xiaolu xiaolu@qq.com 格式为MAINTAINER，指定维">
@@ -408,7 +408,7 @@
         <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
         
 	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 701(字)</span>
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 696(字)</span>
 	
 	
 		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 2(分)</span>
@@ -420,55 +420,45 @@
       
         <p>Dockerfile分为四部分：基础镜像信息、维护者信息、镜像操作指令、容器启动时执行指令。</p>
 <ol>
-<li>基础镜像信息：FROM ubutu</li>
+<li>基础镜像信息：<code>FROM ubutu</code></li>
 </ol>
 <p>格式为FROM或FROM: ，Dockerfile第一条必须为FROM指令，如果一个Dockerfile要指定多个镜像，则每个镜像使用一个FROM指令</p>
-<p>2.维护者信息：MAINTAINER xiaolu <a href="mailto:xiaolu@qq.com" target="_blank" rel="noopener">xiaolu@qq.com</a></p>
+<p>2.维护者信息：<code>MAINTAINER xiaolu xiaolu@qq.com</code></p>
 <p>格式为MAINTAINER，指定维护者信息，可省略</p>
-<p>3.镜像操作指令：RUN apt-get update &amp;&amp; apt-get install -y vim</p>
-<p>格式为RUN或RUN [“executable”, “Param1”, “Param2”]</p>
+<p>3.镜像操作指令：<code>RUN apt-get update &amp;&amp; apt-get install -y vim</code></p>
+<p>格式为RUN或<code>RUN [&quot;executable&quot;, &quot;Param1&quot;, &quot;Param2&quot;]</code></p>
 <p>格式RUN：在shell终端运行，即/bin/sh -C</p>
 <p>格式RUN [“executable”, “Param1”, “Param2”]：使用exec执行</p>
 <p>每条run指令在当前基础镜像执行，并且重新提交新镜像，当命令比较长时可用&quot;/&quot;换行</p>
-<p>4.容器启动时执行指令：CMD /usr/sbin/nginx</p>
+<p>4.容器启动时执行指令：<code>CMD /usr/sbin/nginx</code></p>
 <p>每个容器只能执行一条CMD命令，多个CMD命令时，只会执行最后一条。</p>
 <p>支持三种格式：</p>
-<p>CMD [“executable”, “Param1”, “Param2”]：使用exec执行，推荐</p>
-<p>CMD command param1 param2：使用/bin/sh上执行</p>
-<p>CMD [“Param1”, “Param2”]：提供给ENTRYPOINT做默认参数</p>
-<p>5.暴露端口指令：EXPOSE，例如：EXPOSE 80 22 8080</p>
-<p>格式为：EXPOSE port1 port2 port3</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CMD ["executable", "Param1", "Param2"]：使用exec执行，推荐</span><br><span class="line"></span><br><span class="line">CMD command param1 param2：使用/bin/sh上执行</span><br><span class="line"></span><br><span class="line">CMD ["Param1", "Param2"]：提供给ENTRYPOINT做默认参数</span><br></pre></td></tr></table></figure>
+<p>5.暴露端口指令：EXPOSE，例如：<code>EXPOSE 80 22 8080</code></p>
+<p>格式为：<code>EXPOSE port1 port2 port3</code></p>
 <p>告诉Docker服务端容器暴露的端口号，供互联系统使用。</p>
 <p>在启动Docker时，主机会自动分配一个端口号转发到指定的端口，可用通过-P/-p，指定主机具体端口号进行映射。</p>
 <p>6.设置环境变量ENV</p>
 <p>格式为ENV，指定一个环境变量，会被后续的RUN指令使用，并且会在容器运行过程中保持。</p>
-<p>ENV YC_NAME yc_framework</p>
-<p>ENV YC_VERSION 1.0</p>
-<p>RUN wget -C <a href="http://www.kevinlu.cc/" target="_blank" rel="noopener">http://www.kevinlu.cc/</a><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>Y</mi><msub><mi>C</mi><mi>N</mi></msub><mi>A</mi><mi>M</mi><mi>E</mi><mi mathvariant="normal">/</mi></mrow><annotation encoding="application/x-tex">YC_NAME/</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.22222em;">Y</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07153em;">C</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.07153em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.10903em;">N</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord mathdefault">A</span><span class="mord mathdefault" style="margin-right:0.10903em;">M</span><span class="mord mathdefault" style="margin-right:0.05764em;">E</span><span class="mord">/</span></span></span></span>YC_VERSION | mvn install /usr/src/<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>Y</mi><msub><mi>C</mi><mi>N</mi></msub><mi>A</mi><mi>M</mi><mi>E</mi><mo>−</mo></mrow><annotation encoding="application/x-tex">YC_NAME-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord mathdefault" style="margin-right:0.22222em;">Y</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07153em;">C</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.07153em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.10903em;">N</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord mathdefault">A</span><span class="mord mathdefault" style="margin-right:0.10903em;">M</span><span class="mord mathdefault" style="margin-right:0.05764em;">E</span><span class="mord">−</span></span></span></span>YC_VERSION</p>
-<p>ENV PATH /usr/src/<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>Y</mi><msub><mi>C</mi><mi>N</mi></msub><mi>A</mi><mi>M</mi><mi>E</mi><mo>−</mo></mrow><annotation encoding="application/x-tex">YC_NAME-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord mathdefault" style="margin-right:0.22222em;">Y</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07153em;">C</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.07153em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.10903em;">N</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord mathdefault">A</span><span class="mord mathdefault" style="margin-right:0.10903em;">M</span><span class="mord mathdefault" style="margin-right:0.05764em;">E</span><span class="mord">−</span></span></span></span>YC_VERSION/bin:$PATH</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ENV YC_NAME yc_framework</span><br><span class="line"></span><br><span class="line">ENV YC_VERSION 1.0</span><br><span class="line"></span><br><span class="line">RUN wget -C http://www.kevinlu.cc/$YC_NAME/$YC_VERSION | mvn install /usr/src/$YC_NAME-$YC_VERSION</span><br><span class="line"></span><br><span class="line">ENV PATH /usr/src/$YC_NAME-$YC_VERSION/bin:$PATH</span><br></pre></td></tr></table></figure>
 <p>7.复制指定的文件到容器中ADD</p>
-<p>ADD hom* /usr/file</p>
+<p><code>ADD hom* /usr/file</code></p>
 <p>若/usr/file目录不存在，则自动创建</p>
 <p>源目录可以是Dockerfile所在目录的一个相对路径；也可以是一个URL；也可以是一个tar文件（自动解压为目录）</p>
 <p>8.复制本地主机的文件到容器COPY</p>
-<p>格式：COPY file directory</p>
+<p>格式：<code>COPY file directory</code></p>
 <p>拷贝的文件为Dockerfile所在目录的相对路径</p>
 <p>9.容器启动后执行指令：ENTRYPOINT</p>
-<p>格式：ENTRYPOINT [“executable”, “Param1”, “Param2”]</p>
-<p>​    ENTRYPOINT command param1 param2</p>
+<p>格式：<code>ENTRYPOINT [&quot;executable&quot;, &quot;Param1&quot;, &quot;Param2&quot;]</code></p>
+<p>​    <code>ENTRYPOINT command param1 param2</code></p>
 <p>配置容器启动后需要执行的指令，并且不会被docker run提供的参数覆盖</p>
 <p>每个Dockerfile中只能有一个ENTRYPOINT，如果有多个，则只会执行最后一个</p>
 <p>10.指定工作目录WORKDIR</p>
-<p>格式：WORKDIR /a/b/c</p>
+<p>格式：<code>WORKDIR /a/b/c</code></p>
 <p>为后续的RUN、CMD、ENTRYPOINT指令配置工作目录</p>
 <p>可以使用多个WORKDIR指令，后续的命令的参数为相对路径时，会基于之前命令指定的目录</p>
 <p>例如：</p>
-<p>WORKDIR /a</p>
-<p>WORKDIR b</p>
-<p>WORKDIR c</p>
-<p>WORKDIR d</p>
-<p>RUN pwd&lt;打印出/a/b/c/d&gt;</p>
-
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">WORKDIR /a</span><br><span class="line"></span><br><span class="line">WORKDIR b</span><br><span class="line"></span><br><span class="line">WORKDIR c</span><br><span class="line"></span><br><span class="line">WORKDIR d</span><br><span class="line"></span><br><span class="line">RUN pwd&lt;打印出/a/b/c/d&gt;</span><br></pre></td></tr></table></figure>
       
     </div>
     <div class="article-footer">

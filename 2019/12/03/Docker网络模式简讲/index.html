@@ -36,7 +36,7 @@
 <meta property="og:image" content="http://luxiaowan.github.io/images/dn9.png">
 <meta property="og:image" content="http://luxiaowan.github.io/images/dn10.png">
 <meta property="og:image" content="http://luxiaowan.github.io/images/dn11.png">
-<meta property="og:updated_time" content="2020-03-24T04:57:52.703Z">
+<meta property="og:updated_time" content="2020-03-24T05:10:17.425Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Docker网络模式简讲">
 <meta name="twitter:description" content="docker有四种网络模式：Bridge、Container、Host、None docker默认的网络模式为Bridge，通过在镜像启动时使用–net进行指定，不特殊声明则为默认模式。 docker进程启动时会在宿主机上创建一个名为docker0的虚拟网桥，此主机上启动的所有的docker镜像容器都会链接到这个虚拟网桥上。（虚拟网桥就是为了将镜像容器的虚拟机网络与主机网络建立桥接的一个交换机，与">
@@ -420,7 +420,7 @@
         <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
         
 	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 677(字)</span>
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 676(字)</span>
 	
 	
 		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 2(分)</span>
@@ -437,7 +437,7 @@
 <p>1、Bridge模式：默认、使用–net=bridge</p>
 <p>bridge模式是将每个docker镜像容器隔离开运行，分别映射到宿主机的端口上，每个容器都会被分配一个独立的网络命名空间，并且会把网络命名空间的IP映射到宿主机的docker0上。</p>
 <p>a.启动命令：</p>
-<p>docker run --net=bridge --name xiaolu_one -dt xiaolu</p>
+<p><code>docker run --net=bridge --name xiaolu_one -dt xiaolu</code></p>
 <p>b.原理图：</p>
 <p><img src="/images/dn1.png" alt="img"></p>
 <p>c.宿主服务器：</p>
@@ -447,7 +447,7 @@
 <p>2、host模式：–net=host</p>
 <p>host模式是与宿主机共用同一个网络空间，容器不会虚拟出自己的网卡、配置自己的IP等，也不会映射到docker0虚拟网桥，容器的IP、端口都与宿主机共用，极其容易发生冲突，所以不推荐使用此模式。虽然网络空间是与宿主机共用，但是文件系统、进程列表与宿主机是隔离的。</p>
 <p>a.启动命令：</p>
-<p>docker run --net=host --name xiaolu_two -dt xiaolu</p>
+<p><code>docker run --net=host --name xiaolu_two -dt xiaolu</code></p>
 <p>b.原理图：</p>
 <p><img src="/images/dn4.png" alt="img"></p>
 <p>c. 宿主服务器：</p>
@@ -458,8 +458,7 @@
 <p>3、Container模式：–net=container:docker_container_name</p>
 <p>Container模式是将新创建的容器指定与一个已经存在的容器共用一个网络空间，新创建的容器不会创建自己的网卡、配置自己的IP，容器内的端口和IP都与指定容器使用同一个，但是新建容器的文件系统、进程列表是与宿主容器相隔离。</p>
 <p>a.启动命令</p>
-<p>docker run --name xiaolu_three -dt xiaolu</p>
-<p>docker run --net=container:xiaolu_three --name xiaolu_four -dt xiaolu</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker run --name xiaolu_three -dt xiaolu</span><br><span class="line"></span><br><span class="line">docker run --net=container:xiaolu_three --name xiaolu_four -dt xiaolu</span><br></pre></td></tr></table></figure>
 <p>b.原理图</p>
 <p><img src="/images/dn7.png" alt="img"></p>
 <p>c.宿主服务器：</p>
@@ -472,7 +471,7 @@
 <p>4、None模式：–net=none</p>
 <p>None模式表示docker容器拥有自己的网络空间，但是并不为docker容器进行任何网络配置，也就是说这个docker容器没有网卡、IP、路由等信息，需要手动为docker容器配置。</p>
 <p>a.启动命令：</p>
-<p>docker run --net=none --name xiaolu_five -dt xiaolu</p>
+<p><code>docker run --net=none --name xiaolu_five -dt xiaolu</code></p>
 <p>b.原理图</p>
 <p><img src="/images/dn11.png" alt="img"></p>
 

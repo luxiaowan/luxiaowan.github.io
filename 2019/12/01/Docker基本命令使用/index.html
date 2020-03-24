@@ -25,7 +25,7 @@
 <meta property="og:site_name" content="串一串">
 <meta property="og:description" content="1.查看镜像 ​		docker images 2.查看启动中的容器 ​		docker ps 3.删除容器 ​		docker rm containerid 4.删除镜像 ​		docker rmi imageid 5.启动容器 ​		docker run -p 8080:8080 --name tomcat_one -dt xxx.xxx.xxx/tomcat 6.停止容器 ​		docker">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-03-24T04:50:38.650Z">
+<meta property="og:updated_time" content="2020-03-24T05:11:15.111Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Docker基本命令使用">
 <meta name="twitter:description" content="1.查看镜像 ​		docker images 2.查看启动中的容器 ​		docker ps 3.删除容器 ​		docker rm containerid 4.删除镜像 ​		docker rmi imageid 5.启动容器 ​		docker run -p 8080:8080 --name tomcat_one -dt xxx.xxx.xxx/tomcat 6.停止容器 ​		docker">
@@ -419,24 +419,24 @@
     <div class="article-entry marked-body" itemprop="articleBody">
       
         <p>1.查看镜像</p>
-<p>​		docker images</p>
+<p>​		<code>docker images</code></p>
 <p>2.查看启动中的容器</p>
-<p>​		docker ps</p>
+<p>​		<code>docker ps</code></p>
 <p>3.删除容器</p>
-<p>​		docker rm containerid</p>
+<p>​		<code>docker rm containerid</code></p>
 <p>4.删除镜像</p>
-<p>​		docker rmi imageid</p>
+<p>​		<code>docker rmi imageid</code></p>
 <p>5.启动容器</p>
-<p>​		docker run -p 8080:8080 --name tomcat_one -dt <a href="http://xxx.xxx.xxx/tomcat" target="_blank" rel="noopener">xxx.xxx.xxx/tomcat</a></p>
+<p>​		<code>docker run -p 8080:8080 --name tomcat_one -dt xxx.xxx.xxx/tomcat</code></p>
 <p>6.停止容器</p>
-<p>​		docker stop containerid</p>
-<p>​		docker kill containerid</p>
+<p>​		<code>docker stop containerid</code></p>
+<p>​		<code>docker kill containerid</code></p>
 <p>7.进入容器</p>
-<p>​		docker exec -it containerid bash</p>
+<p>​		<code>docker exec -it containerid bash</code></p>
 <p>8.制作镜像(Dcokerfile所在目录)</p>
-<p>​		docker build . -t image_name:latest</p>
+<p>​		<code>docker build . -t image_name:latest</code></p>
 <p>9.查看容器启动日志</p>
-<p>​		docker logs containerid</p>
+<p>​		<code>docker logs containerid</code></p>
 
       
     </div>
