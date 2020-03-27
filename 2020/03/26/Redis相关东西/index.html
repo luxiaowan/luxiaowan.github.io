@@ -26,15 +26,15 @@
 <meta property="og:site_name" content="串一串">
 <meta property="og:description" content="目录  Redis是什么 五种数据类型 Redis为何这么快 Redis和Memcached的区别 淘汰策略 持久化 主从复制 哨兵    Redis是什么 ​	Redis是由C语言编写的一个开源的高性能键值对的内存数据库，是一款NoSQL(not-only sql | no sql)数据库，可以用作缓存、数据库、消息中间件。 ​	Redis作为一款内存数据库，其优势为： 	1. 性能优秀，数据">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200327015702174.png">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/redis-rdb-conf.png">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/redis-aof-conf.png">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/redis-aof-rewrite.png">
-<meta property="og:updated_time" content="2020-03-27T16:42:41.273Z">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200327015702174.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/redis-rdb-conf.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/redis-aof-conf.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/redis-aof-rewrite.png">
+<meta property="og:updated_time" content="2020-03-27T18:33:07.790Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Redis相关东西">
 <meta name="twitter:description" content="目录  Redis是什么 五种数据类型 Redis为何这么快 Redis和Memcached的区别 淘汰策略 持久化 主从复制 哨兵    Redis是什么 ​	Redis是由C语言编写的一个开源的高性能键值对的内存数据库，是一款NoSQL(not-only sql | no sql)数据库，可以用作缓存、数据库、消息中间件。 ​	Redis作为一款内存数据库，其优势为： 	1. 性能优秀，数据">
-<meta name="twitter:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200327015702174.png">
+<meta name="twitter:image" content="http://luxiaowan.github.io/images/image-20200327015702174.png">
   <!-- Canonical links -->
   <link rel="canonical" href="http://luxiaowan.github.io/2020/03/26/Redis相关东西/index.html">
   
@@ -487,7 +487,7 @@
 <li>
 <p>RDB方式：RDB是Redis的默认持久化方式，属于是定时保存，每隔一段时间将fork出一个子进程去将内存中的数据写入到一个临时dump.rdb(名字在配置文件中设置)文件中，待子进程执行完成之后，将这个临时的dump文件替换掉原来的dump文件，这样做的目的是可以实现copy-on-write，子进程运行过程中使用的内存资源与Redis主进程无关</p>
 <p>*<em><font color="red"><em>通过bgsave和save命令可以手动触发执行RDB</em></font></em></p>
-<p><img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200327015702174.png" alt="image-20200327015702174"></p>
+<p><img src="/images/image-20200327015702174.png" alt="image-20200327015702174"></p>
 <p>配置信息：redis.conf文件中</p>
 <blockquote>
 <p>解读：</p>
@@ -495,7 +495,7 @@
 <p>save 300 10：300秒内若至少有10个key发生变化，则触发备份</p>
 <p>save 60 10000：60秒内若至少有1万个key发生变化，则触发备份</p>
 </blockquote>
-<p><img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/redis-rdb-conf.png" alt="image-20200327001846508"></p>
+<p><img src="/images/redis-rdb-conf.png" alt="image-20200327001846508"></p>
 <blockquote>
 <p>劣势：</p>
 <ol>
@@ -522,11 +522,11 @@
 <li>
 <p>AOF方式：AOF方式在Redis中是默认未开启的，在开启AOF后，会将内容写入到appendonly.aof文件中，文件的内容是服务器接收到的所有对数据进行修改的命令集合，按照时间顺序追加到文件尾部，并且在故障恢复的时候，会优先读取appendonly.aof文件中的内容，因为aof的默认策略是每秒钟写入一次，所以当采用aof进行持久化的时候，最多也仅仅丢失一秒的数据。</p>
 <p>配置信息：redis.conf文件中</p>
-<p><img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/redis-aof-conf.png" alt="image-20200327003834988"></p>
+<p><img src="/images/redis-aof-conf.png" alt="image-20200327003834988"></p>
 <blockquote>
 <p>劣势：</p>
 <p>随着服务运行时间越来越久，内存中的数据变更次数越来越多，会造成aof文件越来越大，当然我们可以在配置文件redis.conf中设置aof文件重写策略，默认当aof文件大小达到64mb且增长比例超过了之前是100%的时候进行重写，重写的规则是将内存中的数据的当前值全部以对应的set命令写入到新的aof文件中，比如当前aof文件100mb，重写之后80mb，那么只有当文件再次达到160mb(160&gt;=80*2&amp;&amp;160&gt;64)的时候才会再次进行重写，</p>
-<p><img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/redis-aof-rewrite.png" alt="image-20200327005212374"></p>
+<p><img src="/images/redis-aof-rewrite.png" alt="image-20200327005212374"></p>
 </blockquote>
 </li>
 </ul>
