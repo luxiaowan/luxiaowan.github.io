@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://luxiaowan.github.io/"/>
-  <updated>2020-03-24T04:44:39.771Z</updated>
+  <updated>2020-03-27T16:42:41.273Z</updated>
   <id>http://luxiaowan.github.io/</id>
   
   <author>
@@ -15,6 +15,64 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Redis相关东西</title>
+    <link href="http://luxiaowan.github.io/2020/03/26/Redis%E7%9B%B8%E5%85%B3%E4%B8%9C%E8%A5%BF/"/>
+    <id>http://luxiaowan.github.io/2020/03/26/Redis相关东西/</id>
+    <published>2020-03-26T14:15:00.000Z</published>
+    <updated>2020-03-27T16:42:41.273Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="目录"><a class="markdownIt-Anchor" href="#目录"></a> 目录</h2><ul><li>Redis是什么</li><li>五种数据类型</li><li>Redis为何这么快</li><li>Redis和Memcached的区别</li><li>淘汰策略</li><li>持久化</li><li>主从复制</li><li>哨兵</li></ul><hr><h4 id="redis是什么"><a class="markdownIt-Anchor" href="#redis是什么"></a> Redis是什么</h4><p>​Redis是由C语言编写的一个开源的高性能键值对的内存数据库，是一款NoSQL(not-only sql | no sql)数据库，可以用作缓存、数据库、消息中间件。</p><p>​Redis作为一款内存数据库，其优势为：</p><pre><code>1. 性能优秀，数据都存于内存中，读写速度快，理论读取速度能达到10W/秒；2. 单线程操作，线程安全，采用IO多路复用实现垃圾回收和持久化；3. 支持丰富的数据类型：字符串(string)、列表(list)、散列(hash)、集合(set)、有序集合(zset)；4. 支持数据持久化，并且提供RDB和AOF两种持久化方式；5. 可以用于分布式锁，也可以利用Redis的发布-订阅特性实现消息队列；6. 主从复制，哨兵，高可用。</code></pre><h4 id="五种数据类型"><a class="markdownIt-Anchor" href="#五种数据类型"></a> 五种数据类型</h4><ul><li>字符串(string)类型：Redis的字符串类型是最基本的类型，可以理解为一个key对应一个value，value可以是字符也可以是数字，该类型可以存储图片或者序列化后的对象等二进制数据，支持的value大小最大512M，当value小于44字节(3.2版本+是44，3.0版本-是39)时，字符串编码为embstr，大于的时候字符串编码为raw，常用的命令有set、get等。</li><li>散列(hash)类型：hash是一个键值对的集合，特别适合用于存储对象，可以直接获取到对象的某个属性的值，常用的命令有hset、hget、hgetall等。</li><li>列表(list)类型：</li><li>集合(set)类型：</li><li>有序集合(zset)类型：</li></ul><h4 id="redis为何那么快"><a class="markdownIt-Anchor" href="#redis为何那么快"></a> Redis为何那么快</h4><p>​Redis之所以是单线程的还那么快，完全是因为Redis是纯内存操作，没有CPU上下文切换带来的消耗，也没有磁盘寻址等带来的IO开销，官方理论QPS为10W+。</p><p>​既然Redis的性能瓶颈是内存和网络带宽，那么就没必要设计成多线程模式，否则会多出CPU切换，且只要涉及到多线程必然会因为资源竞争而衍生出资源锁的使用，频繁的加锁、释放锁还是非常浪费时间的，所以既然多线程会带来那么多问题，还是使用单线程得了，并且Redis本身就是K-V存储，查询时间复杂度限制在O(1)的情况，所以Redis才那么快。</p><h4 id="redis和memcached的区别"><a class="markdownIt-Anchor" href="#redis和memcached的区别"></a> Redis和Memcached的区别</h4><ul><li>存储方式：Memcache将数据存储在内存中，若服务器出现故障，则数据全部丢失，无法持久化。Redis提供了RDB和AOF两种方式进行数据持久化，就算是服务器宕机，在恢复之后依然可以保证数据的完整性；</li><li>数据类型：Memcache仅支持字符串存储，而Redis支持字符串、列表、散列、集合、有序集合等类型，使用起来更方便和多样化；</li><li>value大小：Redis的字符串类型可以存储512M的内容，而Memcache最高仅能存储1M的内容，不过虽然Redis支持很大的value，但是一般不会那么用；</li><li>底层协议不同：Redis拥有自己的VM，Memcache使用系统函数</li></ul><h4 id="淘汰策略"><a class="markdownIt-Anchor" href="#淘汰策略"></a> 淘汰策略</h4><p>Redis目前有6种淘汰策略，据说新版本中有8种</p><ul><li>volatile-lru：从设置了过期时间的所有key中将最近最少使用(least recently used)的key淘汰掉</li><li>volatile-ttl：从设置了过期时间的所有key中将剩余存活时间最少(time to live)的key淘汰掉</li><li>volatile-random：从设置了过期时间的所有key中随机淘汰掉部分key</li><li>allkeys-lru：从所有的key中将最近最少使用的key淘汰掉</li><li>allkeys-random：从所有的key中随机淘汰掉部分key</li><li>noeviction：不执行数据淘汰，当内存不足时直接拒绝新的插入请求，并返回错误信息</li><li>volatile-lfu：从设置了过期时间的所有key中将访问频率最少(least frequently used)的key淘汰掉</li><li>allkeys-lfu：从所有的key中将访问频率最少的key淘汰掉</li></ul><h4 id="持久化"><a class="markdownIt-Anchor" href="#持久化"></a> 持久化</h4><p>Redis支持两种持久化方式，持久化的目的是将内存中的数据写入到磁盘中，防止服务出现故障后的数据丢失的情况。</p><ul><li><p>RDB方式：RDB是Redis的默认持久化方式，属于是定时保存，每隔一段时间将fork出一个子进程去将内存中的数据写入到一个临时dump.rdb(名字在配置文件中设置)文件中，待子进程执行完成之后，将这个临时的dump文件替换掉原来的dump文件，这样做的目的是可以实现copy-on-write，子进程运行过程中使用的内存资源与Redis主进程无关</p><p>*<em><font color="red"><em>通过bgsave和save命令可以手动触发执行RDB</em></font></em></p><p><img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200327015702174.png" alt="image-20200327015702174"></p><p>配置信息：redis.conf文件中</p><blockquote><p>解读：</p><p>save 900 1：900秒内若至少有1个key发生变化，则触发备份</p><p>save 300 10：300秒内若至少有10个key发生变化，则触发备份</p><p>save 60 10000：60秒内若至少有1万个key发生变化，则触发备份</p></blockquote><p><img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/redis-rdb-conf.png" alt="image-20200327001846508"></p><blockquote><p>劣势：</p><ol><li>RDB持久化方式适合于整库备份，dump文件用于故障恢复，但是由于RDB方式并不是实时的整库备份，所以我们拿到的dump文件总是会和内存中的数据不一致，如果你想要避免服务器发生故障的时候丢失数据，那么仅仅使用RDB是万万不行的，需要配合AOF使用。</li><li>为了使用子进程在磁盘上持久存储，RDB经常需要fork()。如果数据集很大，Fork()可能很耗时，并且可能导致Redis停止为客户端提供服务几毫秒甚至一秒钟(如果数据集很大，而且CPU性能不是很好)。AOF还需要fork()，但是您可以调整重写日志的频率，而不需要牺牲持久性。</li></ol><p>优势：</p><ol><li><p>RDB是一个非常紧凑的单文件时间点表示您的Redis数据。RDB文件非常适合备份。例如，您可能希望在最近的24小时内每小时存档一次RDB文件，并在30天内每天保存一次RDB快照。这允许您在发生灾难时轻松地恢复不同版本的数据集。</p></li><li><p>RDB对于灾难恢复非常有用，它是一个紧凑的文件，可以传输到远程数据中心上。</p></li><li><p>RDB最大限度地提高了Redis性能，因为为了保持Redis父进程所需做的惟一工作就是创建一个将完成所有其余工作的子进程。父实例永远不会执行磁盘I/O或类似的操作。</p></li><li><p>与AOF相比，RDB允许对大数据集进行更快的重启。</p></li></ol></blockquote></li><li><p>AOF方式：AOF方式在Redis中是默认未开启的，在开启AOF后，会将内容写入到appendonly.aof文件中，文件的内容是服务器接收到的所有对数据进行修改的命令集合，按照时间顺序追加到文件尾部，并且在故障恢复的时候，会优先读取appendonly.aof文件中的内容，因为aof的默认策略是每秒钟写入一次，所以当采用aof进行持久化的时候，最多也仅仅丢失一秒的数据。</p><p>配置信息：redis.conf文件中</p><p><img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/redis-aof-conf.png" alt="image-20200327003834988"></p><blockquote><p>劣势：</p><p>随着服务运行时间越来越久，内存中的数据变更次数越来越多，会造成aof文件越来越大，当然我们可以在配置文件redis.conf中设置aof文件重写策略，默认当aof文件大小达到64mb且增长比例超过了之前是100%的时候进行重写，重写的规则是将内存中的数据的当前值全部以对应的set命令写入到新的aof文件中，比如当前aof文件100mb，重写之后80mb，那么只有当文件再次达到160mb(160&gt;=80*2&amp;&amp;160&gt;64)的时候才会再次进行重写，</p><p><img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/redis-aof-rewrite.png" alt="image-20200327005212374"></p></blockquote></li></ul><blockquote><p>AOF文件损坏修复：</p><p>​如果在AOF文件写入的过程中突然宕机，可能会导致aof文件损坏，我们可以使用redis-check-aof --fix命令来修复</p></blockquote><p>####### 故障恢复</p><ul><li><p>若同时开启了RDB和AOF，那么在故障恢复的时候先使用AOF文件进行恢复，这样可以保证丢失最少的数据，但是如果我们想尽快的恢复Redis服务，可以允许丢失一部分数据，那么可以禁用AOF，只使用RDB，使用RDB之所以比AOF快，是因为AOF是一条条命令的去执行的，直到最终状态，RDB是一次性把所有数据的最终状态刷到内存的</p></li><li><p>AOF日志文件的命令通过可读的方式进行记录，这个特性非常适合做灾难性的误删除的紧急恢复。比如某人不小心用flushall命令清空了所有数据，只要这个时候后台rewrite还没有发生，那么就可以立即拷贝AOF文件，将最后一条flushall命令给删了，然后再将该AOF文件放回去，就可以通过恢复机制，自动恢复所有数据</p></li><li></li></ul><h4 id="主从复制"><a class="markdownIt-Anchor" href="#主从复制"></a> 主从复制</h4><p>​redis单节点存在单点故障问题，为了解决单点问题，一般都需要对redis配置从节点，然后使用哨兵来监听主节点的存活状态，如果主节点挂掉，从节点能继续提供缓存功能，从节点仅提供读操作，主节点提供写操作。对于读多写少的状况，可给主节点配置多个从节点，从而提高响应效率。</p><p>​<strong>复制过程</strong></p><ol><li><p>从节点执行slaveof [masterIP] [masterPort]，保存主节点信息 ；</p></li><li><p>从节点中的定时任务发现主节点信息，建立和主节点的socket连接；</p></li><li><p>从节点发送Ping信号，主节点返回Pong，两边能互相通信；</p></li><li><p>连接建立后，主节点将所有数据发送给从节点（数据同步）；</p></li><li><p>主节点把当前的数据同步给从节点后，便完成了复制的建立过程；</p></li><li><p>接下来，主节点就会持续的把写命令发送给从节点，保证主从数据一致性。</p></li></ol><h4 id="哨兵"><a class="markdownIt-Anchor" href="#哨兵"></a> 哨兵</h4><ul><li>主从复制存在的问题<ol><li>一旦主节点宕机，从节点晋升为主节点，同时需要修改应用方的主节点地址，还需要命令所有从节点去复制新的主节点，整个过程需要人工干预；</li><li>主节点的写能力受到单机的限制；</li><li>主节点的存储能力受到单机的限制；</li><li>原生复制的弊端在早期的版本中也会比较突出，比如：redis复制中断后，从节点会发起psync。此时如果同步不成功，则会进行全量同步，主库执行全量备份的同时，可能会造成毫秒或秒级的卡顿。</li></ol></li><li>改善方式</li></ul><p>哨兵模式是一种特殊的模式，Redis提供了哨兵命令，哨兵是一个独立的进程，原理是通过哨兵发送命令，然后等待Redis服务器的响应，进而实现对Redis实例的监控。</p><ul><li><p>运行方式</p><ul><li><p>通过命令的发送，Redis实例返回监控的运行状态，所有的Redis服务器</p></li><li><p>当master机器宕机后，会随机选择一个slave节点作为master，然后通过发布订阅模式通知其他slave节点，修改配置信息，更改跟随的主机</p></li><li><p>单哨兵模式相对来说不太可靠，毕竟会出现一言堂的情况，所以我们在使用哨兵的时候一般会采用多少兵模式，每一个哨兵都监控所有的Redis服务器，哨兵之间互相监控，当一个节点宕机后，只有指定数量的哨兵全部将其标记为下线，才会将节点移除</p></li></ul></li><li><p>故障切换过程</p><ul><li>主节点服务器宕机</li><li>哨兵1检测到主节点宕机，然后将其标记为客观下线，这个时候主节点还是主节点，并未进行failover过程</li><li>其他哨兵检测到主节点宕机，全部哨兵都会将主节点标记为客观下线</li><li>标记为客观下线的哨兵数量达到指定数量的时候，由一个哨兵进行投票，根据投票结果决定是否进行主节点切换</li><li>主节点切换完成之后，通过<em>发布订阅模式</em>让各个哨兵和从服务器更换主服务器配置，这个过程称为主观下线</li></ul></li></ul>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;目录&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#目录&quot;&gt;&lt;/a&gt; 目录&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Redis是什么&lt;/li&gt;
+&lt;li&gt;五种数据类型&lt;/li&gt;
+&lt;li&gt;Redis为何这么快&lt;/li&gt;
+&lt;li&gt;Redis和Memcac
+      
+    
+    </summary>
+    
+    
+      <category term="Redis" scheme="http://luxiaowan.github.io/categories/Redis/"/>
+    
+    
+      <category term="面试" scheme="http://luxiaowan.github.io/tags/%E9%9D%A2%E8%AF%95/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>服务治理思考</title>
+    <link href="http://luxiaowan.github.io/2020/03/24/%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86%E6%80%9D%E8%80%83/"/>
+    <id>http://luxiaowan.github.io/2020/03/24/服务治理思考/</id>
+    <published>2020-03-24T05:21:00.000Z</published>
+    <updated>2020-03-24T06:29:57.075Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h3><p>服务治理概念当下主要针对的是分布式架构下的多服务、微服务等。分布式系统由若干个大大小小的服务组成，服务之间通过HTTP或TCP的方式进行相互通信，促使整个系统活络起来。当分布式系统中的服务随着业务的发展不断变多时，我们就需要对服务进行相关的管理，不能一味的任由其野蛮增长。</p><h3 id="思考"><a class="markdownIt-Anchor" href="#思考"></a> 思考</h3><h4 id="1-节点管理即服务提供者在注册中心及客户端创建的服务节点"><a class="markdownIt-Anchor" href="#1-节点管理即服务提供者在注册中心及客户端创建的服务节点"></a> 1. 节点管理，即服务提供者在注册中心及客户端创建的服务节点。</h4><p>节点注册于注册中心，缓存于客户端，目的为若注册中心与服务端出现网络连通故障，但客户端与服务端网络连通正常，此时注册中心已将节点移除，但客户端在下一次同步注册中心节点之前仍可通过自身缓存的服务节点发送请求。</p><ul><li><p>注册中心管理：服务提供者定时向注册中心发送心跳通知来证明其是存活状态，每次收到心跳通知均与上一次收到通知的时间进行比较，如果时差超出注册中心允许的最大值，则认为该服务提供者发生故障，将其从注册中心移除，随即通知监听客户端。</p></li><li><p>客户端管理：若注册中心与服务端网络连通出现问题，但客户端与服务端网络连接正常，直至下一次与注册中心同步之前仍可继续使用该节点。若客户端与服务端网络连通故障，但注册中心与服务端网络连通正常，则客户端会将该节点从缓存中移除直至下一次与注册中心进行同步，周而复始。</p></li></ul><h4 id="2-负载均衡顾名思义平衡所有服务端处理请求的负载防止某个服务端因接受过多请求导致服务故障"><a class="markdownIt-Anchor" href="#2-负载均衡顾名思义平衡所有服务端处理请求的负载防止某个服务端因接受过多请求导致服务故障"></a> 2. 负载均衡，顾名思义：平衡所有服务端处理请求的负载，防止某个服务端因接受过多请求导致服务故障。</h4><ul><li><p>随机算法：字面意思，简洁明了，就是采用随机数的方式选择本次请求所要转发的服务端，此法非常公平，不会因为服务端配置的优劣而对其另眼相看，绝对的公平！</p></li><li><p>加权法：又叫轮询算法。本法则事在人为，完全按照主人的喜好行事，又称拍马屁，就好比食堂打饭，所有人围绕一个圈，如果打饭阿姨看到每个人的长相都一样，那么他对所有人都没有私心，从第一个开始每人给一勺，如此循环下去，谁都不会多谁也不会少，大家都均等，这就是大家的对注册中心来说权重都一样；如果打饭阿姨喜欢帅哥，看到长得帅的（比如我）每次都会多给一勺，其他人仍是一勺，此种情况对于注册中心而言，我的权重大于其他服务提供者，所以每一批请求中都会多分发给权重大的服务端。（此例不太恰当，换为吃饭：胖子和瘦子，胖子多吃，瘦子少吃，好像更好）。</p></li><li><p>最少活跃算法：这个拿吃饭来说吧，吃得多的碗落不下了，然后就少盛点，吃的少趁机多吃点均衡一下。上面也说了，打饭阿姨因为我长得帅，每次给别人打着饭呢都会不定时的拐到我这边给我加上一碗，递过来一碗饭，我桌子上的碗的数量就+1，等我吃完一碗饭将空碗回收后，桌子上的碗的数量就-1，但是打饭阿姨给的次数太过频繁，导致我面前很多碗，其他人面前的碗则很少，有人就向领导投诉，领导痛斥一顿后，阿姨则给面前碗最少的人开始打饭，这时此人碗的数量+1，然后阿姨重新统计，下一碗给统计后面前碗最少的人，这样大家都不至于被冷落，一旦落后，立刻照顾到。</p></li><li><p>一致性Hash算法：对每次请求的参数均计算hash，hash值相同的转发到同一个节点。上体育课1234报数排队，报到相同数字的站在一队，若某一队解散，由4队变成3队，则解散的这一队的人重新123报数，归并相关各队。（为什么不用吃饭举例了？因为再吃就撑死了！）</p></li></ul><h4 id="3-服务路由"><a class="markdownIt-Anchor" href="#3-服务路由"></a> 3. 服务路由</h4><ul><li><p>灰度访问：类似于单双号限行和不限行。一条马路刚修好，实行为期一个礼拜的单双号限行，一个礼拜之内无故障，则取消限行，大家都可以走。</p></li><li><p>就近原则：每次请求到达，客户端先关门在自己的局域网内查找可用的服务提供者，若有则直接调用，若未查到则出门浪。</p></li></ul><blockquote><p>配置分为静态配置和动态配置，这里不做解释了，字面意思！</p></blockquote><h4 id="4-服务容错有容奶大要有一颗包容的心没错是不是没发现奶非乃"><a class="markdownIt-Anchor" href="#4-服务容错有容奶大要有一颗包容的心没错是不是没发现奶非乃"></a> 4. 服务容错：有容奶大！要有一颗包容的心！没错，是不是没发现奶非乃！😳</h4><ul><li><p>failover：拆开来就是fail over，也就是请求服务端a，然后a故障了，那就直接将请求转发给服务端b，结果b也故障了，那就再转发给c，直到成功！当然也可以设置最大转发次数，比如设置最大转发次数是两次，那么（划重点）在服务端2也故障时就不会转发给c了，直接返回给客户端告知失败！此方式为幂等的，也就是每一个服务提供方返回的数据均相等。</p></li><li><p>failback：遇到请求故障，那么就告知客户端请求失败，不再重试，然后根据返回的指令进行下一步操作。</p></li><li><p>failcache：遇到故障，就把请求缓存起来，间隔一段时间再发起请求，防止频繁请求影响服务端恢复。</p></li><li><p>failfast：遇到故障就返回，管他誓言有多真！绝不重试。</p></li></ul>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;&lt;/a&gt; 前言&lt;/h3&gt;
+&lt;p&gt;服务治理概念当下主要针对的是分布式架构下的多服务、微服务等。分布式系统由若干个大大小小的服务组成，服务之间通过HTTP或TCP的方式进行相互通信
+      
+    
+    </summary>
+    
+    
+      <category term="分布式" scheme="http://luxiaowan.github.io/categories/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
+    
+    
+      <category term="服务治理" scheme="http://luxiaowan.github.io/tags/%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86/"/>
+    
+  </entry>
   
   <entry>
     <title>OLTP和OLAP区别</title>
@@ -96,7 +154,7 @@
     <link href="http://luxiaowan.github.io/2020/03/22/JVM%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8%E6%B5%85%E8%B0%88/"/>
     <id>http://luxiaowan.github.io/2020/03/22/JVM垃圾收集器浅谈/</id>
     <published>2020-03-22T03:15:00.000Z</published>
-    <updated>2020-03-24T05:11:19.062Z</updated>
+    <updated>2020-03-24T06:20:21.492Z</updated>
     
     <content type="html"><![CDATA[<h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2><p>JVM是做Java的同学都必须要了解的东西，为什么这么说，因为我们只有知道了Java程序运行环境的配置和工作逻辑，才能对运行环境进行相关的优化和配置修改，让JVM在不同的服务器环境使用不同的配置，从而达到JVM环境最优化。</p><p>说到JVM就不得不说一下GC（garbage collection），垃圾收集的意思是找到垃圾并清理掉，但是常规的垃圾收集器却是找到正在被使用的对象，然后把其他的对象全部当作是垃圾对象清理掉。</p><p>写过C语言的同学都知道，在C语言中，我们需要手动的去管理内存，在使用内存之前我们需要先申请（malloc）一定大小的内存，使用完成之后需要手动的把使用的内存释放掉（free），如果忘记释放内存则很快会导致内存溢出，</p><h2 id="gc算法"><a class="markdownIt-Anchor" href="#gc算法"></a> GC算法</h2><ol><li><p>引用计数法</p><p>为每个对象添加一个引用计数器，在对象被引用时，计数器+1，引用结束后，计数器-1，最终清除掉引用计数器为0的对象，并级联删除该对象引用的所有的对象，只保留引用计数不为0的对象。</p><p>这种算法看起来是不是很屌，是的，非常简单，只需要在对象被引用的时候串行修改引用计数器的值即可，但也容易出现一种问题：循环引用！循环引用就是几个废对象之间循环引用，尽管他们的引用计数器都不为0，但是在整个程序中却没有被使用，但是他们永远不会被回收，这样的对象多了之后很容易造成内存泄漏。</p></li><li><p>标记-清除</p></li><li><p>标记-清理-整理</p></li><li><p>可达性分析法</p></li><li></li></ol>]]></content>
     
@@ -494,64 +552,6 @@
     
       <category term="Nacos" scheme="http://luxiaowan.github.io/categories/Nacos/"/>
     
-    
-  </entry>
-  
-  <entry>
-    <title>忘记MySQL的root用户密码怎么办</title>
-    <link href="http://luxiaowan.github.io/2019/12/20/%E5%BF%98%E8%AE%B0MySQL%E7%9A%84root%E7%94%A8%E6%88%B7%E5%AF%86%E7%A0%81%E6%80%8E%E4%B9%88%E5%8A%9E/"/>
-    <id>http://luxiaowan.github.io/2019/12/20/忘记MySQL的root用户密码怎么办/</id>
-    <published>2019-12-19T16:53:00.000Z</published>
-    <updated>2019-12-20T15:07:26.883Z</updated>
-    
-    <content type="html"><![CDATA[<p>在工作中，如果我们忘记了数据库的密码，那么我们该怎么办？其实方法很多，下面我们主要说一下如何修改宿主机上的MySQL以及Docker容器中的MySQL。</p><h3 id="1-docker容器中的mysql"><a class="markdownIt-Anchor" href="#1-docker容器中的mysql"></a> 1. Docker容器中的MySQL</h3><ol><li><p>启动MySQL的容器</p></li><li><p>通过docker命令进入到容器中<code>docker exec -it container_id /bin/bash</code></p></li><li><p>找到docker.cnf配置文件，大概在<code>/etc/mysql/conf.d/</code>目录下</p></li><li><p>打开docker.cnf文件，在最后一行后添加<code>skip-grant-tables</code>跳过用户权限验证</p></li><li><p>退出docker容器，然后重启容器<code>docker restart container_id</code></p></li><li><p>再次进入到容器中，执行如下命令：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">1. 进入mysql控制台</span><br><span class="line">mysql</span><br><span class="line">2. 进入mysql数据库</span><br><span class="line">use mysql;</span><br><span class="line">3. 修改root用户密码</span><br><span class="line">MySQL5.7+:</span><br><span class="line">update user set authentication_string=password(&apos;newpwd&apos;) where user=&apos;root&apos;;</span><br><span class="line">MySQL5.6-:</span><br><span class="line">update user set password=password(&apos;newpwd&apos;) where user=&apos;root&apos;;</span><br><span class="line">4. 刷新权限</span><br><span class="line">flush privileges;</span><br></pre></td></tr></table></figure></li><li><p>将docker.cnf中添加的那一行<code>skip-grant-tables</code>删除，退出docker容器，然后重启容器，搞定</p></li></ol><h3 id="2-宿主机中的mysql"><a class="markdownIt-Anchor" href="#2-宿主机中的mysql"></a> 2. 宿主机中的MySQL</h3><ol><li>找到my.ini配置文件，并在[mysqld]组下加入<code>skip-grant-tables</code>跳过用户权限验证</li><li>修改密码，同上步骤6</li><li>将my.ini文件中添加的那一行删除，重启MySQL服务<code>service mysqld restart</code>，搞定</li></ol>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;p&gt;在工作中，如果我们忘记了数据库的密码，那么我们该怎么办？其实方法很多，下面我们主要说一下如何修改宿主机上的MySQL以及Docker容器中的MySQL。&lt;/p&gt;
-&lt;h3 id=&quot;1-docker容器中的mysql&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; 
-      
-    
-    </summary>
-    
-    
-      <category term="MySQL" scheme="http://luxiaowan.github.io/categories/MySQL/"/>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>Nacos编译报错Use STAR or POSIX Extensions to Overcome This Limit</title>
-    <link href="http://luxiaowan.github.io/2019/12/19/Nacos%E7%BC%96%E8%AF%91%E6%8A%A5%E9%94%99Use-STAR-or-POSIX-extensions-to-overcome-this-limit/"/>
-    <id>http://luxiaowan.github.io/2019/12/19/Nacos编译报错Use-STAR-or-POSIX-extensions-to-overcome-this-limit/</id>
-    <published>2019-12-19T04:23:00.000Z</published>
-    <updated>2019-12-19T16:51:55.995Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="nacas安装"><a class="markdownIt-Anchor" href="#nacas安装"></a> Nacas安装</h3><blockquote><p>可以通过下载源码进行编译和下载发行包两种方式来启动Nacos</p></blockquote><h6 id="源码"><a class="markdownIt-Anchor" href="#源码"></a> 源码</h6><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/alibaba/nacos.git</span><br><span class="line">cd nacos/</span><br><span class="line">mvn -Prelease-nacos clean install -U  </span><br><span class="line">ls -al distribution/target/</span><br><span class="line"></span><br><span class="line">// change the $version to your actual path</span><br><span class="line">cd distribution/target/nacos-server-$version/nacos/bin</span><br></pre></td></tr></table></figure><h6 id="发行包"><a class="markdownIt-Anchor" href="#发行包"></a> 发行包</h6><p>您可以从 <a href="https://github.com/alibaba/nacos/releases" target="_blank" rel="noopener">最新稳定版本</a> 下载 <code>nacos-server-$version.zip</code> 包。</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">unzip nacos-server-$version.zip 或者 tar -xvf nacos-server-$version.tar.gz</span><br><span class="line">cd nacos/bin</span><br></pre></td></tr></table></figure><blockquote><p>如何启动在这里就不做说明了，我们重点说一下通过源码安装时出现的一个编译错误</p></blockquote><h3 id="错误信息"><a class="markdownIt-Anchor" href="#错误信息"></a> 错误信息</h3><blockquote><p>Failed to execute goal org.apache.maven.plugins:maven-assembly-plugin:3.0.0:single (make-assembly) on project nacos-distribution: Execution make-assembly of goal org.apache.maven.plugins:maven-assembly-plugin:3.0.0:single failed: group id ‘1326029969’ is too big ( &gt; 2097151 ). Use STAR or POSIX extensions to overcome this limit -&gt; [Help 1]</p></blockquote><p>这个错误主要出现在编译distribution这个目录时出现的，执行命令是<code>mvn -Prelease-nacos clean install -U</code>，这个错误导致nacos-server-1.2.0-SNAPSHOT生成失败</p><h3 id="解决办法"><a class="markdownIt-Anchor" href="#解决办法"></a> 解决办法</h3><p>在distribution目录下的pom.xml文件中找到<code>id</code>为<code>release-nacos</code>的<code>profile</code>，在plugin标签的configuration内加上<code>&lt;tarLongFileMode&gt;posix&lt;/tarLongFileMode&gt;</code>即可解决</p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h3 id=&quot;nacas安装&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#nacas安装&quot;&gt;&lt;/a&gt; Nacas安装&lt;/h3&gt;
-&lt;blockquote&gt;
-&lt;p&gt;可以通过下载源码进行编译和下载发行包两种方式来启动Nacos&lt;/p&gt;
-&lt;/blockqu
-      
-    
-    </summary>
-    
-    
-      <category term="Nacos" scheme="http://luxiaowan.github.io/categories/Nacos/"/>
-    
-    
-      <category term="Java" scheme="http://luxiaowan.github.io/tags/Java/"/>
-    
-      <category term="Maven" scheme="http://luxiaowan.github.io/tags/Maven/"/>
-    
-      <category term="基础应用" scheme="http://luxiaowan.github.io/tags/%E5%9F%BA%E7%A1%80%E5%BA%94%E7%94%A8/"/>
     
   </entry>
   
