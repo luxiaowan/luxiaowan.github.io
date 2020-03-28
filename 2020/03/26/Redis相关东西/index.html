@@ -30,7 +30,7 @@
 <meta property="og:image" content="http://luxiaowan.github.io/images/redis-rdb-conf.png">
 <meta property="og:image" content="http://luxiaowan.github.io/images/redis-aof-conf.png">
 <meta property="og:image" content="http://luxiaowan.github.io/images/redis-aof-rewrite.png">
-<meta property="og:updated_time" content="2020-03-27T18:33:07.790Z">
+<meta property="og:updated_time" content="2020-03-28T16:03:57.189Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Redis相关东西">
 <meta name="twitter:description" content="目录  Redis是什么 五种数据类型 Redis为何这么快 Redis和Memcached的区别 淘汰策略 持久化 主从复制 哨兵    Redis是什么 ​	Redis是由C语言编写的一个开源的高性能键值对的内存数据库，是一款NoSQL(not-only sql | no sql)数据库，可以用作缓存、数据库、消息中间件。 ​	Redis作为一款内存数据库，其优势为： 	1. 性能优秀，数据">
@@ -419,7 +419,7 @@
         <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
         
 	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 3.2k(字)</span>
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 3.3k(字)</span>
 	
 	
 		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 11(分)</span>
@@ -601,7 +601,7 @@
 <li>主节点服务器宕机</li>
 <li>哨兵1检测到主节点宕机，然后将其标记为客观下线，这个时候主节点还是主节点，并未进行failover过程</li>
 <li>其他哨兵检测到主节点宕机，全部哨兵都会将主节点标记为客观下线</li>
-<li>标记为客观下线的哨兵数量达到指定数量的时候，由一个哨兵进行投票，根据投票结果决定是否进行主节点切换</li>
+<li>标记为客观下线的哨兵数量达到指定数量(sentinel.conf中配置，尽量设置为N/2+1)的时候，由一个哨兵(Raft选举)进行投票，根据投票结果决定是否进行主节点切换(选择优先级最高的，优先级可以通过slave-priority来设置，若优先级相同，则以复制偏移量最大的为主，若偏移量也全部相同，则选择服务ID最小的那个)</li>
 <li>主节点切换完成之后，通过<em>发布订阅模式</em>让各个哨兵和从服务器更换主服务器配置，这个过程称为主观下线</li>
 </ul>
 </li>
