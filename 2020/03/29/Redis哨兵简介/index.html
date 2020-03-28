@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>Redis哨兵简介 | 串一串</title>
+  <meta name="description" content="前言 Redis Sentinel是Redis官方建议的高可用(HA)解决方案，在我们搭建Redis集群时，Redis本身并未集成主备切换功能，sentinel本身是独立运行的，能够监控多个Redis集群，发现master宕机后能够自动切换，选举一个slave成为新的master，当原master恢复之后，sentinel会自动将其作为slave加入到集群中，整个过程不需要人工参与，完全自动化。">
+<meta name="keywords" content="Sentinel">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis哨兵简介">
+<meta property="og:url" content="http://luxiaowan.github.io/2020/03/29/Redis哨兵简介/index.html">
+<meta property="og:site_name" content="串一串">
+<meta property="og:description" content="前言 Redis Sentinel是Redis官方建议的高可用(HA)解决方案，在我们搭建Redis集群时，Redis本身并未集成主备切换功能，sentinel本身是独立运行的，能够监控多个Redis集群，发现master宕机后能够自动切换，选举一个slave成为新的master，当原master恢复之后，sentinel会自动将其作为slave加入到集群中，整个过程不需要人工参与，完全自动化。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-03-28T19:11:33.900Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis哨兵简介">
+<meta name="twitter:description" content="前言 Redis Sentinel是Redis官方建议的高可用(HA)解决方案，在我们搭建Redis集群时，Redis本身并未集成主备切换功能，sentinel本身是独立运行的，能够监控多个Redis集群，发现master宕机后能够自动切换，选举一个slave成为新的master，当原master恢复之后，sentinel会自动将其作为slave加入到集群中，整个过程不需要人工参与，完全自动化。">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://luxiaowan.github.io/2020/03/29/Redis哨兵简介/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="../../../../css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/luxiaowan" target="_blank">
+          <img class="img-circle img-rotate" src="../../../../images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">串一串</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">浪人</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Suzhou, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="../../../../.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="../../../../archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="../../../../repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="../../../../books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="../../../../links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="../../../../about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>断舍离!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Docker/">Docker</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Git/">Git</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Java/">Java</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Linux/">Linux</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MongoDB/">MongoDB</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MySQL/">MySQL</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Nacos/">Nacos</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/NoSQL/">NoSQL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Redis/">Redis</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/SpringBoot/">SpringBoot</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/kubernates/">kubernates</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/分布式/">分布式</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/杂谈/">杂谈</a><span class="category-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Docker/">Docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/GC/">GC</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java与MongoDB/">Java与MongoDB</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java基础知识/">Java基础知识</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Maven/">Maven</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MongoDB错误记录/">MongoDB错误记录</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MySQL/">MySQL</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Sentinel/">Sentinel</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基本指令/">基本指令</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基础应用/">基础应用</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/服务治理/">服务治理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/监控/">监控</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/阿里/">阿里</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/面试/">面试</a><span class="tag-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="../../../../tags/Docker/" style="font-size: 13px;">Docker</a> <a href="../../../../tags/GC/" style="font-size: 13px;">GC</a> <a href="../../../../tags/Java/" style="font-size: 13.5px;">Java</a> <a href="../../../../tags/Java与MongoDB/" style="font-size: 13px;">Java与MongoDB</a> <a href="../../../../tags/Java基础知识/" style="font-size: 13px;">Java基础知识</a> <a href="../../../../tags/Maven/" style="font-size: 13.5px;">Maven</a> <a href="../../../../tags/MongoDB错误记录/" style="font-size: 13px;">MongoDB错误记录</a> <a href="../../../../tags/MySQL/" style="font-size: 13px;">MySQL</a> <a href="../../../../tags/Sentinel/" style="font-size: 13px;">Sentinel</a> <a href="../../../../tags/基本指令/" style="font-size: 13px;">基本指令</a> <a href="../../../../tags/基础应用/" style="font-size: 13.5px;">基础应用</a> <a href="../../../../tags/服务治理/" style="font-size: 13px;">服务治理</a> <a href="../../../../tags/监控/" style="font-size: 13px;">监控</a> <a href="../../../../tags/阿里/" style="font-size: 13.5px;">阿里</a> <a href="../../../../tags/面试/" style="font-size: 14px;">面试</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/03/">三月 2020</a><span class="archive-list-count">15</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/12/">十二月 2019</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/11/">十一月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/10/">十月 2019</a><span class="archive-list-count">17</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/01/">一月 2019</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled ">
+        
+          <li>
+            
+            <div class="item-thumb">
+              <a href="" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Redis/">Redis</a>
+              </p>
+              <p class="item-title">
+                <a href="" class="title">Redis哨兵简介</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-03-28T17:05:00.000Z" itemprop="datePublished">2020-03-29</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../28/线程池运行的线程和队列中等待的线程是同一个吗/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../28/线程池运行的线程和队列中等待的线程是同一个吗/" class="title">线程池运行的线程和队列中等待的线程是同一个吗</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-03-27T16:52:00.000Z" itemprop="datePublished">2020-03-28</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../26/Redis相关东西/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Redis/">Redis</a>
+              </p>
+              <p class="item-title">
+                <a href="../../26/Redis相关东西/" class="title">Redis相关东西</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-03-26T14:15:00.000Z" itemprop="datePublished">2020-03-26</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../24/服务治理思考/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/分布式/">分布式</a>
+              </p>
+              <p class="item-title">
+                <a href="../../24/服务治理思考/" class="title">服务治理思考</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-03-24T05:21:00.000Z" itemprop="datePublished">2020-03-24</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../24/OLTP和OLAP区别/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/杂谈/">杂谈</a>
+              </p>
+              <p class="item-title">
+                <a href="../../24/OLTP和OLAP区别/" class="title">OLTP和OLAP区别</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-03-24T03:15:00.000Z" itemprop="datePublished">2020-03-24</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-Redis哨兵简介" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Redis哨兵简介
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="" class="article-date">
+	  <time datetime="2020-03-28T17:05:00.000Z" itemprop="datePublished">2020-03-29</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="../../../../categories/Redis/">Redis</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="../../../../tags/Sentinel/">Sentinel</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 2.7k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 11(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h3 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h3>
+<p>Redis Sentinel是Redis官方建议的高可用(HA)解决方案，在我们搭建Redis集群时，Redis本身并未集成主备切换功能，sentinel本身是独立运行的，能够监控多个Redis集群，发现master宕机后能够自动切换，选举一个slave成为新的master，当原master恢复之后，sentinel会自动将其作为slave加入到集群中，整个过程不需要人工参与，完全自动化。</p>
+<h3 id="主要介绍"><a class="markdownIt-Anchor" href="#主要介绍"></a> 主要介绍</h3>
+<ol>
+<li>
+<p>sentinel主要功能</p>
+<ul>
+<li>定期监控Redis服务是否运行正常</li>
+<li>定期监控其他sentinel服务是否正常</li>
+<li>能够自动切换master节点</li>
+<li>sentinel节点不存储数据</li>
+</ul>
+</li>
+<li>
+<p>sentinel集群</p>
+<p>这个不难理解，如果我们用一个非高可用的sentinel去实现Redis的高可用，明显是不科学的，当这一台sentinel宕机之后，Redis显然无法继续保持它的高可用，所以我们在部署sentinel的时候也会采用集群的方式</p>
+<blockquote>
+<p>优势：</p>
+<p>​	即使有sentinel服务宕机，只要还有一台sentinel运行正常，就可以使Redis继续保持高可用</p>
+</blockquote>
+</li>
+<li>
+<p>sentinel版本问题</p>
+<p>sentinel在Redis2.6版本中引入的，当时是sentinel 1，貌似有蛮多问题，毕竟初版</p>
+<p>在Redis2.8版本中升级到sentinel 2，之后就非常稳定了</p>
+<p>不过现在Redis已经发展了很久，版本也越来越高，sentinel已经非常值得信赖了</p>
+</li>
+<li>
+<p>sentinel中的定时任务</p>
+<ul>
+<li>每隔10秒向各个Redis服务器(master和slave节点)发送INFO命令，根据回应获取master和slave信息，通过master的回复可以获取到新增的slave节点</li>
+<li>每隔02秒向Redis的master服务器发送命令(hello消息)，用于发现和监视其他sentinel，sentinel之间的监控不在额外创建订阅</li>
+<li>每隔01秒向Redis和sentinel所有服务发送PING消息(sentinel本身的ip、端口、id等内容)，通过回复PONG判断服务是否在线</li>
+</ul>
+</li>
+<li>
+<p>下线判断</p>
+<ul>
+<li>主观下线：当前sentinel断定master下线</li>
+<li>客观下线：满足sentinel配置文件中quorum数量的sentinel均断定master下线</li>
+</ul>
+</li>
+<li>
+<p>配置文件解读</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># sentinel运行的端口，默认为26379</span></span><br><span class="line"><span class="attr">port</span> <span class="string">26377      </span></span><br><span class="line"></span><br><span class="line"><span class="attr">dir</span> <span class="string">"/private/tmp"</span></span><br><span class="line"></span><br><span class="line"><span class="attr">logfile</span> <span class="string">"/var/log/redis/sentinel_26377.log"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 以守护进程执行</span></span><br><span class="line"><span class="attr">daemonize</span> <span class="string">yes</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 守护进程运行的pid保存文件</span></span><br><span class="line"><span class="attr">pidfile</span> <span class="string">"/var/run/redis-sentinel.pid"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 格式：sentinel monitor &lt;master-name&gt; &lt;ip&gt; &lt;redis-port&gt; &lt;quorum&gt;</span></span><br><span class="line"><span class="comment"># 该行的意思是：&lt;master-name&gt;：自定义</span></span><br><span class="line"><span class="comment">#						  &lt;ip&gt;：master主机的IP</span></span><br><span class="line"><span class="comment">#						  &lt;redis-port&gt;：master的端口</span></span><br><span class="line"><span class="comment">#						  &lt;quorum&gt;：表示在sentinel集群中，使master由主观下线变为客观下线的sentinel数量。</span></span><br><span class="line"><span class="attr">sentinel</span> <span class="string">monitor cc_master 127.0.0.1 6379 2  </span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 格式：sentinel down-after-milliseconds &lt;master-name&gt; &lt;milliseconds&gt;</span></span><br><span class="line"><span class="comment"># sentinel会向master发送心跳PING来确认master是否存活，如果master在&lt;milliseconds&gt;时间内回应的不是PONG，那么这个sentinel会主观地认为这个master下线了。&lt;milliseconds&gt;的单位是毫秒，默认30秒。</span></span><br><span class="line"><span class="attr">sentinel</span> <span class="string">down-after-milliseconds cc_master 15000</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 格式：sentinel failover-timeout &lt;master-name&gt; &lt;milliseconds&gt;</span></span><br><span class="line"><span class="comment"># failover过期时间，当failover开始后，在此时间内仍然没有触发任何failover操作，当前sentinel将会认为此次failoer失败。默认180秒，即3分钟。</span></span><br><span class="line"><span class="attr">sentinel</span> <span class="string">failover-timeout cc_master 60000</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># sentinel parallel-syncs &lt;master-name&gt; &lt;numreplicas&gt;</span></span><br><span class="line"><span class="comment"># 在发生failover主备切换时，这个选项指定了最多可以有多少个slave同时对新的master进行同步，这个数字越小，完成failover所需的时间就越长，但是如果这个数字越大，就意味着越多的slave因为replication而不可用。可以通过将这个值设为1来保证每次只有一个slave处于不能处理命令请求的状态。</span></span><br><span class="line"><span class="attr">sentinel</span> <span class="string">parallel-syncs cc_master 1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 格式：sentinel auth-pass &lt;master-name&gt; &lt;password&gt;</span></span><br><span class="line"><span class="comment"># sentinel连接的master节点的登录密码</span></span><br><span class="line"><span class="attr">sentinel</span> <span class="string">auth-pass cc_master redis</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>故障转移</p>
+<ul>
+<li>sentinel使用Raft投票选举出一个leader去执行故障转移
+<ul>
+<li>每一个将master标记为主观下线的sentinel节点发起投票</li>
+<li>其他sentinel节点收到投票后，若尚未参与投票(也就是尚未投票给其他sentinel)，则同意，否则拒绝</li>
+<li>最终收到过半同意的sentinel节点作为leader</li>
+<li>若有两个sentinel收到了过半投票，那么就再重新选举</li>
+</ul>
+</li>
+<li>选举新的master节点
+<ul>
+<li>选择replica-priority配置数字最高的slave节点为master，默认为100</li>
+<li>若replica-priority相同，则选择偏移量最大的slave节点，偏移量是指slave从master同步的进度，偏移量越大说明数据越完整，可以通过Redis的info命令查看(slave_repl_offset)当前slave的偏移量</li>
+<li>若偏移量相同，则选择最先启动的slave作为master</li>
+<li>更改master后，通知其他slave节点同步为新的master节点的slave节点</li>
+<li>原master节点恢复之后自动加入到集群中，成为新master的slave节点</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="实战"><a class="markdownIt-Anchor" href="#实战"></a> 实战</h3>
+<p>在本机上启动3个Redis实例，采用1主2从的模式，以下只记录redis.conf和sentinel.conf中关键内容</p>
+<ol>
+<li>
+<p>redis.conf</p>
+<ul>
+<li>
+<p>redis-master.conf配置</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 默认端口</span></span><br><span class="line"><span class="attr">port</span> <span class="string">6379</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>redis-slave1.conf配置</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 端口</span></span><br><span class="line"><span class="attr">port</span> <span class="string">63791</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 格式：replicaof &lt;masterip&gt; &lt;masterport&gt;</span></span><br><span class="line"><span class="comment"># 从节点归属的master节点</span></span><br><span class="line"><span class="attr">replicaof</span> <span class="string">127.0.0.1 6379</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>redis-slave2.conf配置</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 端口</span></span><br><span class="line"><span class="attr">port</span> <span class="string">63792</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 格式：replicaof &lt;masterip&gt; &lt;masterport&gt;</span></span><br><span class="line"><span class="comment"># 从节点归属的master节点</span></span><br><span class="line"><span class="attr">replicaof</span> <span class="string">127.0.0.1 6379</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li>
+<p>sentinel.conf</p>
+<ul>
+<li>
+<p>sentinel0.conf</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 端口</span></span><br><span class="line"><span class="attr">port</span> <span class="string">26379</span></span><br><span class="line"></span><br><span class="line"><span class="attr">sentinel</span> <span class="string">myid 842c9102c48eb0cedeb06fe55e7d2258595ac267</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 监控master</span></span><br><span class="line"><span class="attr">sentinel</span> <span class="string">monitor cc_master 127.0.0.1 6379 2</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>sentinel1.conf</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 端口</span></span><br><span class="line"><span class="attr">port</span> <span class="string">26378</span></span><br><span class="line"></span><br><span class="line"><span class="attr">sentinel</span> <span class="string">myid 842c9102c48eb0cedeb06fe55e7d2258595ac266</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 监控master</span></span><br><span class="line"><span class="attr">sentinel</span> <span class="string">monitor cc_master 127.0.0.1 6379 2</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>sentinel2.conf</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 端口</span></span><br><span class="line"><span class="attr">port</span> <span class="string">26377</span></span><br><span class="line"></span><br><span class="line"><span class="attr">sentinel</span> <span class="string">myid 842c9102c48eb0cedeb06fe55e7d2258595ac265</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 监控master</span></span><br><span class="line"><span class="attr">sentinel</span> <span class="string">monitor cc_master 127.0.0.1 6379 2</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li>
+<p>启动</p>
+<ol>
+<li>
+<p>启动sentinel</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">redis-sentinel ~/Documents/develop_tools/tools/redis-5.0.5/sentinel0.conf</span><br><span class="line"></span><br><span class="line">redis-sentinel ~/Documents/develop_tools/tools/redis-5.0.5/sentinel1.conf</span><br><span class="line"></span><br><span class="line">redis-sentinel ~/Documents/develop_tools/tools/redis-5.0.5/sentinel2.conf</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>启动Redis</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">redis-server ~/Documents/develop_tools/tools/redis-5.0.5/redis-master.conf</span><br><span class="line"></span><br><span class="line">redis-server ~/Documents/develop_tools/tools/redis-5.0.5/redis-slave1.conf</span><br><span class="line"></span><br><span class="line">redis-server ~/Documents/develop_tools/tools/redis-5.0.5/redis-slave2.conf</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+</li>
+</ol>
+<h3 id="redis通过info查看信息"><a class="markdownIt-Anchor" href="#redis通过info查看信息"></a> Redis通过info查看信息</h3>
+<p>127.0.0.1:6379&gt;info all</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Server服务器信息</span></span><br><span class="line"><span class="attr">redis_version</span>:<span class="string">5.0.5		# Redis 服务器版本</span></span><br><span class="line"><span class="attr">redis_git_sha1</span>:<span class="string">00000000 # Git SHA1</span></span><br><span class="line"><span class="attr">redis_git_dirty</span>:<span class="string">0		# Git dirty flag</span></span><br><span class="line"><span class="attr">redis_build_id</span>:<span class="string">6c6e38af7cea0726	# Redis构建ID</span></span><br><span class="line"><span class="attr">redis_mode</span>:<span class="string">standalone			# Redis运行模式</span></span><br><span class="line"><span class="attr">os</span>:<span class="string">Darwin 19.3.0 x86_64		# 运行环境操作系统版本</span></span><br><span class="line"><span class="attr">arch_bits</span>:<span class="string">64			# 架构（32 或 64 位）</span></span><br><span class="line"><span class="attr">multiplexing_api</span>:<span class="string">kqueue		# Redis 所使用的事件处理机制</span></span><br><span class="line"><span class="attr">atomicvar_api</span>:<span class="string">atomic-builtin</span></span><br><span class="line"><span class="attr">gcc_version</span>:<span class="string">4.2.1		# 编译的GCC版本</span></span><br><span class="line"><span class="attr">process_id</span>:<span class="string">61985		# 服务器进程的 PID</span></span><br><span class="line"><span class="attr">run_id</span>:<span class="string">433b78ec513c8b782f3a46ba6b4ade1f12439aca		# Redis 服务器的随机标识符(用于Sentinel和集群)</span></span><br><span class="line"><span class="attr">tcp_port</span>:<span class="string">6379		# Redis端口</span></span><br><span class="line"><span class="attr">uptime_in_seconds</span>:<span class="string">108		# Redis运行时长，秒</span></span><br><span class="line"><span class="attr">uptime_in_days</span>:<span class="string">0		# Redis运行市场，天</span></span><br><span class="line"><span class="attr">hz</span>:<span class="string">10</span></span><br><span class="line"><span class="attr">configured_hz</span>:<span class="string">10</span></span><br><span class="line"><span class="attr">lru_clock</span>:<span class="string">8363059		# 以分钟为单位进行自增的时钟，用于 LRU 管理</span></span><br><span class="line"><span class="attr">executable</span>:<span class="string">/Users/chuan/redis-server		# 运行命令</span></span><br><span class="line"><span class="attr">config_file</span>:			<span class="string"># 启动使用的配置文件</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Clients</span></span><br><span class="line"><span class="attr">connected_clients</span>:<span class="string">7		# 已连接客户端的数量</span></span><br><span class="line"><span class="attr">client_recent_max_input_buffer</span>:<span class="string">2		# 当前连接的客户端当中，最长的输出列表</span></span><br><span class="line"><span class="attr">client_recent_max_output_buffer</span>:<span class="string">0		# 当前连接的客户端当中，最大输入缓存</span></span><br><span class="line"><span class="attr">blocked_clients</span>:<span class="string">0			# 正在等待阻塞命令（BLPOP、BRPOP、BRPOPLPUSH）的客户端的数量</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Memory (太多了，不做解释了)</span></span><br><span class="line"><span class="attr">used_memory</span>:<span class="string">2235920				# 由 Redis 分配器分配的内存总量，以字节（byte）为单位</span></span><br><span class="line"><span class="attr">used_memory_human</span>:<span class="string">2.13M		# 以可读的格式返回 Redis 分配的内存总量</span></span><br><span class="line"><span class="attr">used_memory_rss</span>:<span class="string">3153920		# 从操作系统的角度，返回 Redis 已分配的内存总量（俗称常驻集大小）。这个值和top 、 ps 等命令的输出一致。</span></span><br><span class="line"><span class="attr">used_memory_rss_human</span>:<span class="string">3.01M # 以可读的格式返回rss</span></span><br><span class="line"><span class="attr">used_memory_peak</span>:<span class="string">2317840		# Redis 的内存消耗峰值（以字节为单位）</span></span><br><span class="line"><span class="attr">used_memory_peak_human</span>:<span class="string">2.21M</span></span><br><span class="line"><span class="attr">used_memory_peak_perc</span>:<span class="string">96.47%</span></span><br><span class="line"><span class="attr">used_memory_overhead</span>:<span class="string">2221526</span></span><br><span class="line"><span class="attr">used_memory_startup</span>:<span class="string">987776</span></span><br><span class="line"><span class="attr">used_memory_dataset</span>:<span class="string">14394</span></span><br><span class="line"><span class="attr">used_memory_dataset_perc</span>:<span class="string">1.15%</span></span><br><span class="line"><span class="attr">allocator_allocated</span>:<span class="string">2271808</span></span><br><span class="line"><span class="attr">allocator_active</span>:<span class="string">3116032</span></span><br><span class="line"><span class="attr">allocator_resident</span>:<span class="string">3116032</span></span><br><span class="line"><span class="attr">total_system_memory</span>:<span class="string">17179869184</span></span><br><span class="line"><span class="attr">total_system_memory_human</span>:<span class="string">16.00G</span></span><br><span class="line"><span class="attr">used_memory_lua</span>:<span class="string">37888</span></span><br><span class="line"><span class="attr">used_memory_lua_human</span>:<span class="string">37.00K</span></span><br><span class="line"><span class="attr">used_memory_scripts</span>:<span class="string">0</span></span><br><span class="line"><span class="attr">used_memory_scripts_human</span>:<span class="string">0B</span></span><br><span class="line"><span class="attr">number_of_cached_scripts</span>:<span class="string">0</span></span><br><span class="line"><span class="attr">maxmemory</span>:<span class="string">0</span></span><br><span class="line"><span class="attr">maxmemory_human</span>:<span class="string">0B</span></span><br><span class="line"><span class="attr">maxmemory_policy</span>:<span class="string">noeviction</span></span><br><span class="line"><span class="attr">allocator_frag_ratio</span>:<span class="string">1.37</span></span><br><span class="line"><span class="attr">allocator_frag_bytes</span>:<span class="string">844224</span></span><br><span class="line"><span class="attr">allocator_rss_ratio</span>:<span class="string">1.00</span></span><br><span class="line"><span class="attr">allocator_rss_bytes</span>:<span class="string">0</span></span><br><span class="line"><span class="attr">rss_overhead_ratio</span>:<span class="string">1.01</span></span><br><span class="line"><span class="attr">rss_overhead_bytes</span>:<span class="string">37888</span></span><br><span class="line"><span class="attr">mem_fragmentation_ratio</span>:<span class="string">1.39</span></span><br><span class="line"><span class="attr">mem_fragmentation_bytes</span>:<span class="string">882112</span></span><br><span class="line"><span class="attr">mem_not_counted_for_evict</span>:<span class="string">0</span></span><br><span class="line"><span class="attr">mem_replication_backlog</span>:<span class="string">1048576</span></span><br><span class="line"><span class="attr">mem_clients_slaves</span>:<span class="string">33844</span></span><br><span class="line"><span class="attr">mem_clients_normal</span>:<span class="string">151226</span></span><br><span class="line"><span class="attr">mem_aof_buffer</span>:<span class="string">0</span></span><br><span class="line"><span class="attr">mem_allocator</span>:<span class="string">libc</span></span><br><span class="line"><span class="attr">active_defrag_running</span>:<span class="string">0</span></span><br><span class="line"><span class="attr">lazyfree_pending_objects</span>:<span class="string">0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Persistence</span></span><br><span class="line"><span class="attr">loading</span>:<span class="string">0		# 服务器是否正在载入持久化文件</span></span><br><span class="line"><span class="attr">rdb_changes_since_last_save</span>:<span class="string">1		# 距离最后一次成功创建持久化文件之后，改变了多少个键值</span></span><br><span class="line"><span class="attr">rdb_bgsave_in_progress</span>:<span class="string">0		# 服务器是否正在创建RDB文件</span></span><br><span class="line"><span class="attr">rdb_last_save_time</span>:<span class="string">1585421263		# 最近一次成功创建RDB文件的UNIX时间</span></span><br><span class="line"><span class="attr">rdb_last_bgsave_status</span>:<span class="string">ok		# 最后一次创建RDB文件的结果是成功还是失败</span></span><br><span class="line"><span class="attr">rdb_last_bgsave_time_sec</span>:<span class="string">0		# 最后一次创建RDB文件耗费的秒数</span></span><br><span class="line"><span class="attr">rdb_current_bgsave_time_sec</span>:<span class="string">-1	# 记录当前创建RDB操作已经耗费了多长时间（单位为秒）</span></span><br><span class="line"><span class="attr">rdb_last_cow_size</span>:<span class="string">0</span></span><br><span class="line"><span class="attr">aof_enabled</span>:<span class="string">0		# AOF是否处于打开状态</span></span><br><span class="line"><span class="attr">aof_rewrite_in_progress</span>:<span class="string">0		# 服务器是否正在创建AOF文件</span></span><br><span class="line"><span class="attr">aof_rewrite_scheduled</span>:<span class="string">0		# 是否需要执行预约的AOF重写操作</span></span><br><span class="line"><span class="attr">aof_last_rewrite_time_sec</span>:<span class="string">-1	# 最后一次重启AOF的秒数</span></span><br><span class="line"><span class="attr">aof_current_rewrite_time_sec</span>:<span class="string">-1		# 记录当前正在重写AOF的秒数</span></span><br><span class="line"><span class="attr">aof_last_bgrewrite_status</span>:<span class="string">ok		# 最后一次重写AOF文件的结果</span></span><br><span class="line"><span class="attr">aof_last_write_status</span>:<span class="string">ok		# 最后一次写入结果</span></span><br><span class="line"><span class="attr">aof_last_cow_size</span>:<span class="string">0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Stats	(可以不做了解)</span></span><br><span class="line"><span class="attr">total_connections_received</span>:<span class="string">9</span></span><br><span class="line"><span class="attr">total_commands_processed</span>:<span class="string">720</span></span><br><span class="line"><span class="attr">instantaneous_ops_per_sec</span>:<span class="string">6</span></span><br><span class="line"><span class="attr">total_net_input_bytes</span>:<span class="string">34197</span></span><br><span class="line"><span class="attr">total_net_output_bytes</span>:<span class="string">229238</span></span><br><span class="line"><span class="attr">instantaneous_input_kbps</span>:<span class="string">0.34</span></span><br><span class="line"><span class="attr">instantaneous_output_kbps</span>:<span class="string">1.19</span></span><br><span class="line"><span class="attr">rejected_connections</span>:<span class="string">0</span></span><br><span class="line"><span class="attr">sync_full</span>:<span class="string">2		# 主从完全同步成功次数</span></span><br><span class="line"><span class="attr">sync_partial_ok</span>:<span class="string">0		# 主从部分同步成功次数</span></span><br><span class="line"><span class="attr">sync_partial_err</span>:<span class="string">0	# 主从部分同步失败次数</span></span><br><span class="line"><span class="attr">expired_keys</span>:<span class="string">0			# 运行以来过期的key的数量</span></span><br><span class="line"><span class="attr">expired_stale_perc</span>:<span class="string">0.00		# 过期的比率</span></span><br><span class="line"><span class="attr">expired_time_cap_reached_count</span>:<span class="string">0		# 过期计数</span></span><br><span class="line"><span class="attr">evicted_keys</span>:<span class="string">0</span></span><br><span class="line"><span class="attr">keyspace_hits</span>:<span class="string">1</span></span><br><span class="line"><span class="attr">keyspace_misses</span>:<span class="string">1</span></span><br><span class="line"><span class="attr">pubsub_channels</span>:<span class="string">1</span></span><br><span class="line"><span class="attr">pubsub_patterns</span>:<span class="string">0</span></span><br><span class="line"><span class="attr">latest_fork_usec</span>:<span class="string">278</span></span><br><span class="line"><span class="attr">migrate_cached_sockets</span>:<span class="string">0</span></span><br><span class="line"><span class="attr">slave_expires_tracked_keys</span>:<span class="string">0</span></span><br><span class="line"><span class="attr">active_defrag_hits</span>:<span class="string">0</span></span><br><span class="line"><span class="attr">active_defrag_misses</span>:<span class="string">0</span></span><br><span class="line"><span class="attr">active_defrag_key_hits</span>:<span class="string">0</span></span><br><span class="line"><span class="attr">active_defrag_key_misses</span>:<span class="string">0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Replication（master节点）</span></span><br><span class="line"><span class="attr">role</span>:<span class="string">master		# 角色 master和slave</span></span><br><span class="line"><span class="attr">connected_slaves</span>:<span class="string">2	# slave节点数</span></span><br><span class="line"><span class="attr">slave0</span>:<span class="string">ip=127.0.0.1,port=63791,state=online,offset=20163,lag=1	# 从节点1</span></span><br><span class="line"><span class="attr">slave1</span>:<span class="string">ip=127.0.0.1,port=63792,state=online,offset=20163,lag=0	# 从节点2</span></span><br><span class="line"><span class="attr">master_replid</span>:<span class="string">895f219aa1e7ed5ecda50dcb1f77eea9f1ef9c3d		# 主实例启动随机字符串</span></span><br><span class="line"><span class="attr">master_replid2</span>:<span class="string">0000000000000000000000000000000000000000		# 主实例启动随机字符串2</span></span><br><span class="line"><span class="attr">master_repl_offset</span>:<span class="string">20163		# 主从同步偏移量,此值如果和上面的offset相同说明主从一致没延迟，与master_replid可被用来标识主实例复制流中的位置。</span></span><br><span class="line"><span class="attr">second_repl_offset</span>:<span class="string">-1				# 主从同步偏移量2,此值如果和上面的offset相同说明主从一致没延迟</span></span><br><span class="line"><span class="attr">repl_backlog_active</span>:<span class="string">1				# 复制积压缓冲区是否开启</span></span><br><span class="line"><span class="attr">repl_backlog_size</span>:<span class="string">1048576		# 复制积压缓冲大小</span></span><br><span class="line"><span class="attr">repl_backlog_first_byte_offset</span>:<span class="string">1	# 复制缓冲区里偏移量的大小</span></span><br><span class="line"><span class="attr">repl_backlog_histlen</span>:<span class="string">20163	# 此值等于 master_repl_offset - repl_backlog_first_byte_offset,该值不会超过repl_backlog_size的大小</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Replication（slave节点）</span></span><br><span class="line"><span class="attr">role</span>:<span class="string">slave		# 角色 master和slave</span></span><br><span class="line"><span class="attr">master_host</span>:<span class="string">127.0.0.1		# master节点IP</span></span><br><span class="line"><span class="attr">master_port</span>:<span class="string">6379				# master节点端口</span></span><br><span class="line"><span class="attr">master_link_status</span>:<span class="string">up		# master通信</span></span><br><span class="line"><span class="attr">master_last_io_seconds_ago</span>:<span class="string">1		# 主库多少秒未发送数据到从库</span></span><br><span class="line"><span class="attr">master_sync_in_progress</span>:<span class="string">0			# 从服务器是否在与主服务器进行同步</span></span><br><span class="line"><span class="attr">slave_repl_offset</span>:<span class="string">42262		# slave复制偏移量</span></span><br><span class="line"><span class="attr">slave_priority</span>:<span class="string">100		# slave优先级</span></span><br><span class="line"><span class="attr">slave_read_only</span>:<span class="string">1			# 从库是否设置只读</span></span><br><span class="line"><span class="attr">connected_slaves</span>:<span class="string">0		# 连接的slave实例个数</span></span><br><span class="line"><span class="attr">master_replid</span>:<span class="string">895f219aa1e7ed5ecda50dcb1f77eea9f1ef9c3d</span></span><br><span class="line"><span class="attr">master_replid2</span>:<span class="string">0000000000000000000000000000000000000000</span></span><br><span class="line"><span class="attr">master_repl_offset</span>:<span class="string">42262		# master偏移量，与slave_repl_offset相同则表示同步完整</span></span><br><span class="line"><span class="attr">second_repl_offset</span>:<span class="string">-1</span></span><br><span class="line"><span class="attr">repl_backlog_active</span>:<span class="string">1		# 复制积压缓冲区是否开启</span></span><br><span class="line"><span class="attr">repl_backlog_size</span>:<span class="string">1048576			# 复制积压缓冲大小</span></span><br><span class="line"><span class="attr">repl_backlog_first_byte_offset</span>:<span class="string">1		# 复制缓冲区里偏移量的大小</span></span><br><span class="line"><span class="attr">repl_backlog_histlen</span>:<span class="string">42262		# 此值等于 master_repl_offset - repl_backlog_first_byte_offset,该值不会超过repl_backlog_size的大小</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># CPU</span></span><br><span class="line"><span class="attr">used_cpu_sys</span>:<span class="string">0.104404		# 将所有redis主进程在核心态所占用的CPU时求和累计起来</span></span><br><span class="line"><span class="attr">used_cpu_user</span>:<span class="string">0.079472	# 将所有redis主进程在用户态所占用的CPU时求和累计起来</span></span><br><span class="line"><span class="attr">used_cpu_sys_children</span>:<span class="string">0.002037	# 将后台进程在核心态所占用的CPU时求和累计起来</span></span><br><span class="line"><span class="attr">used_cpu_user_children</span>:<span class="string">0.000648	# 将后台进程在用户态所占用的CPU时求和累计起来</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Cluster</span></span><br><span class="line"><span class="attr">cluster_enabled</span>:<span class="string">0	# 实例是否启用集群模式</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Keyspace</span></span><br><span class="line"><span class="attr">db0</span>:<span class="string">keys=1,expires=0,avg_ttl=0	# db0的key的数量,以及带有生存期的key的数,平均存活时间</span></span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://luxiaowan.github.io/2020/03/29/Redis哨兵简介/" title="Redis哨兵简介" target="_blank" rel="external">http://luxiaowan.github.io/2020/03/29/Redis哨兵简介/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/luxiaowan" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="../../../../images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/luxiaowan" target="_blank"><span class="text-dark">串一串</span><small class="ml-1x">浪人</small></a></h3>
+        <div>断舍离</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    
+    <li class="next">
+      <a href="../../28/线程池运行的线程和队列中等待的线程是同一个吗/" title="线程池运行的线程和队列中等待的线程是同一个吗"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2020 cc
+        
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="../../../../js/plugin.min.js"></script>
+<script src="../../../../js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '../../../../content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="../../../../js/insight.js"></script>
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+
+
+
+
+
+
+</body>
+</html>
