@@ -25,14 +25,14 @@
 <meta property="og:site_name" content="串一串">
 <meta property="og:description" content="简介 传输控制协议(Transmission Control Protocol，简称TCP)是一种面向连接的、可靠的、基于字节流的传输层通信协议，应用层向TCP层发送用于网间传输的用8位字节表示的数据流，TCP将数据流做分隔处理后透传给IP层，然后由IP层将数据传输给目标端TCP层。 TCP为保证不发生丢包，会对所有的包进行编号，接收端依据编号按序接收，全部数据包接收完成后按序号进行合并，这里可">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/tcp_connect.png">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/tcp_disconnect.png">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/tcp_disconnect.jpg">
-<meta property="og:updated_time" content="2020-03-29T15:30:11.136Z">
+<meta property="og:image" content="http://luxiaowan.github.io/images/tcp_connect.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/tcp_disconnect.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/tcp_disconnect.jpg">
+<meta property="og:updated_time" content="2020-03-29T15:32:38.853Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="TCP三次握手和四次挥手">
 <meta name="twitter:description" content="简介 传输控制协议(Transmission Control Protocol，简称TCP)是一种面向连接的、可靠的、基于字节流的传输层通信协议，应用层向TCP层发送用于网间传输的用8位字节表示的数据流，TCP将数据流做分隔处理后透传给IP层，然后由IP层将数据传输给目标端TCP层。 TCP为保证不发生丢包，会对所有的包进行编号，接收端依据编号按序接收，全部数据包接收完成后按序号进行合并，这里可">
-<meta name="twitter:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/tcp_connect.png">
+<meta name="twitter:image" content="http://luxiaowan.github.io/images/tcp_connect.png">
   <!-- Canonical links -->
   <link rel="canonical" href="http://luxiaowan.github.io/2020/03/29/TCP三次握手和四次挥手/index.html">
   
@@ -427,7 +427,7 @@
 <p>TCP为保证不发生丢包，会对所有的包进行编号，接收端依据编号按序接收，全部数据包接收完成后按序号进行合并，这里可能会发生粘包、拆包的问题(暂不介绍)。接收端在每次接收到数据包的时候都会返回给发送端一个确认信息(ACK)，若发送端在一定时间内未接收到ACK信息，则主观认为数据发送失败或数据丢失，会重新发送丢失序号的包。</p>
 <h3 id="三次握手"><a class="markdownIt-Anchor" href="#三次握手"></a> 三次握手</h3>
 <p>TCP在发送数据之前，需要先建立连接，客户端主动，TCP使用三次握手的方式建立连接，三次握手的意思就是客户端和服务端进行三次通信，三次握手的目的是为了确认通信双方的发送和接收能力是否正常。主要过程：</p>
-<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/tcp_connect.png" alt="tcp_connect" style="zoom:67%;">
+<img src="/images/tcp_connect.png" alt="tcp_connect" style="zoom:67%;">
 <ul>
 <li>
 <p>第一次握手：客户端：服务端，我想要向你发送数据</p>
@@ -460,7 +460,7 @@
 </blockquote>
 <h3 id="四次挥手"><a class="markdownIt-Anchor" href="#四次挥手"></a> 四次挥手</h3>
 <p>TCP发送完数据之后，需要将连接断开，当然断开连接的也需要客户端主动发起，因为数据是否发送完毕只有发送者知道。断开连接需要通过四次挥手(也可以叫四次握手)来保证合理性。</p>
-<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/tcp_disconnect.png" alt="tcp_disconnect" style="zoom:67%;">
+<img src="/images/tcp_disconnect.png" alt="tcp_disconnect" style="zoom:67%;">
 <ul>
 <li>第一次挥手：客户端：我数据发送完了，可以断开连接了，我先进入准备断开状态
 <ul>
@@ -491,7 +491,7 @@
 </li>
 </ul>
 <p>看一个官方描述图片：</p>
-<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/tcp_disconnect.jpg" alt="tcp_disconnect" style="zoom:75%;">
+<img src="/images/tcp_disconnect.jpg" alt="tcp_disconnect" style="zoom:75%;">
 <h5 id="为什么要等待2msl"><a class="markdownIt-Anchor" href="#为什么要等待2msl"></a> 为什么要等待2MSL</h5>
 <ul>
 <li>
