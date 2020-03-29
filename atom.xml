@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://luxiaowan.github.io/"/>
-  <updated>2020-03-28T19:20:52.904Z</updated>
+  <updated>2020-03-29T15:30:11.136Z</updated>
   <id>http://luxiaowan.github.io/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>TCP三次握手和四次挥手</title>
+    <link href="http://luxiaowan.github.io/2020/03/29/TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%92%8C%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B/"/>
+    <id>http://luxiaowan.github.io/2020/03/29/TCP三次握手和四次挥手/</id>
+    <published>2020-03-29T12:20:00.000Z</published>
+    <updated>2020-03-29T15:30:11.136Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="简介"><a class="markdownIt-Anchor" href="#简介"></a> 简介</h3><p>传输控制协议(Transmission Control Protocol，简称TCP)是一种面向连接的、可靠的、基于字节流的传输层通信协议，应用层向TCP层发送用于网间传输的用8位字节表示的数据流，TCP将数据流做分隔处理后透传给IP层，然后由IP层将数据传输给目标端TCP层。</p><p>TCP为保证不发生丢包，会对所有的包进行编号，接收端依据编号按序接收，全部数据包接收完成后按序号进行合并，这里可能会发生粘包、拆包的问题(暂不介绍)。接收端在每次接收到数据包的时候都会返回给发送端一个确认信息(ACK)，若发送端在一定时间内未接收到ACK信息，则主观认为数据发送失败或数据丢失，会重新发送丢失序号的包。</p><h3 id="三次握手"><a class="markdownIt-Anchor" href="#三次握手"></a> 三次握手</h3><p>TCP在发送数据之前，需要先建立连接，客户端主动，TCP使用三次握手的方式建立连接，三次握手的意思就是客户端和服务端进行三次通信，三次握手的目的是为了确认通信双方的发送和接收能力是否正常。主要过程：</p><img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/tcp_connect.png" alt="tcp_connect" style="zoom:67%;"><ul><li><p>第一次握手：客户端：服务端，我想要向你发送数据</p><ul><li>客户端向服务端发送一个SYN包，并指明客户端的初始化序列号ISN，随后客户端进入SYN_SEND状态。</li><li>同部位SYN=1，初始序列号seq=x，此报文不能携带任何的数据，却会消耗掉一个序列号</li></ul></li><li><p>第二次握手：服务端：客户端，我准备好了，你可以把数据发过来了</p><ul><li>服务端接收到客户端发送的消息，需要返回一个SYN/ACK包进行响应，否则客户端会以为消息跑丢了造成重发，SYN/ACK以服务端的为准，SYN=1, ACK=x+1</li><li>服务端响应消息也属于是一次通信，所以服务端需要将自己的序列号放入到报文中携带给客户端，初始化序列号seq=y</li><li>总的响应报文：SYN=1 ACK=x+1 seq=y</li><li>服务端进入SYN_RECV状态</li></ul></li><li><p>第三次握手：客户端：服务端，我知道了，敌人还有三秒到达战场</p><ul><li>客户端接收到服务端的响应之后，要告诉服务端老子收到你的响应了，不要以为消息丢了，等着接收数据吧您嘞</li><li>这次握手等于是服务端响应的翻版，报文包括ACK=y+1 seq=x+1</li><li>客户端和服务端均进入ESTABLISHED（TCP连接成功）状态</li></ul></li></ul><blockquote><p>为什么使用三次握手，两次是否可以？</p><p>*** 之所以进行三次握手，是保证客户端和服务端均可以进行一次发送、接收和发送接收反馈，目的是让客户端和服务端各自确认自己的发送和接收能力都正常**</p></blockquote><h3 id="四次挥手"><a class="markdownIt-Anchor" href="#四次挥手"></a> 四次挥手</h3><p>TCP发送完数据之后，需要将连接断开，当然断开连接的也需要客户端主动发起，因为数据是否发送完毕只有发送者知道。断开连接需要通过四次挥手(也可以叫四次握手)来保证合理性。</p><img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/tcp_disconnect.png" alt="tcp_disconnect" style="zoom:67%;"><ul><li>第一次挥手：客户端：我数据发送完了，可以断开连接了，我先进入准备断开状态<ul><li>客户端发送完数据之后，向服务端发送断开请求报文，FIN=1 seq=u</li><li>客户端进入FIN-WAIT-1状态，等待服务端的响应</li><li>表示客户端没有数据要发给服务端了</li></ul></li><li>第二次挥手：服务端：我收到了，我同意你的请求，但我要看下我是否还有数据尚在发送，你等会<ul><li>服务端接收到客户端的断开请求之后，根据序列号进行反馈，ACK=1 seq=v ack=u+1</li><li>服务端反馈之后进入CLOSE-WAIT状态，客户端接收到反馈之后进入FIN-WAIT-2状态，等待服务端的确认断开请求</li></ul></li><li>第三次挥手：服务端：我的数据也都发完了，可以断开了<ul><li>服务端再处理完自己的事情之后，向客户端发送确认断开报文，FIN=1 ACK=1 seq=w ack=u+1</li><li>这里的ack=u+1，发现和第二次挥手时候的ack一模一样，这也就是和客户端的断开请求对应起来，否则把别的给断开了岂不是很尴尬</li><li>服务端进入LAST-ACK状态，等待客户端的回应</li></ul></li><li>第四次挥手：客户端：我知道了，断开<ul><li>客户端接收到确认断开报文后，向服务端反馈断开报文，ACK=1 seq=u+1 ack=w+1</li><li>服务端接收到反馈后关闭连接</li><li>客户端等待2MSL后关闭连接</li></ul></li></ul><p>看一个官方描述图片：</p><img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/tcp_disconnect.jpg" alt="tcp_disconnect" style="zoom:75%;"><h5 id="为什么要等待2msl"><a class="markdownIt-Anchor" href="#为什么要等待2msl"></a> 为什么要等待2MSL</h5><ul><li><p>目的是防止ACK消息丢失，服务端重发消息后可以再次接收并反馈；</p></li><li><p>如果在第三次挥手反馈后客户端立刻关闭，如果反馈报文丢失，那么服务端可能就会一直处于重发第三次挥手的报文中，服务端将无法正常进入关闭状态</p></li><li><p>如果第四次挥手的报文丢失，服务端会再次发送确认关闭消息，客户端重新等待2MSL</p></li></ul>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;简介&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#简介&quot;&gt;&lt;/a&gt; 简介&lt;/h3&gt;
+&lt;p&gt;传输控制协议(Transmission Control Protocol，简称TCP)是一种面向连接的、可靠的、基于字节流的传输层通信协议，应用
+      
+    
+    </summary>
+    
+    
+      <category term="杂谈" scheme="http://luxiaowan.github.io/categories/%E6%9D%82%E8%B0%88/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>Redis哨兵简介</title>
@@ -523,33 +548,6 @@
     
     
       <category term="面试" scheme="http://luxiaowan.github.io/tags/%E9%9D%A2%E8%AF%95/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>工程师和程序员的区别</title>
-    <link href="http://luxiaowan.github.io/2019/12/21/%E5%B7%A5%E7%A8%8B%E5%B8%88%E5%92%8C%E7%A8%8B%E5%BA%8F%E5%91%98%E7%9A%84%E5%8C%BA%E5%88%AB/"/>
-    <id>http://luxiaowan.github.io/2019/12/21/工程师和程序员的区别/</id>
-    <published>2019-12-20T17:03:00.000Z</published>
-    <updated>2019-12-20T17:03:48.136Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote><p>开一个杂谈的类目，探讨平时工作中遇到的趣事，可能偶尔也会转载一些其他地方看到的有意思的行业趣事，纯属一乐。</p></blockquote><h4 id="开端"><a class="markdownIt-Anchor" href="#开端"></a> 开端</h4><p>今天下班后，公司里一个工作多年的小朋友找我闲聊，然后聊着聊着不知为啥聊到了行业上：</p><figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">小朋友：串串，你为什么不愿意带团队？</span><br><span class="line">串  串：不感兴趣！</span><br><span class="line">小朋友：你打算敲代码到<span class="number">35</span>岁吗😅</span><br><span class="line">串  串：<span class="number">40</span></span><br><span class="line">小朋友：就算技术上再牛逼，程序员在中国，到了四十也到头了吧</span><br><span class="line">串  串：工程师和程序员是两码事</span><br><span class="line">小朋友：本质区别在哪呢？你指有架构的能力吗？</span><br><span class="line">串  串：。。。。。。</span><br></pre></td></tr></table></figure><h4 id="我想说"><a class="markdownIt-Anchor" href="#我想说"></a> 我想说</h4><p>其实聊到这里，我突然发现很多做开发的同学对程序员和工程师这两个职业的认知好像并不是那么的分明，其实上面的对话还没有结束，我把工程师和程序员对等为进程和线程，做开发的同学应该都知道进程和线程的区别<code>(说不了解的回去把操作系统再细学一遍)</code>，为什么这么比喻呢<code>(其实这个比喻也不恰当，就是想把两者的区别扩大化一下，各位不要挑这个比喻啦，挑了我也不改)</code>，因为进程是由很多线程组成的，每一个线程都只处理进程中很小很小的一个模块，可能仅仅就是去把磁盘上的数据读到内存中而已，进程就像是一片森林，线程只是一棵树，我想表达的意思就是工程师所要掌握的知识技能，要比程序员多的多的多，也就是需要有大局观、知识广度、知识深度、行军线路等，而程序员是什么？<strong>你可以认为会写代码的都叫程序员，但只会写代码的程序员不能叫做工程师!!!</strong></p><h4 id="我还想说"><a class="markdownIt-Anchor" href="#我还想说"></a> 我还想说</h4><p>我们来看一下BOSS直聘上招聘程序员和工程师岗位JD的区别，这里可能要有图：</p><img src="/images/20711576856538.png" alt="Java高级程序员" style="zoom:25%;"><img src="/images/20721576856562.png" alt="20721576856562_.pic_hd" style="zoom:25%;">    <p>看到没，同样是高级岗位，但是岗位JD差别却很大，我们来分析一下区别：</p><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Java高级程序员：                            Java高级研发工程师：</span><br><span class="line">  无学历要求，会写代码就行                      最低科班出身</span><br><span class="line">  能用技术框架写代码，其他低要求                 业务、产品、研发均要擅长，自我驱动，技术攻坚，架构设计</span><br><span class="line">  强调技术要求，罗列一堆技术框架                 无技术框架要求，对软技能提到多次(代码洁癖、计算机原理、算法、行业经验、职责、质量、业务<span class="regexp">/产品/</span>设计<span class="regexp">/研发)</span></span><br></pre></td></tr></table></figure><p>我们从分析结果可以看出，一样的职级，一样的岗位，一样的技术，对程序员的要求是<strong>你会写代码就行</strong>，对工程师的要求是<strong>你不仅要会写代码，还要懂业务、产品、设计、产品和研发质量、数据结构和算法、计算机原理、软件工程学</strong>，现在是不是很清晰的知道了程序员和工程师的区别？</p><h4 id="我再说一下"><a class="markdownIt-Anchor" href="#我再说一下"></a> 我再说一下</h4><p>很多人会问：为什么国外的程序员到60岁还可以写代码，而中国的程序员35岁就要被淘汰？</p><p>其实行业淘汰的是程序员而不是工程师，一个有思想有眼界有能力的工程师是每一个公司都想聘用的，这一类人只会越老越吃香。</p><p>那么程序员为什么到35岁就会被淘汰呢？因为35岁还只是会写代码的人，身体已经被加班摧残的&quot;风烛残年&quot;了，每一年都会有一大批毕业生/培训生走入社会，他们身体健康、强壮、任劳任怨、爱加班，身为35岁的&quot;老年人&quot;，除了年龄大、发际线高、体重超标、脑子迟钝，还有哪一点比得过那么一群小鲜肉？哦~还有上有老下有小的山一般大的压力!!!</p><p>那么工程师为什么越老越吃香呢？因为工程师靠的不是写代码，靠的是自我沉淀和行业经验。</p><h4 id="总结下"><a class="markdownIt-Anchor" href="#总结下"></a> 总结下</h4><p>大家一开始都是从程序员做起的，为什么有的人可以成为工程师，有的人还是程序员呢？这就在于个人平时的积累了。</p><h4 id="玩"><a class="markdownIt-Anchor" href="#玩"></a> 玩</h4><p>最近一年面试了二十多个7、8年工作经验的人，很多人连最基本的技术知识和数据结构都不知道，记忆最深的就是有一个跟着7年的人跟我说：我会写代码，我能实现业务需求，不就行了么，我要知道那些原理干啥？</p><p>是不是又很多人也这么想的？这么想就对啦，等着30岁就被淘汰吧，35都不用等啦！</p><p><strong><font color="red">知道的越多，不知道的就越多</font></strong></p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;blockquote&gt;
-&lt;p&gt;开一个杂谈的类目，探讨平时工作中遇到的趣事，可能偶尔也会转载一些其他地方看到的有意思的行业趣事，纯属一乐。&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h4 id=&quot;开端&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#开端&quot;&gt;
-      
-    
-    </summary>
-    
-    
-      <category term="杂谈" scheme="http://luxiaowan.github.io/categories/%E6%9D%82%E8%B0%88/"/>
-    
     
   </entry>
   
