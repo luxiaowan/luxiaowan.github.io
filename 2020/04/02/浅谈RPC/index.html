@@ -25,12 +25,12 @@
 <meta property="og:site_name" content="串一串">
 <meta property="og:description" content="前言 RPC是Remote Procedure Call的简称，译为远程过程调用，何为远程？就是从这个地方到另一个地方，也就是调用双方不在同一个进程或者不在同一台服务器上，由于双方不在一个内存空间中，所以需要借助网络来实现通信和数据传递。  工作过程 A服务器上的进程P1调用A服务器上的进程P2，或者A服务器上的进程P1调用B服务器上的P2，P1发起调用行为之后，进程被挂起，P2接收到请求之后开">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/45366c44f775abfd0ac3b43bccc1abc3_1440w.png">
-<meta property="og:updated_time" content="2020-04-05T14:04:54.058Z">
+<meta property="og:image" content="http://luxiaowan.github.io/images/45366c44f775abfd0ac3b43bccc1abc3_1440w.png">
+<meta property="og:updated_time" content="2020-04-05T14:05:38.194Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="浅谈RPC">
 <meta name="twitter:description" content="前言 RPC是Remote Procedure Call的简称，译为远程过程调用，何为远程？就是从这个地方到另一个地方，也就是调用双方不在同一个进程或者不在同一台服务器上，由于双方不在一个内存空间中，所以需要借助网络来实现通信和数据传递。  工作过程 A服务器上的进程P1调用A服务器上的进程P2，或者A服务器上的进程P1调用B服务器上的P2，P1发起调用行为之后，进程被挂起，P2接收到请求之后开">
-<meta name="twitter:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/45366c44f775abfd0ac3b43bccc1abc3_1440w.png">
+<meta name="twitter:image" content="http://luxiaowan.github.io/images/45366c44f775abfd0ac3b43bccc1abc3_1440w.png">
   <!-- Canonical links -->
   <link rel="canonical" href="http://luxiaowan.github.io/2020/04/02/浅谈RPC/index.html">
   
@@ -424,7 +424,7 @@
 <p>RPC是Remote Procedure Call的简称，译为远程过程调用，何为远程？就是从这个地方到另一个地方，也就是调用双方不在同一个进程或者不在同一台服务器上，由于双方不在一个内存空间中，所以需要借助网络来实现通信和数据传递。</p>
 <h3 id="工作过程"><a class="markdownIt-Anchor" href="#工作过程"></a> 工作过程</h3>
 <p>A服务器上的进程P1调用A服务器上的进程P2，或者A服务器上的进程P1调用B服务器上的P2，P1发起调用行为之后，进程被挂起，P2接收到请求之后开始执行，然后返回结果给P1，P1继续执行。P1可以使用参数将信息传递给P2，然后通过P2传回的消息得到结果。</p>
-<p><img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/45366c44f775abfd0ac3b43bccc1abc3_1440w.png" alt="img"></p>
+<p><img src="/images/45366c44f775abfd0ac3b43bccc1abc3_1440w.png" alt="img"></p>
 <ol>
 <li>Client function中像调用本地方法一样调用远程服务</li>
 <li>Client stub接收到调用请求后，将方法、参数序列化</li>
