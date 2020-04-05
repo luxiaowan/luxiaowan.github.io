@@ -17,22 +17,24 @@
   <meta http-equiv="window-target" content="_top">
   
   
-  <title>浅谈RPC | 串一串</title>
-  <meta name="description" content="前言 RPC是Remote Procedure Call的简称，译为远程过程调用，何为远程？就是从这个地方到另一个地方，也就是调用双方不在同一个进程或者不在同一台服务器上，由于双方不在一个内存空间中，所以需要借助网络来实现通信和数据传递。  工作过程 A服务器上的进程P1调用A服务器上的进程P2，或者A服务器上的进程P1调用B服务器上的P2，P1发起调用行为之后，进程被挂起，P2接收到请求之后开">
+  <title>聊一聊SPI | 串一串</title>
+  <meta name="description" content="前言 SPI全称是Service Provider Interface，是一种服务发现机制（哎，服务发现机制？和Zookeeper什么关系？）。SPI 的本质是将接口实现类的全限定名配置在文件META-INFO/services目录下以接口全限定名命名的文件中，并由服务加载器(ServiceLoader)读取配置文件，加载实现类。这样可以在运行时，动态为接口替换实现类。正因此特性，我们可以很容易">
 <meta property="og:type" content="article">
-<meta property="og:title" content="浅谈RPC">
-<meta property="og:url" content="http://luxiaowan.github.io/2020/04/02/浅谈RPC/index.html">
+<meta property="og:title" content="聊一聊SPI">
+<meta property="og:url" content="http://luxiaowan.github.io/2020/04/02/聊一聊SPI/index.html">
 <meta property="og:site_name" content="串一串">
-<meta property="og:description" content="前言 RPC是Remote Procedure Call的简称，译为远程过程调用，何为远程？就是从这个地方到另一个地方，也就是调用双方不在同一个进程或者不在同一台服务器上，由于双方不在一个内存空间中，所以需要借助网络来实现通信和数据传递。  工作过程 A服务器上的进程P1调用A服务器上的进程P2，或者A服务器上的进程P1调用B服务器上的P2，P1发起调用行为之后，进程被挂起，P2接收到请求之后开">
+<meta property="og:description" content="前言 SPI全称是Service Provider Interface，是一种服务发现机制（哎，服务发现机制？和Zookeeper什么关系？）。SPI 的本质是将接口实现类的全限定名配置在文件META-INFO/services目录下以接口全限定名命名的文件中，并由服务加载器(ServiceLoader)读取配置文件，加载实现类。这样可以在运行时，动态为接口替换实现类。正因此特性，我们可以很容易">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/45366c44f775abfd0ac3b43bccc1abc3_1440w.png">
-<meta property="og:updated_time" content="2020-04-05T14:04:54.058Z">
+<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200405012001538.png">
+<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/spi.png">
+<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200405175109421.png">
+<meta property="og:updated_time" content="2020-04-05T10:30:55.883Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="浅谈RPC">
-<meta name="twitter:description" content="前言 RPC是Remote Procedure Call的简称，译为远程过程调用，何为远程？就是从这个地方到另一个地方，也就是调用双方不在同一个进程或者不在同一台服务器上，由于双方不在一个内存空间中，所以需要借助网络来实现通信和数据传递。  工作过程 A服务器上的进程P1调用A服务器上的进程P2，或者A服务器上的进程P1调用B服务器上的P2，P1发起调用行为之后，进程被挂起，P2接收到请求之后开">
-<meta name="twitter:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/45366c44f775abfd0ac3b43bccc1abc3_1440w.png">
+<meta name="twitter:title" content="聊一聊SPI">
+<meta name="twitter:description" content="前言 SPI全称是Service Provider Interface，是一种服务发现机制（哎，服务发现机制？和Zookeeper什么关系？）。SPI 的本质是将接口实现类的全限定名配置在文件META-INFO/services目录下以接口全限定名命名的文件中，并由服务加载器(ServiceLoader)读取配置文件，加载实现类。这样可以在运行时，动态为接口替换实现类。正因此特性，我们可以很容易">
+<meta name="twitter:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200405012001538.png">
   <!-- Canonical links -->
-  <link rel="canonical" href="http://luxiaowan.github.io/2020/04/02/浅谈RPC/index.html">
+  <link rel="canonical" href="http://luxiaowan.github.io/2020/04/02/聊一聊SPI/index.html">
   
     <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
   
@@ -261,6 +263,31 @@
           <li>
             
             <div class="item-thumb">
+              <a href="../浅谈RPC/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/分布式/">分布式</a>
+              </p>
+              <p class="item-title">
+                <a href="../浅谈RPC/" class="title">浅谈RPC</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-01T17:10:00.000Z" itemprop="datePublished">2020-04-02</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
               <a href="" class="thumb">
     
     
@@ -275,32 +302,7 @@
                 <a class="category-link" href="../../../../categories/分布式/">分布式</a>
               </p>
               <p class="item-title">
-                <a href="" class="title">浅谈RPC</a>
-              </p>
-              <p class="item-date">
-                <time datetime="2020-04-01T17:10:00.000Z" itemprop="datePublished">2020-04-02</time>
-              </p>
-            </div>
-          </li>
-          
-          <li>
-            
-            <div class="item-thumb">
-              <a href="../聊一聊SPI/" class="thumb">
-    
-    
-        <span class="thumb-image thumb-none"></span>
-    
-</a>
-
-            </div>
-            
-            <div class="item-inner">
-              <p class="item-category">
-                <a class="category-link" href="../../../../categories/分布式/">分布式</a>
-              </p>
-              <p class="item-title">
-                <a href="../聊一聊SPI/" class="title">聊一聊SPI</a>
+                <a href="" class="title">聊一聊SPI</a>
               </p>
               <p class="item-date">
                 <time datetime="2020-04-01T17:10:00.000Z" itemprop="datePublished">2020-04-02</time>
@@ -371,14 +373,14 @@
   
 <main class="main" role="main">
   <div class="content">
-  <article id="post-浅谈RPC" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+  <article id="post-聊一聊SPI" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
     
     <div class="article-header">
       
         
   
     <h1 class="article-title" itemprop="name">
-      浅谈RPC
+      聊一聊SPI
     </h1>
   
 
@@ -410,10 +412,10 @@
         <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
         
 	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1k(字)</span>
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1.5k(字)</span>
 	
 	
-		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 3(分)</span>
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 6(分)</span>
 	
 
       </div>
@@ -421,75 +423,95 @@
     <div class="article-entry marked-body" itemprop="articleBody">
       
         <h3 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h3>
-<p>RPC是Remote Procedure Call的简称，译为远程过程调用，何为远程？就是从这个地方到另一个地方，也就是调用双方不在同一个进程或者不在同一台服务器上，由于双方不在一个内存空间中，所以需要借助网络来实现通信和数据传递。</p>
-<h3 id="工作过程"><a class="markdownIt-Anchor" href="#工作过程"></a> 工作过程</h3>
-<p>A服务器上的进程P1调用A服务器上的进程P2，或者A服务器上的进程P1调用B服务器上的P2，P1发起调用行为之后，进程被挂起，P2接收到请求之后开始执行，然后返回结果给P1，P1继续执行。P1可以使用参数将信息传递给P2，然后通过P2传回的消息得到结果。</p>
-<p><img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/45366c44f775abfd0ac3b43bccc1abc3_1440w.png" alt="img"></p>
+<p>SPI全称是Service Provider Interface，是一种服务发现机制（哎，服务发现机制？和Zookeeper什么关系？）。SPI 的本质是将接口实现类的全限定名配置在文件META-INFO/services目录下以接口全限定名命名的文件中，并由服务加载器(ServiceLoader)读取配置文件，加载实现类。这样可以在运行时，动态为接口替换实现类。正因此特性，我们可以很容易的通过 SPI 机制为我们的程序提供拓展功能。</p>
+<p><img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200405012001538.png" alt="image-20200405012001538"></p>
+<h3 id="使用方式"><a class="markdownIt-Anchor" href="#使用方式"></a> 使用方式</h3>
+<ul>
+<li>
+<p>场景</p>
+<p>如果在使用过程中需要动态替换接口类的实现逻辑，那么比较适合使用SPI。比如<code>java.sql.Driver</code>。</p>
+</li>
+<li>
+<p>方式</p>
 <ol>
-<li>Client function中像调用本地方法一样调用远程服务</li>
-<li>Client stub接收到调用请求后，将方法、参数序列化</li>
-<li>Client通过Socket将消息发送到远程服务</li>
-<li>Server接收到消息后转发给Server stub，Server stub将消息进行解码（反序列化）</li>
-<li>Server stub根据解码后的内容调用本地Server服务</li>
-<li>Server执行完本地方法后，将执行结果返回给Server stub</li>
-<li>Server stub将结果进行编码（序列化），然后传给Socket</li>
-<li>然后通过Socket将消息发送给Client</li>
-<li>Client接收到返回的消息后转发给Client stub，随之进行解码（反序列化）</li>
-<li>Client接收到返回数据做最终处理</li>
+<li>在服务提供者提供了接口的一种具体实现后，在jar包的META-INF/services目录下创建一个以接口全限定名为命名的文件，内容为实现类的全限定名</li>
+<li>通过maven引入接口实现类所在的jar包，或者将jar包放到应用的classpath中</li>
+<li>通过java.util.ServiceLoder动态装载接口实现模块，它通过扫描META-INF/services目录下的配置文件找到实现类的全限定名，把类加载到JVM</li>
+<li>SPI的实现类必须有一个无参的public构造器</li>
 </ol>
-<p>以上就是一次RPC请求的全过程，整个RPC调用过程有同步和异步两种方式，同步也就是Client在接收到Server返回的消息之前一直将请求保持在运行中状态，例如IO和BIO；异步则是Client将请求发出去之后就将请求挂起，然后Server执行完后再发消息过来通知服务唤醒对应的请求继续处理，例如NIO和AIO。</p>
-<h3 id="特点"><a class="markdownIt-Anchor" href="#特点"></a> 特点</h3>
-<p>在RPC理论被提出时就被赋予了简单、高效、通用三个特点。</p>
-<p>简单：RPC概念语义清晰，使建立分布式应用更加简单，服务之间调用方式简单</p>
-<p>高效：过程调用使用起来很高效，会隐藏底层的通信细节，不需要我们之间去处理Socket通信</p>
-<p>通用：RPC是一个请求响应模型，调用双方可以使用不同的编程语言去实现，选择合适的序列化方式即可</p>
-<p>简单点说，就是RPC能够使我们像调用本地方法一样去调用远程方法，并且调用者不需要知道远程服务到底部署在何处，达到像傻子一样去编程。</p>
-<h3 id="序列化"><a class="markdownIt-Anchor" href="#序列化"></a> 序列化</h3>
-<p>在说到RPC调用过程的时候，有反复的提到序列化和反序列化，RPC支持的数据序列化方式有Java序列化、JSON、Hessian、Kryo等，还有我们很早之前WebService常用的XML。</p>
-<ul>
-<li>JSON：
-<ul>
-<li>可读性较高</li>
-<li>无法表示数据内的引用关系</li>
-<li>统一JSON字段命名规范较困难</li>
-</ul>
 </li>
-<li>Hessian二进制
+<li>
+<p>疑问</p>
 <ul>
-<li>几乎无可读性而言</li>
-<li>支持的语言不够多，比如直接忽略了对js的支持</li>
-<li>二进制兼容性较高</li>
-<li>二进制传输速度比XML、JSON快</li>
+<li>
+<p>为什么要把定义放在META-INF/services目录下？</p>
+<p>这个目录位置是在ServiceLoader中定义的，并且还是final不能修改的，所以还是乖乖遵守吧，因为ServiceLoader也是final的，所以也不能从这个类进行扩展。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">ServiceLoader</span>&lt;<span class="title">S</span>&gt; <span class="keyword">implements</span> <span class="title">Iterable</span>&lt;<span class="title">S</span>&gt;</span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String PREFIX = <span class="string">"META-INF/services/"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>为什么需要一个无参的public构造器？</p>
+<p>ServiceLoader内部实例化扫描到的类是通过<code>LazyIterator</code>迭代器在迭代的时候使用Class的newInstance()方法，所以这里必须要有一个无参的public构造器，否则实例化的时候会报错。</p>
+</li>
+<li>
+<p>如果引入的多个jar包中均有目标接口的实现类及SPI定义，咋整？</p>
+<p>全部都会被加载，只要是在项目中被引入了，就会全部被加载。</p>
+</li>
+<li>
+<p>运行过程是什么样子的？</p>
+<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/spi.png" alt="spi" style="zoom:46%;">
+</li>
 </ul>
 </li>
 </ul>
-<h3 id="rpc框架"><a class="markdownIt-Anchor" href="#rpc框架"></a> RPC框架</h3>
+<h3 id="案例"><a class="markdownIt-Anchor" href="#案例"></a> 案例</h3>
+<ol>
+<li>
+<p>服务方</p>
 <ul>
 <li>
-<p>Dubbo</p>
-<p>阿里研发的，后由当当网扩展出了Dubbox，阿里的已经不维护了，现在丢给Apache了</p>
+<p>接口</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cc.kevinlu.spidemo.spi;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">SPIUserService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">name</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 <li>
-<p>Feign</p>
-<p>Netflix的一套，由Spring Cloud拓展出来了一套轻量级的，很好的融合于Spring Cloud，微服务中还是常用的，适用于Java</p>
+<p>实现类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 领导实现类</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LeaderServiceImpl</span> <span class="keyword">implements</span> <span class="title">SPIUserService</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">name</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"领导发话了"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 员工实现类</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">EmployeeServiceImpl</span> <span class="keyword">implements</span> <span class="title">SPIUserService</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">name</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"员工暴怒了"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 <li>
-<p>gRPC</p>
-<p>谷歌的一套RPC框架，基于HTTP/2 协议传输，在多语言服务之间交互时常被采用</p>
+<p>spi文件</p>
+<p>在实现类所在的项目中的resources目录下创建文件夹META-INF/services文件夹，然后创建文件<code>cc.kevinlu.spidemo.spi.SPIUserService</code></p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">cc.kevinlu.spidemoimpl.spi.LeaderServiceImpl</span></span><br><span class="line"><span class="attr">cc.kevinlu.spidemoimpl.spi.EmployeeServiceImpl</span></span><br></pre></td></tr></table></figure>
 </li>
 <li>
-<p>Java RMI</p>
-<p>较古老的一款RPC框架，仅适用于Java程序，无法跨语言，用起来也不方便</p>
-</li>
-<li>
-<p>Thrift</p>
-<p>Facebook开源的一套RPC框架，它主要是一种接口描述语言和二进制通信协议，跨语言协作，现在丢给Apache了</p>
-</li>
-<li>
-<p>SOAP</p>
-<p>由XML-RPC演变而来，不常用，老项目里可能会用到</p>
+<p>项目结构</p>
+<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200405175109421.png" alt="image-20200405175109421" style="zoom:50%;">
 </li>
 </ul>
+</li>
+<li>
+<p>调用方</p>
+<ul>
+<li>
+<p>pom.xml引入依赖</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>cc.kevinlu<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spi-demo-impl<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>0.0.1-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>调用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">ServiceLoader&lt;SPIUserService&gt; services = ServiceLoader.load(SPIUserService.class);</span><br><span class="line"><span class="comment">// 隐式迭代器方式</span></span><br><span class="line"><span class="keyword">for</span> (SPIUserService service : services) &#123;</span><br><span class="line">  service.name();</span><br><span class="line">&#125;</span><br><span class="line">System.out.println(<span class="string">"---------------"</span>);</span><br><span class="line"><span class="comment">// 显式迭代器方式</span></span><br><span class="line">Iterator&lt;SPIUserService&gt; iterator = services.iterator();</span><br><span class="line"><span class="keyword">while</span> (iterator.hasNext()) &#123;</span><br><span class="line">  SPIUserService service = iterator.next();</span><br><span class="line">  service.name();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="mysql"><a class="markdownIt-Anchor" href="#mysql"></a> MySQL</h3>
+<p>在mysql-connector-java包中的META-INFO/services目录下可以找到以接口<code>java.sql.Driver</code>为名的文件，文件内容是<code>com.mysql.jdbc.Driver</code>或者<code>com.mysql.cj.jdbc.Driver</code>。再来我们就需要找到是在哪里对这个类进行加载的，我们从<code>com.mysql.jdbc.Driver</code>可以进入到<code>java.sql.DriverManager</code>，哦哟~原来是在DriverManager类中的静态代码块实现的对目标类的加载</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Load the initial JDBC drivers by checking the System property</span></span><br><span class="line"><span class="comment"> * jdbc.properties and then use the &#123;<span class="doctag">@code</span> ServiceLoader&#125; mechanism</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">static</span> &#123;</span><br><span class="line">  loadInitialDrivers();</span><br><span class="line">  println(<span class="string">"JDBC DriverManager initialized"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">loadInitialDrivers</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  String drivers;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// If the driver is packaged as a Service Provider, load it.</span></span><br><span class="line">  <span class="comment">// Get all the drivers through the classloader</span></span><br><span class="line">  <span class="comment">// exposed as a java.sql.Driver.class service.</span></span><br><span class="line">  <span class="comment">// ServiceLoader.load() replaces the sun.misc.Providers()</span></span><br><span class="line">  AccessController.doPrivileged(<span class="keyword">new</span> PrivilegedAction&lt;Void&gt;() &#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Void <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">      ServiceLoader&lt;Driver&gt; loadedDrivers = ServiceLoader.load(Driver.class);</span><br><span class="line">      Iterator&lt;Driver&gt; driversIterator = loadedDrivers.iterator();</span><br><span class="line"></span><br><span class="line">      <span class="comment">/* Load these drivers, so that they can be instantiated.</span></span><br><span class="line"><span class="comment">       * It may be the case that the driver class may not be there</span></span><br><span class="line"><span class="comment">       * i.e. there may be a packaged driver with the service class</span></span><br><span class="line"><span class="comment">       * as implementation of java.sql.Driver but the actual class</span></span><br><span class="line"><span class="comment">       * may be missing. In that case a java.util.ServiceConfigurationError</span></span><br><span class="line"><span class="comment">       * will be thrown at runtime by the VM trying to locate</span></span><br><span class="line"><span class="comment">       * and load the service.</span></span><br><span class="line"><span class="comment">       *</span></span><br><span class="line"><span class="comment">       * Adding a try catch block to catch those runtime errors</span></span><br><span class="line"><span class="comment">       * if driver not available in classpath but it's</span></span><br><span class="line"><span class="comment">       * packaged as service and that service is there in classpath.</span></span><br><span class="line"><span class="comment">       */</span></span><br><span class="line">      <span class="keyword">try</span>&#123;</span><br><span class="line">        <span class="keyword">while</span>(driversIterator.hasNext()) &#123;</span><br><span class="line">          driversIterator.next();</span><br><span class="line">        &#125;</span><br><span class="line">      &#125; <span class="keyword">catch</span>(Throwable t) &#123;</span><br><span class="line">        <span class="comment">// Do nothing</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  println(<span class="string">"DriverManager.initialize: jdbc.drivers = "</span> + drivers);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="疑"><a class="markdownIt-Anchor" href="#疑"></a> 疑</h2>
+<p>前几天面试的时候，有个同学问我：我们订单类型分很多种，有美食、外卖、酒店、门票、火车票、机票等等，我们这边是做一个中台(中间平台)，为客户端提供统一下单、出单、订单等服务，但是订单需要流转到相对应的业务部门，怎么做？</p>
+<p>我说SDK、微服务等形式，比如下单的时候由中台判断订单要流转的业务线，然后依据策略调用不同业务线提供的API服务。</p>
+<p>然后又问我每个业务线提供的接口定义不同，调用起来会很麻烦，怎么办？</p>
+<p>我说这个很简单啊，由中台定义接口，业务方引入中台的接口依赖，然后实现中台提供的接口，去编写自己的业务逻辑，并把该api暴露给中台去调用，这样中台对外的接口定义都一致，其实就是对外统一接口请求规范。</p>
+<p>接着这位同学问了句：你知道SPI么？</p>
+<p>艾玛~SPI会把业务方的实现代码依赖进来，如果某个业务方的处理逻辑改变了，或者他们的包版本变更了，岂不是所有的依赖方都要去更新依赖？这种方式其实不是不可取，只是会麻烦一些，并且我们把所有的业务方的实现都依赖进来了，那么我们使用ServiceLoader加载之后在使用的时候判断起来也麻烦。</p>
+<p>是吗？</p>
 
       
     </div>
@@ -499,7 +521,7 @@
     
     <li class="post-copyright-link hidden-xs">
       <strong>本文链接：</strong>
-      <a href="http://luxiaowan.github.io/2020/04/02/浅谈RPC/" title="浅谈RPC" target="_blank" rel="external">http://luxiaowan.github.io/2020/04/02/浅谈RPC/</a>
+      <a href="http://luxiaowan.github.io/2020/04/02/聊一聊SPI/" title="聊一聊SPI" target="_blank" rel="external">http://luxiaowan.github.io/2020/04/02/聊一聊SPI/</a>
     </li>
     
     <li class="post-copyright-license">
@@ -544,12 +566,12 @@
   <ul class="pager pull-left">
     
     <li class="prev">
-      <a href="../运行jar包时指定启动端口/" title="运行Jar包时指定启动端口"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+      <a href="../浅谈RPC/" title="浅谈RPC"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
     </li>
     
     
     <li class="next">
-      <a href="../聊一聊SPI/" title="聊一聊SPI"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+      <a href="../../01/SpringCloud全家桶初探/" title="Spring Cloud全家桶初探"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
     </li>
     
     
