@@ -18,17 +18,19 @@
   
   
   <title>Spring解决循环依赖 | 串一串</title>
-  <meta name="description" content="前言">
+  <meta name="description" content="什么是循环依赖 循环依赖的关键点在循环，为了直观一点，我们看个图  从图中我们看到，要想实例化类A，必须先要实例化类B，但是在实例化B之前也必须先实例化C，可想要实例化C，就要先实例化A，喏，死循环了，三个类相互引用又相互等待。  循环依赖如何产生的 循环依赖的产生可能有多种情况：  A的构造器中依赖了B的实例，B的构造器中依赖了A的实例 A的构造器中依赖了B的实例，B的属性或者setter依赖">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Spring解决循环依赖">
 <meta property="og:url" content="http://luxiaowan.github.io/2020/03/29/Spring解决循环依赖/index.html">
 <meta property="og:site_name" content="串一串">
-<meta property="og:description" content="前言">
+<meta property="og:description" content="什么是循环依赖 循环依赖的关键点在循环，为了直观一点，我们看个图  从图中我们看到，要想实例化类A，必须先要实例化类B，但是在实例化B之前也必须先实例化C，可想要实例化C，就要先实例化A，喏，死循环了，三个类相互引用又相互等待。  循环依赖如何产生的 循环依赖的产生可能有多种情况：  A的构造器中依赖了B的实例，B的构造器中依赖了A的实例 A的构造器中依赖了B的实例，B的属性或者setter依赖">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-04-05T14:07:29.841Z">
+<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200405224151194.png">
+<meta property="og:updated_time" content="2020-04-06T16:00:55.283Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spring解决循环依赖">
-<meta name="twitter:description" content="前言">
+<meta name="twitter:description" content="什么是循环依赖 循环依赖的关键点在循环，为了直观一点，我们看个图  从图中我们看到，要想实例化类A，必须先要实例化类B，但是在实例化B之前也必须先实例化C，可想要实例化C，就要先实例化A，喏，死循环了，三个类相互引用又相互等待。  循环依赖如何产生的 循环依赖的产生可能有多种情况：  A的构造器中依赖了B的实例，B的构造器中依赖了A的实例 A的构造器中依赖了B的实例，B的属性或者setter依赖">
+<meta name="twitter:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200405224151194.png">
   <!-- Canonical links -->
   <link rel="canonical" href="http://luxiaowan.github.io/2020/03/29/Spring解决循环依赖/index.html">
   
@@ -259,31 +261,6 @@
           <li>
             
             <div class="item-thumb">
-              <a href="../../../04/02/浅谈RPC/" class="thumb">
-    
-    
-        <span class="thumb-image thumb-none"></span>
-    
-</a>
-
-            </div>
-            
-            <div class="item-inner">
-              <p class="item-category">
-                <a class="category-link" href="../../../../categories/分布式/">分布式</a>
-              </p>
-              <p class="item-title">
-                <a href="../../../04/02/浅谈RPC/" class="title">浅谈RPC</a>
-              </p>
-              <p class="item-date">
-                <time datetime="2020-04-01T17:10:00.000Z" itemprop="datePublished">2020-04-02</time>
-              </p>
-            </div>
-          </li>
-          
-          <li>
-            
-            <div class="item-thumb">
               <a href="../../../04/02/聊一聊SPI/" class="thumb">
     
     
@@ -299,6 +276,31 @@
               </p>
               <p class="item-title">
                 <a href="../../../04/02/聊一聊SPI/" class="title">聊一聊SPI</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-01T17:10:00.000Z" itemprop="datePublished">2020-04-02</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../04/02/浅谈RPC/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/分布式/">分布式</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../04/02/浅谈RPC/" class="title">浅谈RPC</a>
               </p>
               <p class="item-date">
                 <time datetime="2020-04-01T17:10:00.000Z" itemprop="datePublished">2020-04-02</time>
@@ -408,17 +410,69 @@
         <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
         
 	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 2(字)</span>
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1.3k(字)</span>
 	
 	
-		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 1(分)</span>
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 5(分)</span>
 	
 
       </div>
     </div>
     <div class="article-entry marked-body" itemprop="articleBody">
       
-        <h3 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h3>
+        <h3 id="什么是循环依赖"><a class="markdownIt-Anchor" href="#什么是循环依赖"></a> 什么是循环依赖</h3>
+<p>循环依赖的关键点在循环，为了直观一点，我们看个图</p>
+<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200405224151194.png" alt="image-20200405224151194" style="zoom:50%;">
+<p>从图中我们看到，要想实例化类A，必须先要实例化类B，但是在实例化B之前也必须先实例化C，可想要实例化C，就要先实例化A，喏，死循环了，三个类相互引用又相互等待。</p>
+<h3 id="循环依赖如何产生的"><a class="markdownIt-Anchor" href="#循环依赖如何产生的"></a> 循环依赖如何产生的</h3>
+<p>循环依赖的产生可能有多种情况：</p>
+<ol>
+<li>A的构造器中依赖了B的实例，B的构造器中依赖了A的实例</li>
+<li>A的构造器中依赖了B的实例，B的属性或者setter依赖了A的实例</li>
+<li>A的属性或setter依赖了B的实例，B的属性或者setter依赖了A的实例</li>
+</ol>
+<h3 id="spring-ioc解决办法"><a class="markdownIt-Anchor" href="#spring-ioc解决办法"></a> Spring IOC解决办法</h3>
+<p>Spring并不是能解决所有的循环依赖情况，比如上方的情况1是无法解决的，并且如果Bean的scope是protype的，也无法解决。</p>
+<ol>
+<li>
+<p>scope=prototype</p>
+<p>此种情况无法解决循环依赖，因为如果获取bean实例的时候，如果类正在创建中，则会抛出异常，详情查看<code>org.springframework.beans.factory.support.AbstractBeanFactory#doGetBean</code>方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Fail if we're already creating this bean instance:</span></span><br><span class="line"><span class="comment">// We're assumably within a circular reference.</span></span><br><span class="line"><span class="keyword">if</span> (isPrototypeCurrentlyInCreation(beanName)) &#123;</span><br><span class="line">  <span class="keyword">throw</span> <span class="keyword">new</span> BeanCurrentlyInCreationException(beanName);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从注释我们就可以看出：如果创建bean实例失败则多半因为存在循环依赖。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Return whether the specified prototype bean is currently in creation</span></span><br><span class="line"><span class="comment"> * (within the current thread).</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> beanName the name of the bean</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">boolean</span> <span class="title">isPrototypeCurrentlyInCreation</span><span class="params">(String beanName)</span> </span>&#123;</span><br><span class="line">  Object curVal = <span class="keyword">this</span>.prototypesCurrentlyInCreation.get();</span><br><span class="line">  <span class="keyword">return</span> (curVal != <span class="keyword">null</span> &amp;&amp;</span><br><span class="line">          (curVal.equals(beanName) || (curVal <span class="keyword">instanceof</span> Set &amp;&amp; ((Set&lt;?&gt;) curVal).contains(beanName))));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>prototype类型的Bean在创建之前会进行标记和创建之后进行解标记</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (mbd.isPrototype()) &#123;</span><br><span class="line">  <span class="comment">// It's a prototype -&gt; create a new instance.</span></span><br><span class="line">  Object prototypeInstance = <span class="keyword">null</span>;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    beforePrototypeCreation(beanName);</span><br><span class="line">    prototypeInstance = createBean(beanName, mbd, args);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">finally</span> &#123;</span><br><span class="line">    afterPrototypeCreation(beanName);</span><br><span class="line">  &#125;</span><br><span class="line">  bean = getObjectForBeanInstance(prototypeInstance, name, beanName, mbd);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforePrototypeCreation</span><span class="params">(String beanName)</span> </span>&#123;</span><br><span class="line">  Object curVal = <span class="keyword">this</span>.prototypesCurrentlyInCreation.get();</span><br><span class="line">  <span class="keyword">if</span> (curVal == <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="keyword">this</span>.prototypesCurrentlyInCreation.set(beanName);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span> ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterPrototypeCreation</span><span class="params">(String beanName)</span> </span>&#123;</span><br><span class="line">  Object curVal = <span class="keyword">this</span>.prototypesCurrentlyInCreation.get();</span><br><span class="line">  <span class="keyword">if</span> (curVal <span class="keyword">instanceof</span> String) &#123;</span><br><span class="line">    <span class="keyword">this</span>.prototypesCurrentlyInCreation.remove();</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span> ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>scope=singleton</p>
+<p>Spring通过三级缓存的模式解决非构造器注入引起的循环依赖，详情查看<code>org.springframework.beans.factory.support.AbstractBeanFactory#doGetBean</code>方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Object sharedInstance = getSingleton(beanName);</span><br></pre></td></tr></table></figure>
+<p>我们看下getSingleton方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> Object <span class="title">getSingleton</span><span class="params">(String beanName, <span class="keyword">boolean</span> allowEarlyReference)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 第一级缓存获取</span></span><br><span class="line">  Object singletonObject = <span class="keyword">this</span>.singletonObjects.get(beanName);</span><br><span class="line">  <span class="comment">// 第一级未找到缓存且bean处于创建中(例如A定义的构造函数依赖了B对象，得先去创建B对象，或者在populatebean过程中依赖了B对象，得先去创建B对象，此时A处于创建中)</span></span><br><span class="line">  <span class="keyword">if</span> (singletonObject == <span class="keyword">null</span> &amp;&amp; isSingletonCurrentlyInCreation(beanName)) &#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>.singletonObjects) &#123;</span><br><span class="line">      singletonObject = <span class="keyword">this</span>.earlySingletonObjects.get(beanName);</span><br><span class="line">      <span class="comment">// 第二级未找到缓存并允许循环依赖即从工厂类获取对象</span></span><br><span class="line">      <span class="keyword">if</span> (singletonObject == <span class="keyword">null</span> &amp;&amp; allowEarlyReference) &#123;</span><br><span class="line">        ObjectFactory&lt;?&gt; singletonFactory = <span class="keyword">this</span>.singletonFactories.get(beanName);</span><br><span class="line">        <span class="keyword">if</span> (singletonFactory != <span class="keyword">null</span>) &#123;</span><br><span class="line">          singletonObject = singletonFactory.getObject();</span><br><span class="line">          <span class="comment">// 将三级缓存移入二级缓存</span></span><br><span class="line">          <span class="keyword">this</span>.earlySingletonObjects.put(beanName, singletonObject);</span><br><span class="line">          <span class="keyword">this</span>.singletonFactories.remove(beanName);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> singletonObject;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在singleton方法中出现了三个属性：<code>singletonObjects</code>,<code>earlySingletonObjects</code>,<code>singletonFactories</code>，这也就是上面说的三级缓存，这个方法的逻辑是先获取一级缓存，若一级缓存中不存在，则获取第二级缓存，二级缓存若也不存在则获取三级缓存，若三级缓存都不存在，则在getBean方法中当成prototype处理。那么这三级缓存中主要存的是什么东西呢？</p>
+<ul>
+<li>一级缓存：已经初始化完成的bean对象Cache</li>
+<li>二级缓存：提前曝光的bean对象Cache</li>
+<li>三级缓存：ObjectFactory工厂bean缓存, 存储实例化后的bean factory</li>
+</ul>
+<p>Spring创建一个Bean的实例大致经过三个步骤：</p>
+<ol>
+<li>createBeanInstance：调用Bean的构造器进行实例化，调用构造器并未填充属性</li>
+<li>populateBean：填充属性，也就是setter所有的property</li>
+<li>initializeBean：初始化Bean，会调用指定的init方法，或者afterPropertiesSet方法，这个时候类属性已经注入完成了</li>
+</ol>
+<h4 id="三级缓存何时设置的"><a class="markdownIt-Anchor" href="#三级缓存何时设置的"></a> 三级缓存何时设置的</h4>
+<p>三级缓存的设置点是什么时候？我们来看下类的创建过程<code>org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#doCreateBean</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> Object <span class="title">doCreateBean</span><span class="params">(<span class="keyword">final</span> String beanName, <span class="keyword">final</span> RootBeanDefinition mbd, <span class="keyword">final</span> @Nullable Object[] args)</span></span></span><br><span class="line"><span class="function">  <span class="keyword">throws</span> BeanCreationException </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 1. Instantiate the bean.</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 2. 创建三级缓存</span></span><br><span class="line">  <span class="keyword">boolean</span> earlySingletonExposure = (mbd.isSingleton() &amp;&amp; <span class="keyword">this</span>.allowCircularReferences &amp;&amp;</span><br><span class="line">                                    isSingletonCurrentlyInCreation(beanName));</span><br><span class="line">  <span class="keyword">if</span> (earlySingletonExposure) &#123;</span><br><span class="line">    <span class="keyword">if</span> (logger.isTraceEnabled()) &#123;</span><br><span class="line">      logger.trace(<span class="string">"Eagerly caching bean '"</span> + beanName +</span><br><span class="line">                   <span class="string">"' to allow for resolving potential circular references"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 获取Bean的ObjectFactory并放入三级缓存</span></span><br><span class="line">    addSingletonFactory(beanName, () -&gt; getEarlyBeanReference(beanName, mbd, bean));</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Initialize the bean instance.</span></span><br><span class="line">  Object exposedObject = bean;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// 填充属性</span></span><br><span class="line">    populateBean(beanName, mbd, instanceWrapper);</span><br><span class="line">    <span class="comment">// 初始化Bean</span></span><br><span class="line">    exposedObject = initializeBean(beanName, exposedObject, mbd);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">catch</span> (Throwable ex) &#123;</span><br><span class="line">    <span class="keyword">if</span> (ex <span class="keyword">instanceof</span> BeanCreationException &amp;&amp; beanName.equals(((BeanCreationException) ex).getBeanName())) &#123;</span><br><span class="line">      <span class="keyword">throw</span> (BeanCreationException) ex;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> BeanCreationException(</span><br><span class="line">        mbd.getResourceDescription(), beanName, <span class="string">"Initialization of bean failed"</span>, ex);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> exposedObject;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>可以看到第三级缓存是在createBeanInstance方法之后就被设置，这个时候Bean的对象已经被创建出来了，只不过是还不够完美，只是一个壳，但是在容器中已经可以根据对象引用被认出来了；</li>
+<li>第二级缓存是在getSingleton方法之后，若第三级缓存中已经存在，则将对象从三级缓存中转移到二级缓存中；</li>
+<li>完全初始化之后将自己放入到一级缓存singletonObjects中</li>
+</ul>
+</li>
+</ol>
 
       
     </div>
