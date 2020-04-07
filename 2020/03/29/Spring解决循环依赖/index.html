@@ -25,12 +25,12 @@
 <meta property="og:site_name" content="串一串">
 <meta property="og:description" content="什么是循环依赖 循环依赖的关键点在循环，为了直观一点，我们看个图  从图中我们看到，要想实例化类A，必须先要实例化类B，但是在实例化B之前也必须先实例化C，可想要实例化C，就要先实例化A，喏，死循环了，三个类相互引用又相互等待。  循环依赖如何产生的 循环依赖的产生可能有多种情况：  A的构造器中依赖了B的实例，B的构造器中依赖了A的实例 A的构造器中依赖了B的实例，B的属性或者setter依赖">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200405224151194.png">
-<meta property="og:updated_time" content="2020-04-06T16:00:55.283Z">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200405224151194.png">
+<meta property="og:updated_time" content="2020-04-07T15:44:04.469Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spring解决循环依赖">
 <meta name="twitter:description" content="什么是循环依赖 循环依赖的关键点在循环，为了直观一点，我们看个图  从图中我们看到，要想实例化类A，必须先要实例化类B，但是在实例化B之前也必须先实例化C，可想要实例化C，就要先实例化A，喏，死循环了，三个类相互引用又相互等待。  循环依赖如何产生的 循环依赖的产生可能有多种情况：  A的构造器中依赖了B的实例，B的构造器中依赖了A的实例 A的构造器中依赖了B的实例，B的属性或者setter依赖">
-<meta name="twitter:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200405224151194.png">
+<meta name="twitter:image" content="http://luxiaowan.github.io/images/image-20200405224151194.png">
   <!-- Canonical links -->
   <link rel="canonical" href="http://luxiaowan.github.io/2020/03/29/Spring解决循环依赖/index.html">
   
@@ -192,7 +192,7 @@
   <div class="widget">
     <h3 class="widget-title">分类</h3>
     <div class="widget-body">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Docker/">Docker</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Git/">Git</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Java/">Java</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Linux/">Linux</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MongoDB/">MongoDB</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MyBatis/">MyBatis</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MySQL/">MySQL</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Nacos/">Nacos</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/NoSQL/">NoSQL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Redis/">Redis</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Spring/">Spring</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/SpringBoot/">SpringBoot</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/kubernates/">kubernates</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/分布式/">分布式</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/杂谈/">杂谈</a><span class="category-list-count">4</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Docker/">Docker</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Git/">Git</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Java/">Java</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Linux/">Linux</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MongoDB/">MongoDB</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MyBatis/">MyBatis</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MySQL/">MySQL</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Nacos/">Nacos</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/NoSQL/">NoSQL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Redis/">Redis</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Spring/">Spring</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/SpringBoot/">SpringBoot</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/kubernates/">kubernates</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/分布式/">分布式</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/杂谈/">杂谈</a><span class="category-list-count">4</span></li></ul>
     </div>
   </div>
 
@@ -221,7 +221,7 @@
   <div class="widget">
     <h3 class="widget-title">归档</h3>
     <div class="widget-body">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/04/">四月 2020</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/03/">三月 2020</a><span class="archive-list-count">18</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/12/">十二月 2019</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/11/">十一月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/10/">十月 2019</a><span class="archive-list-count">17</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/01/">一月 2019</a><span class="archive-list-count">2</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/04/">四月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/03/">三月 2020</a><span class="archive-list-count">18</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/12/">十二月 2019</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/11/">十一月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/10/">十月 2019</a><span class="archive-list-count">17</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/01/">一月 2019</a><span class="archive-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -233,6 +233,31 @@
     <div class="widget-body">
       <ul class="recent-post-list list-unstyled ">
         
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../04/07/Java获取项目中的文件/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../04/07/Java获取项目中的文件/" class="title">Java获取项目中的文件</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-07T15:17:00.000Z" itemprop="datePublished">2020-04-07</time>
+              </p>
+            </div>
+          </li>
+          
           <li>
             
             <div class="item-thumb">
@@ -254,31 +279,6 @@
               </p>
               <p class="item-date">
                 <time datetime="2020-04-02T13:30:00.000Z" itemprop="datePublished">2020-04-02</time>
-              </p>
-            </div>
-          </li>
-          
-          <li>
-            
-            <div class="item-thumb">
-              <a href="../../../04/02/聊一聊SPI/" class="thumb">
-    
-    
-        <span class="thumb-image thumb-none"></span>
-    
-</a>
-
-            </div>
-            
-            <div class="item-inner">
-              <p class="item-category">
-                <a class="category-link" href="../../../../categories/分布式/">分布式</a>
-              </p>
-              <p class="item-title">
-                <a href="../../../04/02/聊一聊SPI/" class="title">聊一聊SPI</a>
-              </p>
-              <p class="item-date">
-                <time datetime="2020-04-01T17:10:00.000Z" itemprop="datePublished">2020-04-02</time>
               </p>
             </div>
           </li>
@@ -311,6 +311,31 @@
           <li>
             
             <div class="item-thumb">
+              <a href="../../../04/02/聊一聊SPI/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/分布式/">分布式</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../04/02/聊一聊SPI/" class="title">聊一聊SPI</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-01T17:10:00.000Z" itemprop="datePublished">2020-04-02</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
               <a href="../../../04/01/SpringCloud全家桶初探/" class="thumb">
     
     
@@ -329,31 +354,6 @@
               </p>
               <p class="item-date">
                 <time datetime="2020-04-01T14:56:00.000Z" itemprop="datePublished">2020-04-01</time>
-              </p>
-            </div>
-          </li>
-          
-          <li>
-            
-            <div class="item-thumb">
-              <a href="../MyBatis中的设计模式/" class="thumb">
-    
-    
-        <span class="thumb-image thumb-none"></span>
-    
-</a>
-
-            </div>
-            
-            <div class="item-inner">
-              <p class="item-category">
-                <a class="category-link" href="../../../../categories/MyBatis/">MyBatis</a>
-              </p>
-              <p class="item-title">
-                <a href="../MyBatis中的设计模式/" class="title">MyBatis中的设计模式</a>
-              </p>
-              <p class="item-date">
-                <time datetime="2020-03-29T15:55:00.000Z" itemprop="datePublished">2020-03-29</time>
               </p>
             </div>
           </li>
@@ -422,7 +422,7 @@
       
         <h3 id="什么是循环依赖"><a class="markdownIt-Anchor" href="#什么是循环依赖"></a> 什么是循环依赖</h3>
 <p>循环依赖的关键点在循环，为了直观一点，我们看个图</p>
-<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200405224151194.png" alt="image-20200405224151194" style="zoom:50%;">
+<img src="/images/image-20200405224151194.png" alt="image-20200405224151194" style="zoom:50%;">
 <p>从图中我们看到，要想实例化类A，必须先要实例化类B，但是在实例化B之前也必须先实例化C，可想要实例化C，就要先实例化A，喏，死循环了，三个类相互引用又相互等待。</p>
 <h3 id="循环依赖如何产生的"><a class="markdownIt-Anchor" href="#循环依赖如何产生的"></a> 循环依赖如何产生的</h3>
 <p>循环依赖的产生可能有多种情况：</p>
