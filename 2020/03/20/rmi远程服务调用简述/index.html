@@ -17,20 +17,20 @@
   <meta http-equiv="window-target" content="_top">
   
   
-  <title>RMI远程服务调用简述 | 串一串</title>
+  <title>Rmi远程服务调用简述 | 串一串</title>
   <meta name="description" content="RMI是什么 RMI(Remote Method Invocation)意为远程方式调用，顾名思义，是Java版的RPC实现技术，是建立分布式Java应用程序的方便途径。RMI是基于接口的，一般是接口定义和实现分开在不同的工程中。 相似：Hessian，Burlap，Httpinvoker，webservice  为什么使用RMI 它允许运行在一台虚拟机上的方法调用运行在另一台虚拟机上的对象方法">
 <meta property="og:type" content="article">
-<meta property="og:title" content="RMI远程服务调用简述">
-<meta property="og:url" content="http://luxiaowan.github.io/2020/03/20/RMI远程服务调用简述/index.html">
+<meta property="og:title" content="Rmi远程服务调用简述">
+<meta property="og:url" content="http://luxiaowan.github.io/2020/03/20/rmi远程服务调用简述/index.html">
 <meta property="og:site_name" content="串一串">
 <meta property="og:description" content="RMI是什么 RMI(Remote Method Invocation)意为远程方式调用，顾名思义，是Java版的RPC实现技术，是建立分布式Java应用程序的方便途径。RMI是基于接口的，一般是接口定义和实现分开在不同的工程中。 相似：Hessian，Burlap，Httpinvoker，webservice  为什么使用RMI 它允许运行在一台虚拟机上的方法调用运行在另一台虚拟机上的对象方法">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-03-19T17:50:31.146Z">
+<meta property="og:updated_time" content="2020-04-08T13:49:58.978Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="RMI远程服务调用简述">
+<meta name="twitter:title" content="Rmi远程服务调用简述">
 <meta name="twitter:description" content="RMI是什么 RMI(Remote Method Invocation)意为远程方式调用，顾名思义，是Java版的RPC实现技术，是建立分布式Java应用程序的方便途径。RMI是基于接口的，一般是接口定义和实现分开在不同的工程中。 相似：Hessian，Burlap，Httpinvoker，webservice  为什么使用RMI 它允许运行在一台虚拟机上的方法调用运行在另一台虚拟机上的对象方法">
   <!-- Canonical links -->
-  <link rel="canonical" href="http://luxiaowan.github.io/2020/03/20/RMI远程服务调用简述/index.html">
+  <link rel="canonical" href="http://luxiaowan.github.io/2020/03/20/rmi远程服务调用简述/index.html">
   
     <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
   
@@ -219,7 +219,7 @@
   <div class="widget">
     <h3 class="widget-title">归档</h3>
     <div class="widget-body">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/04/">四月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/03/">三月 2020</a><span class="archive-list-count">19</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/12/">十二月 2019</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/11/">十一月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/10/">十月 2019</a><span class="archive-list-count">17</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/01/">一月 2019</a><span class="archive-list-count">2</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/04/">四月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/03/">三月 2020</a><span class="archive-list-count">18</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/12/">十二月 2019</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/11/">十一月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/10/">十月 2019</a><span class="archive-list-count">17</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/01/">一月 2019</a><span class="archive-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -231,6 +231,31 @@
     <div class="widget-body">
       <ul class="recent-post-list list-unstyled ">
         
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../04/08/getClassLoader能否为null/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../04/08/getClassLoader能否为null/" class="title">getClassLoader能否为null</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-08T01:30:00.000Z" itemprop="datePublished">2020-04-08</time>
+              </p>
+            </div>
+          </li>
+          
           <li>
             
             <div class="item-thumb">
@@ -331,31 +356,6 @@
             </div>
           </li>
           
-          <li>
-            
-            <div class="item-thumb">
-              <a href="../../../04/01/SpringCloud全家桶初探/" class="thumb">
-    
-    
-        <span class="thumb-image thumb-none"></span>
-    
-</a>
-
-            </div>
-            
-            <div class="item-inner">
-              <p class="item-category">
-                <a class="category-link" href="../../../../categories/SpringBoot/">SpringBoot</a>
-              </p>
-              <p class="item-title">
-                <a href="../../../04/01/SpringCloud全家桶初探/" class="title">Spring Cloud全家桶初探</a>
-              </p>
-              <p class="item-date">
-                <time datetime="2020-04-01T14:56:00.000Z" itemprop="datePublished">2020-04-01</time>
-              </p>
-            </div>
-          </li>
-          
       </ul>
     </div>
   </div>
@@ -369,14 +369,14 @@
   
 <main class="main" role="main">
   <div class="content">
-  <article id="post-RMI远程服务调用简述" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+  <article id="post-rmi远程服务调用简述" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
     
     <div class="article-header">
       
         
   
     <h1 class="article-title" itemprop="name">
-      RMI远程服务调用简述
+      Rmi远程服务调用简述
     </h1>
   
 
@@ -469,7 +469,7 @@
     
     <li class="post-copyright-link hidden-xs">
       <strong>本文链接：</strong>
-      <a href="http://luxiaowan.github.io/2020/03/20/RMI远程服务调用简述/" title="RMI远程服务调用简述" target="_blank" rel="external">http://luxiaowan.github.io/2020/03/20/RMI远程服务调用简述/</a>
+      <a href="http://luxiaowan.github.io/2020/03/20/rmi远程服务调用简述/" title="Rmi远程服务调用简述" target="_blank" rel="external">http://luxiaowan.github.io/2020/03/20/rmi远程服务调用简述/</a>
     </li>
     
     <li class="post-copyright-license">
