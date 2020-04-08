@@ -26,7 +26,7 @@
 <meta property="og:description" content="前言 我们Javaer都知道类想要被加载是需要一个个ClassLoader来帮助的，并且类加载的方案叫双亲委派模式，说是双亲，其实就是单亲，可能我们最初的翻译人想让我们的加载器的家庭更完整吧，所以翻译成双亲。默认的类加载器包括BootstrapClassLoader、ExtClassLoader、AppClassLoader，他们都定义在在rt.jar中的sun.misc.Launcher类中，">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://luxiaowan.github.io/images/classloader.png">
-<meta property="og:updated_time" content="2020-04-08T13:50:44.313Z">
+<meta property="og:updated_time" content="2020-04-08T13:58:13.327Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="getClassLoader能否为null">
 <meta name="twitter:description" content="前言 我们Javaer都知道类想要被加载是需要一个个ClassLoader来帮助的，并且类加载的方案叫双亲委派模式，说是双亲，其实就是单亲，可能我们最初的翻译人想让我们的加载器的家庭更完整吧，所以翻译成双亲。默认的类加载器包括BootstrapClassLoader、ExtClassLoader、AppClassLoader，他们都定义在在rt.jar中的sun.misc.Launcher类中，">
@@ -410,7 +410,7 @@
         <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
         
 	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 882(字)</span>
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 884(字)</span>
 	
 	
 		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 3(分)</span>
@@ -421,7 +421,7 @@
     <div class="article-entry marked-body" itemprop="articleBody">
       
         <h3 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h3>
-<p>我们Javaer都知道类想要被加载是需要一个个ClassLoader来帮助的，并且类加载的方案叫双亲委派模式，说是双亲，其实就是单亲，可能我们最初的翻译人想让我们的加载器的家庭更完整吧，所以翻译成双亲。默认的类加载器包括BootstrapClassLoader、ExtClassLoader、AppClassLoader，他们都定义在在rt.jar中的<code>sun.misc.Launcher</code>类中，他们的继承关系是AppClassLoader—&gt;ExtClassLoader—&gt;BootstrapClassLoader，ExtClassLoader的parent获取不到BootstrapClassLoader，只能获取到一个null。</p>
+<p>我们Javaer都知道类想要被加载是需要一个个ClassLoader来帮助的，并且类加载的方案叫双亲委派模式，说是双亲，其实就是单亲，可能我们最初的翻译人想让我们的加载器的家庭更完整吧，所以翻译成双亲。默认的类加载器包括BootstrapClassLoader、ExtClassLoader、AppClassLoader，他们都定义在在rt.jar中的<code>sun.misc.Launcher</code>类中，他们的&quot;继承&quot;关系是AppClassLoader—&gt;ExtClassLoader—&gt;BootstrapClassLoader，ExtClassLoader的parent获取不到BootstrapClassLoader，只能获取到一个null。</p>
 <img src="/images/classloader.png" alt="classloader" style="zoom:67%;">
 <ol>
 <li>bootstrap是C++编写的类加载器，主要加载%JRE_HOME/lib/目录下的jar包</li>
