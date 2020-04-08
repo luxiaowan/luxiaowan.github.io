@@ -17,21 +17,22 @@
   <meta http-equiv="window-target" content="_top">
   
   
-  <title>Linux配置JDK环境 | 串一串</title>
-  <meta name="description" content="1、下载jdk压缩包 https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html 2、解压 tar -zxvf jdk-8u191-linux-x64.tar.gz /opt/jdk 3、设置环境变量 vim ~/.bashrc 内容： 12345export JAVA_HOME=/opt">
-<meta name="keywords" content="Java">
+  <title>getClassLoader能否为null | 串一串</title>
+  <meta name="description" content="前言 我们Javaer都知道类想要被加载是需要一个个ClassLoader来帮助的，并且类加载的方案叫双亲委派模式，说是双亲，其实就是单亲，可能我们最初的翻译人想让我们的加载器的家庭更完整吧，所以翻译成双亲。默认的类加载器包括BootstrapClassLoader、ExtClassLoader、AppClassLoader，他们都定义在在rt.jar中的sun.misc.Launcher类中，">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Linux配置JDK环境">
-<meta property="og:url" content="http://luxiaowan.github.io/2019/01/15/Linux配置JDK环境/index.html">
+<meta property="og:title" content="getClassLoader能否为null">
+<meta property="og:url" content="http://luxiaowan.github.io/2020/03/05/getClassLoader能否为null/index.html">
 <meta property="og:site_name" content="串一串">
-<meta property="og:description" content="1、下载jdk压缩包 https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html 2、解压 tar -zxvf jdk-8u191-linux-x64.tar.gz /opt/jdk 3、设置环境变量 vim ~/.bashrc 内容： 12345export JAVA_HOME=/opt">
+<meta property="og:description" content="前言 我们Javaer都知道类想要被加载是需要一个个ClassLoader来帮助的，并且类加载的方案叫双亲委派模式，说是双亲，其实就是单亲，可能我们最初的翻译人想让我们的加载器的家庭更完整吧，所以翻译成双亲。默认的类加载器包括BootstrapClassLoader、ExtClassLoader、AppClassLoader，他们都定义在在rt.jar中的sun.misc.Launcher类中，">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-03-24T05:09:48.450Z">
+<meta property="og:image" content="http://luxiaowan.github.io/images/classloader.png">
+<meta property="og:updated_time" content="2020-04-08T02:14:22.399Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Linux配置JDK环境">
-<meta name="twitter:description" content="1、下载jdk压缩包 https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html 2、解压 tar -zxvf jdk-8u191-linux-x64.tar.gz /opt/jdk 3、设置环境变量 vim ~/.bashrc 内容： 12345export JAVA_HOME=/opt">
+<meta name="twitter:title" content="getClassLoader能否为null">
+<meta name="twitter:description" content="前言 我们Javaer都知道类想要被加载是需要一个个ClassLoader来帮助的，并且类加载的方案叫双亲委派模式，说是双亲，其实就是单亲，可能我们最初的翻译人想让我们的加载器的家庭更完整吧，所以翻译成双亲。默认的类加载器包括BootstrapClassLoader、ExtClassLoader、AppClassLoader，他们都定义在在rt.jar中的sun.misc.Launcher类中，">
+<meta name="twitter:image" content="http://luxiaowan.github.io/images/classloader.png">
   <!-- Canonical links -->
-  <link rel="canonical" href="http://luxiaowan.github.io/2019/01/15/Linux配置JDK环境/index.html">
+  <link rel="canonical" href="http://luxiaowan.github.io/2020/03/05/getClassLoader能否为null/index.html">
   
     <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
   
@@ -235,7 +236,7 @@
           <li>
             
             <div class="item-thumb">
-              <a href="../../../../2020/04/07/Java获取项目中的文件/" class="thumb">
+              <a href="../../../04/07/Java获取项目中的文件/" class="thumb">
     
     
         <span class="thumb-image thumb-none"></span>
@@ -249,7 +250,7 @@
                 <a class="category-link" href="../../../../categories/Java/">Java</a>
               </p>
               <p class="item-title">
-                <a href="../../../../2020/04/07/Java获取项目中的文件/" class="title">Java获取项目中的文件</a>
+                <a href="../../../04/07/Java获取项目中的文件/" class="title">Java获取项目中的文件</a>
               </p>
               <p class="item-date">
                 <time datetime="2020-04-07T15:17:00.000Z" itemprop="datePublished">2020-04-07</time>
@@ -260,7 +261,7 @@
           <li>
             
             <div class="item-thumb">
-              <a href="../../../../2020/04/02/运行jar包时指定启动端口/" class="thumb">
+              <a href="../../../04/02/运行jar包时指定启动端口/" class="thumb">
     
     
         <span class="thumb-image thumb-none"></span>
@@ -274,7 +275,7 @@
                 <a class="category-link" href="../../../../categories/Java/">Java</a>
               </p>
               <p class="item-title">
-                <a href="../../../../2020/04/02/运行jar包时指定启动端口/" class="title">运行Jar包时指定启动端口</a>
+                <a href="../../../04/02/运行jar包时指定启动端口/" class="title">运行Jar包时指定启动端口</a>
               </p>
               <p class="item-date">
                 <time datetime="2020-04-02T13:30:00.000Z" itemprop="datePublished">2020-04-02</time>
@@ -285,7 +286,7 @@
           <li>
             
             <div class="item-thumb">
-              <a href="../../../../2020/04/02/聊一聊SPI/" class="thumb">
+              <a href="../../../04/02/聊一聊SPI/" class="thumb">
     
     
         <span class="thumb-image thumb-none"></span>
@@ -299,7 +300,7 @@
                 <a class="category-link" href="../../../../categories/分布式/">分布式</a>
               </p>
               <p class="item-title">
-                <a href="../../../../2020/04/02/聊一聊SPI/" class="title">聊一聊SPI</a>
+                <a href="../../../04/02/聊一聊SPI/" class="title">聊一聊SPI</a>
               </p>
               <p class="item-date">
                 <time datetime="2020-04-01T17:10:00.000Z" itemprop="datePublished">2020-04-02</time>
@@ -310,7 +311,7 @@
           <li>
             
             <div class="item-thumb">
-              <a href="../../../../2020/04/02/浅谈RPC/" class="thumb">
+              <a href="../../../04/02/浅谈RPC/" class="thumb">
     
     
         <span class="thumb-image thumb-none"></span>
@@ -324,7 +325,7 @@
                 <a class="category-link" href="../../../../categories/分布式/">分布式</a>
               </p>
               <p class="item-title">
-                <a href="../../../../2020/04/02/浅谈RPC/" class="title">浅谈RPC</a>
+                <a href="../../../04/02/浅谈RPC/" class="title">浅谈RPC</a>
               </p>
               <p class="item-date">
                 <time datetime="2020-04-01T17:10:00.000Z" itemprop="datePublished">2020-04-02</time>
@@ -335,7 +336,7 @@
           <li>
             
             <div class="item-thumb">
-              <a href="../../../../2020/04/01/SpringCloud全家桶初探/" class="thumb">
+              <a href="../../../04/01/SpringCloud全家桶初探/" class="thumb">
     
     
         <span class="thumb-image thumb-none"></span>
@@ -349,7 +350,7 @@
                 <a class="category-link" href="../../../../categories/SpringBoot/">SpringBoot</a>
               </p>
               <p class="item-title">
-                <a href="../../../../2020/04/01/SpringCloud全家桶初探/" class="title">Spring Cloud全家桶初探</a>
+                <a href="../../../04/01/SpringCloud全家桶初探/" class="title">Spring Cloud全家桶初探</a>
               </p>
               <p class="item-date">
                 <time datetime="2020-04-01T14:56:00.000Z" itemprop="datePublished">2020-04-01</time>
@@ -370,14 +371,14 @@
   
 <main class="main" role="main">
   <div class="content">
-  <article id="post-Linux配置JDK环境" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+  <article id="post-getClassLoader能否为null" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
     
     <div class="article-header">
       
         
   
     <h1 class="article-title" itemprop="name">
-      Linux配置JDK环境
+      getClassLoader能否为null
     </h1>
   
 
@@ -386,21 +387,16 @@
         <span class="article-date">
     <i class="icon icon-calendar-check"></i>
 	<a href="" class="article-date">
-	  <time datetime="2019-01-15T04:12:00.000Z" itemprop="datePublished">2019-01-15</time>
+	  <time datetime="2020-03-05T01:30:00.000Z" itemprop="datePublished">2020-03-05</time>
 	</a>
 </span>
         
   <span class="article-category">
     <i class="icon icon-folder"></i>
-    <a class="article-category-link" href="../../../../categories/Linux/">Linux</a>
+    <a class="article-category-link" href="../../../../categories/Java/">Java</a>
   </span>
 
         
-  <span class="article-tag">
-    <i class="icon icon-tags"></i>
-	<a class="article-tag-link" href="../../../../tags/Java/">Java</a>
-  </span>
-
 
         
 	<span class="article-read hidden-xs">
@@ -414,26 +410,37 @@
         <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
         
 	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 71(字)</span>
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 882(字)</span>
 	
 	
-		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 1(分)</span>
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 3(分)</span>
 	
 
       </div>
     </div>
     <div class="article-entry marked-body" itemprop="articleBody">
       
-        <p>1、下载jdk压缩包</p>
-<p><a href="https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html" target="_blank" rel="noopener">https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html</a></p>
-<p>2、解压</p>
-<p><code>tar -zxvf jdk-8u191-linux-x64.tar.gz /opt/jdk</code></p>
-<p>3、设置环境变量</p>
-<p><code>vim ~/.bashrc</code></p>
-<p>内容：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">export JAVA_HOME=/opt/jdk</span><br><span class="line"></span><br><span class="line">export CLASSPATH=$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar</span><br><span class="line"></span><br><span class="line">export PATH=$PATH:$JAVA_HOME/bin</span><br></pre></td></tr></table></figure>
-<p>4、立即设置环境变量</p>
-<p><code>source ~/.bashrc</code></p>
+        <h3 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h3>
+<p>我们Javaer都知道类想要被加载是需要一个个ClassLoader来帮助的，并且类加载的方案叫双亲委派模式，说是双亲，其实就是单亲，可能我们最初的翻译人想让我们的加载器的家庭更完整吧，所以翻译成双亲。默认的类加载器包括BootstrapClassLoader、ExtClassLoader、AppClassLoader，他们都定义在在rt.jar中的<code>sun.misc.Launcher</code>类中，他们的继承关系是AppClassLoader—&gt;ExtClassLoader—&gt;BootstrapClassLoader，ExtClassLoader的parent获取不到BootstrapClassLoader，只能获取到一个null。</p>
+<img src="/images/classloader.png" alt="classloader" style="zoom:67%;">
+<ol>
+<li>bootstrap是C++编写的类加载器，主要加载%JRE_HOME/lib/目录下的jar包</li>
+<li>ExtClassLoader主要加载%JRE_HOME/lib/ext目录下的jar包</li>
+<li>AppClassLoader主要加载java环境变量CLASSPATH所指定的路径下的jar包和class文件，通过System.getProperty(“java.class.path”)获取考验获取CLASSPATH路径</li>
+<li>用户自定义ClassLoader，加载用户自己制定的类</li>
+</ol>
+<h3 id="getclassloader会不会为空"><a class="markdownIt-Anchor" href="#getclassloader会不会为空"></a> getClassLoader会不会为空</h3>
+<p>说了这么多，其实就是想说getClassLoader当然可能会为空，是不是此时会有个疑惑：加载器都为空了，那这个类是怎么加载的，被谁加载的？答：被BootstrapClassLoader加载的。</p>
+<p>我们知道BootstrapClassLoader是由C++编写的，我们是用Java代码获取不到的，BootstrapClassLoader也不是ExtClassLoader的父类，而是它的父亲，这里要搞清关系，父亲和父类是两码事，父类是有继承关系，父亲是上一层的关系，所以我们在获取String、Integer、int、double、BufferedInputStream等等一系列在rt.jar包中被BootstrapClassLoader加载的类的加载器时，返回的都是null。</p>
+<h3 id="extclassloader是怎么成为appclassloader的父亲的"><a class="markdownIt-Anchor" href="#extclassloader是怎么成为appclassloader的父亲的"></a> ExtClassLoader是怎么成为AppClassLoader的父亲的</h3>
+<p>类加载器并非是继承关系，而是父子关系，就像上面说的BootstrapClassLoader是ExtClassLoader的父亲，不是父类。关键点就在于ClassLoader的实例变量parent，这个parent指定了当前类加载器的父亲，但是翻遍了AppClassLoader的代码也没发现是在哪里把ExtClassLoader设置进去的，怎么parent就是ExtClassLoader了呢。</p>
+<p>刚才我们说这些类加载器被定义在了Launcher类中，那么我们就去看下这个类的构造器</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">Launcher</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  Launcher.ExtClassLoader var1;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// 获取ExtClassLoader</span></span><br><span class="line">    var1 = Launcher.ExtClassLoader.getExtClassLoader();</span><br><span class="line">  &#125; <span class="keyword">catch</span> (IOException var10) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> InternalError(<span class="string">"Could not create extension class loader"</span>, var10);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// 获取AppClassLoader实例并赋值给loader，并把ExtClassLoader的实例传入到方法中，</span></span><br><span class="line">    <span class="keyword">this</span>.loader = Launcher.AppClassLoader.getAppClassLoader(var1);</span><br><span class="line">  &#125; <span class="keyword">catch</span> (IOException var9) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> InternalError(<span class="string">"Could not create application class loader"</span>, var9);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 返回AppClassLoader实例</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> ClassLoader <span class="title">getClassLoader</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>.loader;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从Launcher的构造器我们看到关键点在AppClassLoader.getAppClassLoader(var1)这句，那我们就看这个方法是怎么写的</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">AppClassLoader</span> <span class="keyword">extends</span> <span class="title">URLClassLoader</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ClassLoader <span class="title">getAppClassLoader</span><span class="params">(<span class="keyword">final</span> ClassLoader var0)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> String var1 = System.getProperty(<span class="string">"java.class.path"</span>);</span><br><span class="line">    <span class="keyword">final</span> File[] var2 = var1 == <span class="keyword">null</span> ? <span class="keyword">new</span> File[<span class="number">0</span>] : Launcher.getClassPath(var1);</span><br><span class="line">    <span class="keyword">return</span> (ClassLoader)AccessController.doPrivileged(<span class="keyword">new</span> PrivilegedAction&lt;Launcher.AppClassLoader&gt;() &#123;</span><br><span class="line">      <span class="keyword">public</span> Launcher.<span class="function">AppClassLoader <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        URL[] var1x = var1 == <span class="keyword">null</span> ? <span class="keyword">new</span> URL[<span class="number">0</span>] : Launcher.pathToURLs(var2);</span><br><span class="line">        <span class="comment">// 关键看这一句，调用了AppClassLoader的构造器，并把ExtClassLoader实例传了进去，那就跳到构造器去看</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Launcher.AppClassLoader(var1x, var0);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 构造器</span></span><br><span class="line">  AppClassLoader(URL[] var1, ClassLoader var2) &#123;</span><br><span class="line">    <span class="comment">// 调用了父类的构造器，他的父类是哪个？从定义上看应该是URLClassLoader没跑了</span></span><br><span class="line">    <span class="keyword">super</span>(var1, var2, Launcher.factory);</span><br><span class="line">    <span class="keyword">this</span>.ucp.initLookupCache(<span class="keyword">this</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其实再往里的代码就不用在这闲扯了，里面就是不断的将var2往上传递，直到ClassLoader这个类的构造器中，在ClassLoader中完成的设置。</p>
+<h4 id="那为什么extclassloader没通过这种形式将bootstrapclassloader设置给parent呢"><a class="markdownIt-Anchor" href="#那为什么extclassloader没通过这种形式将bootstrapclassloader设置给parent呢"></a> 那为什么ExtClassLoader没通过这种形式将BootstrapClassLoader设置给parent呢？</h4>
+<p>是不是傻，上面刚说了BootstrapClassLoader是C++写的，Java代码不能直观的获取。</p>
 
       
     </div>
@@ -443,7 +450,7 @@
     
     <li class="post-copyright-link hidden-xs">
       <strong>本文链接：</strong>
-      <a href="http://luxiaowan.github.io/2019/01/15/Linux配置JDK环境/" title="Linux配置JDK环境" target="_blank" rel="external">http://luxiaowan.github.io/2019/01/15/Linux配置JDK环境/</a>
+      <a href="http://luxiaowan.github.io/2020/03/05/getClassLoader能否为null/" title="getClassLoader能否为null" target="_blank" rel="external">http://luxiaowan.github.io/2020/03/05/getClassLoader能否为null/</a>
     </li>
     
     <li class="post-copyright-license">
@@ -488,12 +495,12 @@
   <ul class="pager pull-left">
     
     <li class="prev">
-      <a href="../../../10/10/蚂蚁Java基础面试题/" title="Java基础面试题"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+      <a href="../../10/k8s中YAML文件解释/" title="k8s中YAML文件解释"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
     </li>
     
     
     <li class="next">
-      <a href="../Linux配置maven环境/" title="Linux配置maven环境"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+      <a href="../../../02/11/Git修改已提交用户信息/" title="Git修改已提交用户信息"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
     </li>
     
     

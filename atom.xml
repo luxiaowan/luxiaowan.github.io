@@ -69,31 +69,6 @@
   </entry>
   
   <entry>
-    <title>浅谈RPC</title>
-    <link href="http://luxiaowan.github.io/2020/04/02/%E6%B5%85%E8%B0%88RPC/"/>
-    <id>http://luxiaowan.github.io/2020/04/02/浅谈RPC/</id>
-    <published>2020-04-01T17:10:00.000Z</published>
-    <updated>2020-04-07T15:44:11.888Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h3><p>RPC是Remote Procedure Call的简称，译为远程过程调用，何为远程？就是从这个地方到另一个地方，也就是调用双方不在同一个进程或者不在同一台服务器上，由于双方不在一个内存空间中，所以需要借助网络来实现通信和数据传递。</p><h3 id="工作过程"><a class="markdownIt-Anchor" href="#工作过程"></a> 工作过程</h3><p>A服务器上的进程P1调用A服务器上的进程P2，或者A服务器上的进程P1调用B服务器上的P2，P1发起调用行为之后，进程被挂起，P2接收到请求之后开始执行，然后返回结果给P1，P1继续执行。P1可以使用参数将信息传递给P2，然后通过P2传回的消息得到结果。</p><p><img src="/images/45366c44f775abfd0ac3b43bccc1abc3_1440w.png" alt="img"></p><ol><li>Client function中像调用本地方法一样调用远程服务</li><li>Client stub接收到调用请求后，将方法、参数序列化</li><li>Client通过Socket将消息发送到远程服务</li><li>Server接收到消息后转发给Server stub，Server stub将消息进行解码（反序列化）</li><li>Server stub根据解码后的内容调用本地Server服务</li><li>Server执行完本地方法后，将执行结果返回给Server stub</li><li>Server stub将结果进行编码（序列化），然后传给Socket</li><li>然后通过Socket将消息发送给Client</li><li>Client接收到返回的消息后转发给Client stub，随之进行解码（反序列化）</li><li>Client接收到返回数据做最终处理</li></ol><p>以上就是一次RPC请求的全过程，整个RPC调用过程有同步和异步两种方式，同步也就是Client在接收到Server返回的消息之前一直将请求保持在运行中状态，例如IO和BIO；异步则是Client将请求发出去之后就将请求挂起，然后Server执行完后再发消息过来通知服务唤醒对应的请求继续处理，例如NIO和AIO。</p><h3 id="特点"><a class="markdownIt-Anchor" href="#特点"></a> 特点</h3><p>在RPC理论被提出时就被赋予了简单、高效、通用三个特点。</p><p>简单：RPC概念语义清晰，使建立分布式应用更加简单，服务之间调用方式简单</p><p>高效：过程调用使用起来很高效，会隐藏底层的通信细节，不需要我们之间去处理Socket通信</p><p>通用：RPC是一个请求响应模型，调用双方可以使用不同的编程语言去实现，选择合适的序列化方式即可</p><p>简单点说，就是RPC能够使我们像调用本地方法一样去调用远程方法，并且调用者不需要知道远程服务到底部署在何处，达到像傻子一样去编程。</p><h3 id="序列化"><a class="markdownIt-Anchor" href="#序列化"></a> 序列化</h3><p>在说到RPC调用过程的时候，有反复的提到序列化和反序列化，RPC支持的数据序列化方式有Java序列化、JSON、Hessian、Kryo等，还有我们很早之前WebService常用的XML。</p><ul><li>JSON：<ul><li>可读性较高</li><li>无法表示数据内的引用关系</li><li>统一JSON字段命名规范较困难</li></ul></li><li>Hessian二进制<ul><li>几乎无可读性而言</li><li>支持的语言不够多，比如直接忽略了对js的支持</li><li>二进制兼容性较高</li><li>二进制传输速度比XML、JSON快</li></ul></li></ul><h3 id="rpc框架"><a class="markdownIt-Anchor" href="#rpc框架"></a> RPC框架</h3><ul><li><p>Dubbo</p><p>阿里研发的，后由当当网扩展出了Dubbox，阿里的已经不维护了，现在丢给Apache了</p></li><li><p>Feign</p><p>Netflix的一套，由Spring Cloud拓展出来了一套轻量级的，很好的融合于Spring Cloud，微服务中还是常用的，适用于Java</p></li><li><p>gRPC</p><p>谷歌的一套RPC框架，基于HTTP/2 协议传输，在多语言服务之间交互时常被采用</p></li><li><p>Java RMI</p><p>较古老的一款RPC框架，仅适用于Java程序，无法跨语言，用起来也不方便</p></li><li><p>Thrift</p><p>Facebook开源的一套RPC框架，它主要是一种接口描述语言和二进制通信协议，跨语言协作，现在丢给Apache了</p></li><li><p>SOAP</p><p>由XML-RPC演变而来，不常用，老项目里可能会用到</p></li></ul>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h3 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;&lt;/a&gt; 前言&lt;/h3&gt;
-&lt;p&gt;RPC是Remote Procedure Call的简称，译为远程过程调用，何为远程？就是从这个地方到另一个地方，也就是调用双方不在同一个进程或
-      
-    
-    </summary>
-    
-    
-      <category term="分布式" scheme="http://luxiaowan.github.io/categories/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
-    
-    
-  </entry>
-  
-  <entry>
     <title>聊一聊SPI</title>
     <link href="http://luxiaowan.github.io/2020/04/02/%E8%81%8A%E4%B8%80%E8%81%8ASPI/"/>
     <id>http://luxiaowan.github.io/2020/04/02/聊一聊SPI/</id>
@@ -108,6 +83,31 @@
       
         &lt;h3 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;&lt;/a&gt; 前言&lt;/h3&gt;
 &lt;p&gt;SPI全称是Service Provider Interface，是一种服务发现机制（哎，服务发现机制？和Zookeeper什么关系？）。SPI
+      
+    
+    </summary>
+    
+    
+      <category term="分布式" scheme="http://luxiaowan.github.io/categories/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>浅谈RPC</title>
+    <link href="http://luxiaowan.github.io/2020/04/02/%E6%B5%85%E8%B0%88RPC/"/>
+    <id>http://luxiaowan.github.io/2020/04/02/浅谈RPC/</id>
+    <published>2020-04-01T17:10:00.000Z</published>
+    <updated>2020-04-07T15:44:11.888Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h3><p>RPC是Remote Procedure Call的简称，译为远程过程调用，何为远程？就是从这个地方到另一个地方，也就是调用双方不在同一个进程或者不在同一台服务器上，由于双方不在一个内存空间中，所以需要借助网络来实现通信和数据传递。</p><h3 id="工作过程"><a class="markdownIt-Anchor" href="#工作过程"></a> 工作过程</h3><p>A服务器上的进程P1调用A服务器上的进程P2，或者A服务器上的进程P1调用B服务器上的P2，P1发起调用行为之后，进程被挂起，P2接收到请求之后开始执行，然后返回结果给P1，P1继续执行。P1可以使用参数将信息传递给P2，然后通过P2传回的消息得到结果。</p><p><img src="/images/45366c44f775abfd0ac3b43bccc1abc3_1440w.png" alt="img"></p><ol><li>Client function中像调用本地方法一样调用远程服务</li><li>Client stub接收到调用请求后，将方法、参数序列化</li><li>Client通过Socket将消息发送到远程服务</li><li>Server接收到消息后转发给Server stub，Server stub将消息进行解码（反序列化）</li><li>Server stub根据解码后的内容调用本地Server服务</li><li>Server执行完本地方法后，将执行结果返回给Server stub</li><li>Server stub将结果进行编码（序列化），然后传给Socket</li><li>然后通过Socket将消息发送给Client</li><li>Client接收到返回的消息后转发给Client stub，随之进行解码（反序列化）</li><li>Client接收到返回数据做最终处理</li></ol><p>以上就是一次RPC请求的全过程，整个RPC调用过程有同步和异步两种方式，同步也就是Client在接收到Server返回的消息之前一直将请求保持在运行中状态，例如IO和BIO；异步则是Client将请求发出去之后就将请求挂起，然后Server执行完后再发消息过来通知服务唤醒对应的请求继续处理，例如NIO和AIO。</p><h3 id="特点"><a class="markdownIt-Anchor" href="#特点"></a> 特点</h3><p>在RPC理论被提出时就被赋予了简单、高效、通用三个特点。</p><p>简单：RPC概念语义清晰，使建立分布式应用更加简单，服务之间调用方式简单</p><p>高效：过程调用使用起来很高效，会隐藏底层的通信细节，不需要我们之间去处理Socket通信</p><p>通用：RPC是一个请求响应模型，调用双方可以使用不同的编程语言去实现，选择合适的序列化方式即可</p><p>简单点说，就是RPC能够使我们像调用本地方法一样去调用远程方法，并且调用者不需要知道远程服务到底部署在何处，达到像傻子一样去编程。</p><h3 id="序列化"><a class="markdownIt-Anchor" href="#序列化"></a> 序列化</h3><p>在说到RPC调用过程的时候，有反复的提到序列化和反序列化，RPC支持的数据序列化方式有Java序列化、JSON、Hessian、Kryo等，还有我们很早之前WebService常用的XML。</p><ul><li>JSON：<ul><li>可读性较高</li><li>无法表示数据内的引用关系</li><li>统一JSON字段命名规范较困难</li></ul></li><li>Hessian二进制<ul><li>几乎无可读性而言</li><li>支持的语言不够多，比如直接忽略了对js的支持</li><li>二进制兼容性较高</li><li>二进制传输速度比XML、JSON快</li></ul></li></ul><h3 id="rpc框架"><a class="markdownIt-Anchor" href="#rpc框架"></a> RPC框架</h3><ul><li><p>Dubbo</p><p>阿里研发的，后由当当网扩展出了Dubbox，阿里的已经不维护了，现在丢给Apache了</p></li><li><p>Feign</p><p>Netflix的一套，由Spring Cloud拓展出来了一套轻量级的，很好的融合于Spring Cloud，微服务中还是常用的，适用于Java</p></li><li><p>gRPC</p><p>谷歌的一套RPC框架，基于HTTP/2 协议传输，在多语言服务之间交互时常被采用</p></li><li><p>Java RMI</p><p>较古老的一款RPC框架，仅适用于Java程序，无法跨语言，用起来也不方便</p></li><li><p>Thrift</p><p>Facebook开源的一套RPC框架，它主要是一种接口描述语言和二进制通信协议，跨语言协作，现在丢给Apache了</p></li><li><p>SOAP</p><p>由XML-RPC演变而来，不常用，老项目里可能会用到</p></li></ul>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;&lt;/a&gt; 前言&lt;/h3&gt;
+&lt;p&gt;RPC是Remote Procedure Call的简称，译为远程过程调用，何为远程？就是从这个地方到另一个地方，也就是调用双方不在同一个进程或
       
     
     </summary>
