@@ -25,12 +25,12 @@
 <meta property="og:site_name" content="串一串">
 <meta property="og:description" content="前言 我们Javaer都知道类想要被加载是需要一个个ClassLoader来帮助的，并且类加载的方案叫双亲委派模式，说是双亲，其实就是单亲，可能我们最初的翻译人想让我们的加载器的家庭更完整吧，所以翻译成双亲。默认的类加载器包括BootstrapClassLoader、ExtClassLoader、AppClassLoader，他们都定义在在rt.jar中的sun.misc.Launcher类中，">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://luxiaowan.github.io/images/classloader.png">
-<meta property="og:updated_time" content="2020-04-08T02:14:22.399Z">
+<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/classloader.png">
+<meta property="og:updated_time" content="2020-04-08T02:14:49.199Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="getClassLoader能否为null">
 <meta name="twitter:description" content="前言 我们Javaer都知道类想要被加载是需要一个个ClassLoader来帮助的，并且类加载的方案叫双亲委派模式，说是双亲，其实就是单亲，可能我们最初的翻译人想让我们的加载器的家庭更完整吧，所以翻译成双亲。默认的类加载器包括BootstrapClassLoader、ExtClassLoader、AppClassLoader，他们都定义在在rt.jar中的sun.misc.Launcher类中，">
-<meta name="twitter:image" content="http://luxiaowan.github.io/images/classloader.png">
+<meta name="twitter:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/classloader.png">
   <!-- Canonical links -->
   <link rel="canonical" href="http://luxiaowan.github.io/2020/03/05/getClassLoader能否为null/index.html">
   
@@ -286,31 +286,6 @@
           <li>
             
             <div class="item-thumb">
-              <a href="../../../04/02/聊一聊SPI/" class="thumb">
-    
-    
-        <span class="thumb-image thumb-none"></span>
-    
-</a>
-
-            </div>
-            
-            <div class="item-inner">
-              <p class="item-category">
-                <a class="category-link" href="../../../../categories/分布式/">分布式</a>
-              </p>
-              <p class="item-title">
-                <a href="../../../04/02/聊一聊SPI/" class="title">聊一聊SPI</a>
-              </p>
-              <p class="item-date">
-                <time datetime="2020-04-01T17:10:00.000Z" itemprop="datePublished">2020-04-02</time>
-              </p>
-            </div>
-          </li>
-          
-          <li>
-            
-            <div class="item-thumb">
               <a href="../../../04/02/浅谈RPC/" class="thumb">
     
     
@@ -326,6 +301,31 @@
               </p>
               <p class="item-title">
                 <a href="../../../04/02/浅谈RPC/" class="title">浅谈RPC</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-01T17:10:00.000Z" itemprop="datePublished">2020-04-02</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../04/02/聊一聊SPI/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/分布式/">分布式</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../04/02/聊一聊SPI/" class="title">聊一聊SPI</a>
               </p>
               <p class="item-date">
                 <time datetime="2020-04-01T17:10:00.000Z" itemprop="datePublished">2020-04-02</time>
@@ -422,7 +422,7 @@
       
         <h3 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h3>
 <p>我们Javaer都知道类想要被加载是需要一个个ClassLoader来帮助的，并且类加载的方案叫双亲委派模式，说是双亲，其实就是单亲，可能我们最初的翻译人想让我们的加载器的家庭更完整吧，所以翻译成双亲。默认的类加载器包括BootstrapClassLoader、ExtClassLoader、AppClassLoader，他们都定义在在rt.jar中的<code>sun.misc.Launcher</code>类中，他们的继承关系是AppClassLoader—&gt;ExtClassLoader—&gt;BootstrapClassLoader，ExtClassLoader的parent获取不到BootstrapClassLoader，只能获取到一个null。</p>
-<img src="/images/classloader.png" alt="classloader" style="zoom:67%;">
+<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/classloader.png" alt="classloader" style="zoom:67%;">
 <ol>
 <li>bootstrap是C++编写的类加载器，主要加载%JRE_HOME/lib/目录下的jar包</li>
 <li>ExtClassLoader主要加载%JRE_HOME/lib/ext目录下的jar包</li>
