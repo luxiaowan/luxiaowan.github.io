@@ -17,22 +17,25 @@
   <meta http-equiv="window-target" content="_top">
   
   
-  <title>使用Docker发布项目 | 串一串</title>
-  <meta name="description" content="1、下载项目 此处使用公开的github上的项目：git clone https://github.com/luxiaowan/simple-eureka-server.git 2、编写Dockerfile    #使用自己构建的jdk镜像 &amp;lt; 查看 &amp;gt; 1234567891011FROM docker.kevinlu.cc/env/jdk-8u191:190114MAINTAINER">
+  <title>MySQL自适应Hash索引 | 串一串</title>
+  <meta name="description" content="Hash索引 Hash是一种查找数据非常快的数据结构，在正常情况下这种查找的时间复杂度为O(1)，即一般仅需要一次查找就能定位数据，正常情况是指不存在哈希冲突的情况；而B+树的查找次数，取决于B+树的高度，B+树的高度一般为34层，所以一般最少需要34次的查询。  InnoDB的Hash索引 InnoDB存储引擎会监控对表上各索引页的查询，如果监控到某个索引页被频繁查询，并诊断后发现如果为这一页">
+<meta name="keywords" content="索引">
 <meta property="og:type" content="article">
-<meta property="og:title" content="使用Docker发布项目">
-<meta property="og:url" content="http://luxiaowan.github.io/2019/12/04/使用Docker发布项目/index.html">
+<meta property="og:title" content="MySQL自适应Hash索引">
+<meta property="og:url" content="http://luxiaowan.github.io/2020/04/09/MySQL自适应Hash索引/index.html">
 <meta property="og:site_name" content="串一串">
-<meta property="og:description" content="1、下载项目 此处使用公开的github上的项目：git clone https://github.com/luxiaowan/simple-eureka-server.git 2、编写Dockerfile    #使用自己构建的jdk镜像 &amp;lt; 查看 &amp;gt; 1234567891011FROM docker.kevinlu.cc/env/jdk-8u191:190114MAINTAINER">
+<meta property="og:description" content="Hash索引 Hash是一种查找数据非常快的数据结构，在正常情况下这种查找的时间复杂度为O(1)，即一般仅需要一次查找就能定位数据，正常情况是指不存在哈希冲突的情况；而B+树的查找次数，取决于B+树的高度，B+树的高度一般为34层，所以一般最少需要34次的查询。  InnoDB的Hash索引 InnoDB存储引擎会监控对表上各索引页的查询，如果监控到某个索引页被频繁查询，并诊断后发现如果为这一页">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://luxiaowan.github.io/images/dp1.png">
-<meta property="og:updated_time" content="2020-03-24T05:09:46.712Z">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200409150053986.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200409150834710.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200409154256344.png">
+<meta property="og:updated_time" content="2020-04-09T07:45:31.343Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="使用Docker发布项目">
-<meta name="twitter:description" content="1、下载项目 此处使用公开的github上的项目：git clone https://github.com/luxiaowan/simple-eureka-server.git 2、编写Dockerfile    #使用自己构建的jdk镜像 &amp;lt; 查看 &amp;gt; 1234567891011FROM docker.kevinlu.cc/env/jdk-8u191:190114MAINTAINER">
-<meta name="twitter:image" content="http://luxiaowan.github.io/images/dp1.png">
+<meta name="twitter:title" content="MySQL自适应Hash索引">
+<meta name="twitter:description" content="Hash索引 Hash是一种查找数据非常快的数据结构，在正常情况下这种查找的时间复杂度为O(1)，即一般仅需要一次查找就能定位数据，正常情况是指不存在哈希冲突的情况；而B+树的查找次数，取决于B+树的高度，B+树的高度一般为34层，所以一般最少需要34次的查询。  InnoDB的Hash索引 InnoDB存储引擎会监控对表上各索引页的查询，如果监控到某个索引页被频繁查询，并诊断后发现如果为这一页">
+<meta name="twitter:image" content="http://luxiaowan.github.io/images/image-20200409150053986.png">
   <!-- Canonical links -->
-  <link rel="canonical" href="http://luxiaowan.github.io/2019/12/04/使用Docker发布项目/index.html">
+  <link rel="canonical" href="http://luxiaowan.github.io/2020/04/09/MySQL自适应Hash索引/index.html">
   
     <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
   
@@ -236,7 +239,7 @@
           <li>
             
             <div class="item-thumb">
-              <a href="../../../../2020/04/09/MySQL自适应Hash索引/" class="thumb">
+              <a href="" class="thumb">
     
     
         <span class="thumb-image thumb-none"></span>
@@ -250,7 +253,7 @@
                 <a class="category-link" href="../../../../categories/MySQL/">MySQL</a>
               </p>
               <p class="item-title">
-                <a href="../../../../2020/04/09/MySQL自适应Hash索引/" class="title">MySQL自适应Hash索引</a>
+                <a href="" class="title">MySQL自适应Hash索引</a>
               </p>
               <p class="item-date">
                 <time datetime="2020-04-09T06:40:00.000Z" itemprop="datePublished">2020-04-09</time>
@@ -261,7 +264,7 @@
           <li>
             
             <div class="item-thumb">
-              <a href="../../../../2020/04/09/MySQL存储引擎下的索引/" class="thumb">
+              <a href="../MySQL存储引擎下的索引/" class="thumb">
     
     
         <span class="thumb-image thumb-none"></span>
@@ -275,7 +278,7 @@
                 
               </p>
               <p class="item-title">
-                <a href="../../../../2020/04/09/MySQL存储引擎下的索引/" class="title">MySQL存储引擎下的索引</a>
+                <a href="../MySQL存储引擎下的索引/" class="title">MySQL存储引擎下的索引</a>
               </p>
               <p class="item-date">
                 <time datetime="2020-04-09T01:55:00.000Z" itemprop="datePublished">2020-04-09</time>
@@ -286,7 +289,7 @@
           <li>
             
             <div class="item-thumb">
-              <a href="../../../../2020/04/08/MySQL索引初识/" class="thumb">
+              <a href="../../08/MySQL索引初识/" class="thumb">
     
     
         <span class="thumb-image thumb-none"></span>
@@ -300,7 +303,7 @@
                 <a class="category-link" href="../../../../categories/MySQL/">MySQL</a>
               </p>
               <p class="item-title">
-                <a href="../../../../2020/04/08/MySQL索引初识/" class="title">MySQL索引初识</a>
+                <a href="../../08/MySQL索引初识/" class="title">MySQL索引初识</a>
               </p>
               <p class="item-date">
                 <time datetime="2020-04-08T14:10:00.000Z" itemprop="datePublished">2020-04-08</time>
@@ -311,7 +314,7 @@
           <li>
             
             <div class="item-thumb">
-              <a href="../../../../2020/04/08/getClassLoader能否为null/" class="thumb">
+              <a href="../../08/getClassLoader能否为null/" class="thumb">
     
     
         <span class="thumb-image thumb-none"></span>
@@ -325,7 +328,7 @@
                 <a class="category-link" href="../../../../categories/Java/">Java</a>
               </p>
               <p class="item-title">
-                <a href="../../../../2020/04/08/getClassLoader能否为null/" class="title">getClassLoader能否为null</a>
+                <a href="../../08/getClassLoader能否为null/" class="title">getClassLoader能否为null</a>
               </p>
               <p class="item-date">
                 <time datetime="2020-04-08T01:30:00.000Z" itemprop="datePublished">2020-04-08</time>
@@ -336,7 +339,7 @@
           <li>
             
             <div class="item-thumb">
-              <a href="../../../../2020/04/07/Java获取项目中的文件/" class="thumb">
+              <a href="../../07/Java获取项目中的文件/" class="thumb">
     
     
         <span class="thumb-image thumb-none"></span>
@@ -350,7 +353,7 @@
                 <a class="category-link" href="../../../../categories/Java/">Java</a>
               </p>
               <p class="item-title">
-                <a href="../../../../2020/04/07/Java获取项目中的文件/" class="title">Java获取项目中的文件</a>
+                <a href="../../07/Java获取项目中的文件/" class="title">Java获取项目中的文件</a>
               </p>
               <p class="item-date">
                 <time datetime="2020-04-07T15:17:00.000Z" itemprop="datePublished">2020-04-07</time>
@@ -371,14 +374,14 @@
   
 <main class="main" role="main">
   <div class="content">
-  <article id="post-使用Docker发布项目" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+  <article id="post-MySQL自适应Hash索引" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
     
     <div class="article-header">
       
         
   
     <h1 class="article-title" itemprop="name">
-      使用Docker发布项目
+      MySQL自适应Hash索引
     </h1>
   
 
@@ -387,16 +390,21 @@
         <span class="article-date">
     <i class="icon icon-calendar-check"></i>
 	<a href="" class="article-date">
-	  <time datetime="2019-12-04T03:50:00.000Z" itemprop="datePublished">2019-12-04</time>
+	  <time datetime="2020-04-09T06:40:00.000Z" itemprop="datePublished">2020-04-09</time>
 	</a>
 </span>
         
   <span class="article-category">
     <i class="icon icon-folder"></i>
-    <a class="article-category-link" href="../../../../categories/Docker/">Docker</a>
+    <a class="article-category-link" href="../../../../categories/MySQL/">MySQL</a>
   </span>
 
         
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="../../../../tags/索引/">索引</a>
+  </span>
+
 
         
 	<span class="article-read hidden-xs">
@@ -410,31 +418,41 @@
         <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
         
 	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 240(字)</span>
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 874(字)</span>
 	
 	
-		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 1(分)</span>
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 3(分)</span>
 	
 
       </div>
     </div>
     <div class="article-entry marked-body" itemprop="articleBody">
       
-        <p>1、下载项目</p>
-<p>此处使用公开的github上的项目：git clone <a href="https://github.com/luxiaowan/simple-eureka-server.git" target="_blank" rel="noopener">https://github.com/luxiaowan/simple-eureka-server.git</a></p>
-<p>2、编写Dockerfile    #使用自己构建的jdk镜像 &lt; <a href="http://luxiaowan.github.io/2019/12/03/%E4%BD%BF%E7%94%A8Docker%E6%9E%84%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84JDK%E5%AE%B9%E5%99%A8/">查看</a> &gt;</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">FROM docker.kevinlu.cc/env/jdk-8u191:190114</span><br><span class="line"></span><br><span class="line">MAINTAINER cc</span><br><span class="line"></span><br><span class="line">ADD ./target/simple-eureka-server-1.0.jar  /root/startup/ </span><br><span class="line"></span><br><span class="line">WORKDIR /root/startup</span><br><span class="line"></span><br><span class="line">EXPOSE 8080</span><br><span class="line"></span><br><span class="line">CMD ["java", "-jar", "simple-eureka-server-1.0.jar"]</span><br></pre></td></tr></table></figure>
-<p>3、构建项目</p>
-<p><code>docker build -t simple-eureka-server:7 .</code></p>
-<p><img src="/images/dp1.png" alt="img"></p>
-<p>发现最后报错了，找不到我们的jar包，那是因为我们还没有编译打包我们的项目</p>
-<p>所以在执行Dockerfile之前要先对项目进行编译打包</p>
-<p>因为项目是Maven管理的，所以我们使用 mvn clean package进行打包(第一次使用Maven会有点慢，因为要下载Maven的基础库)  &lt; <a href="http://luxiaowan.github.io/2019/01/15/Linux%E9%85%8D%E7%BD%AEmaven%E7%8E%AF%E5%A2%83/">安装Maven</a> &gt;</p>
-<p>打包完成之后再进行构建，发现成功了，然后使用docker images查看刚构建的镜像</p>
-<p>4、运行镜像</p>
-<p><code>docker run -d -P 8080:8080 --name eureka-server simple-eureka-server:7</code></p>
-<p>5、查看</p>
-<p><a href="http://IP:8080" target="_blank" rel="noopener">http://IP:8080</a></p>
+        <h3 id="hash索引"><a class="markdownIt-Anchor" href="#hash索引"></a> Hash索引</h3>
+<p>Hash是一种查找数据非常快的数据结构，在正常情况下这种查找的时间复杂度为O(1)，即一般仅需要一次查找就能定位数据，正常情况是指不存在哈希冲突的情况；而B+树的查找次数，取决于B+树的高度，B+树的高度一般为3<sub>4层，所以一般最少需要3</sub>4次的查询。</p>
+<h3 id="innodb的hash索引"><a class="markdownIt-Anchor" href="#innodb的hash索引"></a> InnoDB的Hash索引</h3>
+<p>InnoDB存储引擎会监控对表上各索引页的查询，如果监控到某个索引页被频繁查询，并诊断后发现如果为这一页的数据创建Hash索引会带来更大的性能提升，则会自动为这一页的数据创建Hash索引，并称之为自适应Hash索引。自适应Hash是通过缓冲池中B+树的页进行构建的，建立速度很快，不需要对整张表的数据都构建Hash索引，所以我们又可以把自适应Hash索引看成是索引的索引，。注意一点就是InnoDB只会对热点页构建自适应索引，且是由InnoDB自动创建和删除的，所以不能人为干预是否在一张InnoDB的表中创建Hash索引。</p>
+<h3 id="自适应hash索引"><a class="markdownIt-Anchor" href="#自适应hash索引"></a> 自适应Hash索引</h3>
+<p>官方有告诉我们每一种存储引擎所支持的索引结构，在https://dev.mysql.com/doc/refman/5.7/en/create-index.html中可以查看，我们截图保留下：</p>
+<p><img src="/images/image-20200409150053986.png" alt="image-20200409150053986"></p>
+<p>我们可以看到MyIsam和InnoDB仅支持BTree结构的索引，但是我们在创建的时候却有Hash结构可选择，这是因为啥？细心的话可以发现不论我们在创建索引的时候选择了Hash还是BTree，在保存的时候都会自动转换成BTree，就是这个原因。</p>
+<p>但是我们又在官方的https://dev.mysql.com/doc/refman/5.7/en/innodb-adaptive-hash.html页面看到这么一句话：</p>
+<p><img src="/images/image-20200409150834710.png" alt="image-20200409150834710"></p>
+<p>大致意思是：自适应Hash索引特征能使InnoDB在具有适当的工作负载和足够缓冲池内存的系统上执行的更像内存中的数据库的操作，且不会牺牲事务特性或可靠性，MySQL能基于监视到的搜索规则，使用索引键的前缀构建Hash索引，前缀可以是任意长度，并且可能只有b+树中的某些值出现在Hash索引中，Hash索引其实就是对经常访问的索引页进行构建的。</p>
+<p>这又说明其实InnoDB是支持Hash索引的，但并不是真正意义上的Hash，而是通过自己的监视情况自动对某些热点索引值构建的内存Hash。</p>
+<h3 id="开启和关闭"><a class="markdownIt-Anchor" href="#开启和关闭"></a> 开启和关闭</h3>
+<p>默认情况下自适应索引是开启状态，毕竟是可以提升性能的嘛，我们也可以通过命令开启和关闭，并可以查看自适应索引的</p>
+<ul>
+<li>
+<p>开启</p>
+<p>默认就是开启的，可以通过命令<code>show variables like 'innodb_adaptive_hash_index';</code>查看自适应哈希索引的状态，并可以在命令行通过<code>show engine innodb status\G</code>查看自适应Hash索引的使用信息(AHI的大小，使用情况，每秒使用AHI搜索的情况等等)</p>
+<img src="/images/image-20200409154256344.png" alt="image-20200409154256344" style="zoom:50%;">
+</li>
+<li>
+<p>关闭</p>
+<p>负载较重的情况下，就不太适合开启自适应Hash索引了，因为这样可以避免额外的索引维护带来的开销，可以在启动的时候通过参数<code>--skip-innodb-adaptive-hash-index</code>关闭</p>
+</li>
+</ul>
 
       
     </div>
@@ -444,7 +462,7 @@
     
     <li class="post-copyright-link hidden-xs">
       <strong>本文链接：</strong>
-      <a href="http://luxiaowan.github.io/2019/12/04/使用Docker发布项目/" title="使用Docker发布项目" target="_blank" rel="external">http://luxiaowan.github.io/2019/12/04/使用Docker发布项目/</a>
+      <a href="http://luxiaowan.github.io/2020/04/09/MySQL自适应Hash索引/" title="MySQL自适应Hash索引" target="_blank" rel="external">http://luxiaowan.github.io/2020/04/09/MySQL自适应Hash索引/</a>
     </li>
     
     <li class="post-copyright-license">
@@ -488,13 +506,9 @@
   
   <ul class="pager pull-left">
     
-    <li class="prev">
-      <a href="../../08/阿里面试题/" title="阿里面试题"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
-    </li>
-    
     
     <li class="next">
-      <a href="../../03/Docker网络模式简讲/" title="Docker网络模式简讲"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+      <a href="../MySQL存储引擎下的索引/" title="MySQL存储引擎下的索引"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
     </li>
     
     
