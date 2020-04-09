@@ -17,24 +17,16 @@
   <meta http-equiv="window-target" content="_top">
   
   
-  <title>使用Docker构建自己的JDK容器 | 串一串</title>
-  <meta name="description" content="★为了在Dockerfile中使用FROM自己的jdk，在此构建一个独立专属的 1、下载需要构建的jdk压缩包，使用压缩包即可，此处使用了jdk_8u191&amp;lt; 下载 &amp;gt;，根据自己需要，别乱下 2、因为jdk属于是系统环境配置，所以此处需要借助系统镜像去构建，此处借助centos:7来构建，查找可用的centos镜像： 2.1、docker search centos  第一个是官方的镜">
-<meta property="og:type" content="article">
-<meta property="og:title" content="使用Docker构建自己的JDK容器">
-<meta property="og:url" content="http://luxiaowan.github.io/2019/12/03/使用Docker构建自己的JDK容器/index.html">
+  <title>分类: MySQL | 串一串</title>
+  <meta property="og:type" content="website">
+<meta property="og:title" content="串一串">
+<meta property="og:url" content="http://luxiaowan.github.io/categories/MySQL/page/2/index.html">
 <meta property="og:site_name" content="串一串">
-<meta property="og:description" content="★为了在Dockerfile中使用FROM自己的jdk，在此构建一个独立专属的 1、下载需要构建的jdk压缩包，使用压缩包即可，此处使用了jdk_8u191&amp;lt; 下载 &amp;gt;，根据自己需要，别乱下 2、因为jdk属于是系统环境配置，所以此处需要借助系统镜像去构建，此处借助centos:7来构建，查找可用的centos镜像： 2.1、docker search centos  第一个是官方的镜">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://luxiaowan.github.io/images/docker-jdk1.png">
-<meta property="og:image" content="http://luxiaowan.github.io/images/docker-jdk1.png">
-<meta property="og:image" content="http://luxiaowan.github.io/images/docker-jdk3.png">
-<meta property="og:updated_time" content="2020-03-24T05:10:49.862Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="使用Docker构建自己的JDK容器">
-<meta name="twitter:description" content="★为了在Dockerfile中使用FROM自己的jdk，在此构建一个独立专属的 1、下载需要构建的jdk压缩包，使用压缩包即可，此处使用了jdk_8u191&amp;lt; 下载 &amp;gt;，根据自己需要，别乱下 2、因为jdk属于是系统环境配置，所以此处需要借助系统镜像去构建，此处借助centos:7来构建，查找可用的centos镜像： 2.1、docker search centos  第一个是官方的镜">
-<meta name="twitter:image" content="http://luxiaowan.github.io/images/docker-jdk1.png">
+<meta name="twitter:title" content="串一串">
   <!-- Canonical links -->
-  <link rel="canonical" href="http://luxiaowan.github.io/2019/12/03/使用Docker构建自己的JDK容器/index.html">
+  <link rel="canonical" href="http://luxiaowan.github.io/categories/MySQL/page/2/index.html">
   
     <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
   
@@ -194,7 +186,7 @@
   <div class="widget">
     <h3 class="widget-title">分类</h3>
     <div class="widget-body">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Docker/">Docker</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Git/">Git</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Java/">Java</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Linux/">Linux</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MongoDB/">MongoDB</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MyBatis/">MyBatis</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MySQL/">MySQL</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Nacos/">Nacos</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/NoSQL/">NoSQL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Redis/">Redis</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Spring/">Spring</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/SpringBoot/">SpringBoot</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/kubernates/">kubernates</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/分布式/">分布式</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/杂谈/">杂谈</a><span class="category-list-count">4</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="../../../Docker/">Docker</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../Git/">Git</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../Java/">Java</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="../../../Linux/">Linux</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../MongoDB/">MongoDB</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../MyBatis/">MyBatis</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../">MySQL</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="../../../Nacos/">Nacos</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../NoSQL/">NoSQL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../Redis/">Redis</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="../../../Spring/">Spring</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../SpringBoot/">SpringBoot</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../kubernates/">kubernates</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../分布式/">分布式</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../杂谈/">杂谈</a><span class="category-list-count">4</span></li></ul>
     </div>
   </div>
 
@@ -249,7 +241,7 @@
             
             <div class="item-inner">
               <p class="item-category">
-                <a class="category-link" href="../../../../categories/MySQL/">MySQL</a>
+                <a class="category-link" href="../../">MySQL</a>
               </p>
               <p class="item-title">
                 <a href="../../../../2020/04/09/MySQL回表、索引覆盖、索引下推/" class="title">MySQL回表、索引覆盖、索引下推</a>
@@ -274,7 +266,7 @@
             
             <div class="item-inner">
               <p class="item-category">
-                <a class="category-link" href="../../../../categories/MySQL/">MySQL</a>
+                <a class="category-link" href="../../">MySQL</a>
               </p>
               <p class="item-title">
                 <a href="../../../../2020/04/09/MySQL聚簇索引和非聚簇索引/" class="title">MySQL聚簇索引和非聚簇索引</a>
@@ -299,7 +291,7 @@
             
             <div class="item-inner">
               <p class="item-category">
-                <a class="category-link" href="../../../../categories/MySQL/">MySQL</a>
+                <a class="category-link" href="../../">MySQL</a>
               </p>
               <p class="item-title">
                 <a href="../../../../2020/04/09/MySQL索引类型/" class="title">MySQL索引类型</a>
@@ -324,7 +316,7 @@
             
             <div class="item-inner">
               <p class="item-category">
-                <a class="category-link" href="../../../../categories/MySQL/">MySQL</a>
+                <a class="category-link" href="../../">MySQL</a>
               </p>
               <p class="item-title">
                 <a href="../../../../2020/04/09/MySQL自适应Hash索引/" class="title">MySQL自适应Hash索引</a>
@@ -370,160 +362,105 @@
 </aside>
 
   
-  
-<main class="main" role="main">
-  <div class="content">
-  <article id="post-使用Docker构建自己的JDK容器" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
-    
-    <div class="article-header">
-      
-        
-  
-    <h1 class="article-title" itemprop="name">
-      使用Docker构建自己的JDK容器
-    </h1>
-  
-
-      
-      <div class="article-meta">
-        <span class="article-date">
-    <i class="icon icon-calendar-check"></i>
-	<a href="" class="article-date">
-	  <time datetime="2019-12-02T16:10:00.000Z" itemprop="datePublished">2019-12-03</time>
-	</a>
-</span>
-        
-  <span class="article-category">
-    <i class="icon icon-folder"></i>
-    <a class="article-category-link" href="../../../../categories/Docker/">Docker</a>
-  </span>
-
-        
-
-        
-	<span class="article-read hidden-xs">
-	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
-	    <span id="busuanzi_container_page_pv">
-			<span id="busuanzi_value_page_pv">0</span>
-		</span>
-	</span>
-
-
-        <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
-        
-	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 478(字)</span>
-	
-	
-		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 1(分)</span>
-	
-
-      </div>
+  <main class="main" role="main">
+  <article class="content article article-categories article-type-list" itemscope="">
+    <header class="article-header">
+      <h1 itemprop="name" class="hidden-xs">分类: MySQL</h1>
+      <p class="hidden-xs">共 1 篇文章</p>
+      <nav role="navigation" id="nav-main" class="okayNav">
+        <ul>
+          <li><a href="/categories">All</a></li>
+          
+          <li><a href="/categories/Linux/">Linux</a></li>
+          
+          <li><a href="/categories/kubernates/">kubernates</a></li>
+          
+          <li><a href="/categories/Docker/">Docker</a></li>
+          
+          <li><a href="/categories/Git/">Git</a></li>
+          
+          <li><a href="/categories/Java/">Java</a></li>
+          
+          <li><a href="/categories/MySQL/">MySQL</a></li>
+          
+          <li><a href="/categories/杂谈/">杂谈</a></li>
+          
+          <li><a href="/categories/NoSQL/">NoSQL</a></li>
+          
+          <li><a href="/categories/MongoDB/">MongoDB</a></li>
+          
+          <li><a href="/categories/MyBatis/">MyBatis</a></li>
+          
+          <li><a href="/categories/Nacos/">Nacos</a></li>
+          
+          <li><a href="/categories/Redis/">Redis</a></li>
+          
+          <li><a href="/categories/SpringBoot/">SpringBoot</a></li>
+          
+          <li><a href="/categories/Spring/">Spring</a></li>
+          
+          <li><a href="/categories/分布式/">分布式</a></li>
+          
+        </ul>
+      </nav>
+    </header>
+    <!-- /header -->
+    <div class="article-body">
+      <div class="panel panel-default b-no">
+    <div class="panel-heading" role="tab">
+        <h4 class="panel-title">
+            <a data-toggle="collapse" href="#collapseMySQL" aria-expanded="true">
+              <i class="icon icon-folder text-active"></i><i class="icon icon-folder-open text"></i>
+              MySQL
+            </a>
+            <small class="text-muted">(Total 1 articles)</small>
+        </h4>
     </div>
-    <div class="article-entry marked-body" itemprop="articleBody">
-      
-        <p>★为了在Dockerfile中使用FROM自己的jdk，在此构建一个独立专属的</p>
-<p>1、下载需要构建的jdk压缩包，使用压缩包即可，此处使用了jdk_8u191&lt; <a href="https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html" target="_blank" rel="noopener">下载</a> &gt;，根据自己需要，别乱下</p>
-<p>2、因为jdk属于是系统环境配置，所以此处需要借助系统镜像去构建，此处借助centos:7来构建，查找可用的centos镜像：</p>
-<p>2.1、<code>docker search centos</code></p>
-<p><img src="/images/docker-jdk1.png" alt="img"></p>
-<p>第一个是官方的镜像，直接使用这个即可：<code>docker pull docker.io/centos:7</code> (这个命令就不解释了，看不懂的此文也可用就此打住了)</p>
-<p>2.2、下载完成之后使用命令查看当前存在的镜像：docker images -a</p>
-<p>3、编写构建jdk镜像的Dockerfile，内容如下：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">FROM docker.io/centos:7</span><br><span class="line"></span><br><span class="line">MAINTAINER cc</span><br><span class="line"></span><br><span class="line">ADD jdk-8u191-linux-x64.tar.gz /opt/localhost/   ------这个路径即为jdk的安装路径</span><br><span class="line"></span><br><span class="line">ENV JAVA_HOME /opt/localhost/jdk1.8.0_191   ------设置环境变量</span><br><span class="line"></span><br><span class="line">ENV CLASSPATH $JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar</span><br><span class="line"></span><br><span class="line">ENV PATH $PATH:$JAVA_HOME/bin</span><br></pre></td></tr></table></figure>
-<p>4、构建jdk的docker镜像</p>
-<p><code>docker build -t docker.kevinlu.cc/env/jdk-8u191:190114 . -f Dockerfile</code></p>
-<p>这个命令就没啥好讲的了，不认识的可以看&lt; <a href="http://luxiaowan.github.io/2019/12/01/Docker%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8/">这里</a> &gt;</p>
-<p>构建完成之后通过docker images命令查看镜像信息，构建的时候就会将构建信息打印到控制台：</p>
-<p><img src="/images/docker-jdk1.png" alt="img"></p>
-<p>可以看到最后的Successfully built 47a3b1aa0e55，这个47a3b1aa0e55就是镜像的IMAGE ID，同一个镜像多次构建，生成的IMAGE ID相同</p>
-<p>5、运行jdk镜像</p>
-<p>运行jdk镜像与其他普通镜像有些许不同，因为jdk属于是系统环境配置，所以运行命令为：</p>
-<p><code>docker run -d --name jdk8u191 -it 47a3b1aa0e55 /bin/bash</code></p>
-<p>★创建容器的时候一定要使用 -it /bin/bash，不然jdk的容器起不来。</p>
-<p>6、验证</p>
-<p>docker ps查看当前运行的容器</p>
-<p>docker exec -it jdk8u191 /bin/bash进入jdk容器内</p>
-<p>java -version查看当前环境中jdk版本</p>
-<p><img src="/images/docker-jdk3.png" alt="img"></p>
-<p>大功告成！</p>
-<p>7、使用</p>
-<p>&lt; <a href="http://luxiaowan.github.io/2019/12/04/%E4%BD%BF%E7%94%A8Docker%E5%8F%91%E5%B8%83%E9%A1%B9%E7%9B%AE/">查看</a> &gt;</p>
+    <div id="collapseMySQL" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingMySQL">
+        <div class="panel-body">
+            <div class="collection">
+              
+                
+<a href="../../../../2019/10/11/MySQL使用查询缓存/" class="collection-item" target="_blank" itemprop="url">
+  <time datetime="2019-10-11T05:01:23.000Z" itemprop="datePublished">2019-10-11</time>
+  <span>&nbsp;&nbsp;&nbsp;</span> MySQL使用查询缓存
+</a>
 
-      
+
+              
+            </div>
+        </div>
     </div>
-    <div class="article-footer">
-      <blockquote class="mt-2x">
-  <ul class="post-copyright list-unstyled">
-    
-    <li class="post-copyright-link hidden-xs">
-      <strong>本文链接：</strong>
-      <a href="http://luxiaowan.github.io/2019/12/03/使用Docker构建自己的JDK容器/" title="使用Docker构建自己的JDK容器" target="_blank" rel="external">http://luxiaowan.github.io/2019/12/03/使用Docker构建自己的JDK容器/</a>
-    </li>
-    
-    <li class="post-copyright-license">
-      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
-    </li>
-  </ul>
-</blockquote>
-
-
-<div class="panel panel-default panel-badger">
-  <div class="panel-body">
-    <figure class="media">
-      <div class="media-left">
-        <a href="https://github.com/luxiaowan" target="_blank" class="img-burn thumb-sm visible-lg">
-          <img src="../../../../images/avatar.jpg" class="img-rounded w-full" alt="">
-        </a>
-      </div>
-      <div class="media-body">
-        <h3 class="media-heading"><a href="https://github.com/luxiaowan" target="_blank"><span class="text-dark">串一串</span><small class="ml-1x">浪人</small></a></h3>
-        <div>断舍离</div>
-      </div>
-    </figure>
-  </div>
 </div>
-
-
     </div>
   </article>
   
     
-  <section id="comments">
-  	
-  </section>
-
-
-  
-</div>
-
-  <nav class="bar bar-footer clearfix" data-stick-bottom>
-  <div class="bar-inner">
-  
-  <ul class="pager pull-left">
+    <nav class="bar bar-footer clearfix" data-stick-bottom>
+        <div class="bar-inner">
+        <ul class="pager pull-left">
+            
+            <li class="prev">
+                <a href="../../">
+                    <i class="icon icon-angle-left"></i>
+                    上一页
+                </a>
+            </li>
+            
+            
+            <li class="next disabled">
+                <a href="javascript:;">
+                    下一页
+                    <i class="icon icon-angle-right"></i>                    
+                </a>
+            </li>
+            
+        </ul>
+        <div class="total-article bar-right">Page 2 of 2</div>
+        </div>
+    </nav>
     
-    <li class="prev">
-      <a href="../Docker网络模式简讲/" title="Docker网络模式简讲"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
-    </li>
-    
-    
-    <li class="next">
-      <a href="../../02/Git常用命令/" title="Git常用命令"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
-    </li>
-    
-    
-  </ul>
-  
-  
-  
-  <div class="bar-right">
-    
-  </div>
-  </div>
-</nav>
-  
-
-
+ 
 </main>
 
   <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
@@ -572,14 +509,6 @@ window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
 
 
 
-   
-<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-
-
-
-
-
-   
 
 
 
