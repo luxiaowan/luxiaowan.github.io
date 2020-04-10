@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://luxiaowan.github.io/2020/04/10/Eureka%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E8%AF%A6%E8%A7%A3/</loc>
+    
+    <lastmod>2020-04-10T12:34:51.107Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://luxiaowan.github.io/2020/03/10/k8s%E4%B8%ADYAML%E6%96%87%E4%BB%B6%E8%A7%A3%E9%87%8A/</loc>
     
     <lastmod>2020-04-10T02:34:07.090Z</lastmod>
@@ -324,14 +331,14 @@
   </url>
   
   <url>
-    <loc>http://luxiaowan.github.io/2019/12/20/Nacos%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/</loc>
+    <loc>http://luxiaowan.github.io/2019/12/20/Docker%E5%AE%89%E8%A3%85phpmyadmin/</loc>
     
     <lastmod>2019-12-20T15:07:26.882Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://luxiaowan.github.io/2019/12/20/Docker%E5%AE%89%E8%A3%85phpmyadmin/</loc>
+    <loc>http://luxiaowan.github.io/2019/12/20/Nacos%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/</loc>
     
     <lastmod>2019-12-20T15:07:26.882Z</lastmod>
     
