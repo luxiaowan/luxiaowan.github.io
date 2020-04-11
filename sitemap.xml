@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://luxiaowan.github.io/2020/04/12/Consul%E5%BF%83%E8%B7%B3%E6%9C%BA%E5%88%B6/</loc>
+    
+    <lastmod>2020-04-11T18:21:03.310Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://luxiaowan.github.io/2020/04/11/Consul%E6%98%AF%E4%BB%80%E4%B9%88/</loc>
     
     <lastmod>2020-04-11T15:37:22.399Z</lastmod>
@@ -485,7 +492,7 @@
   </url>
   
   <url>
-    <loc>http://luxiaowan.github.io/2019/10/23/MongoDB%E5%9F%BA%E7%A1%80%E5%BA%94%E7%94%A8/</loc>
+    <loc>http://luxiaowan.github.io/2019/10/23/MongoDB%E8%BF%9E%E6%8E%A5%E6%8A%A5%E9%94%99java.lang.NoSuchFieldError-ACKNOWLEDGED/</loc>
     
     <lastmod>2019-10-24T13:20:12.764Z</lastmod>
     
@@ -499,7 +506,7 @@
   </url>
   
   <url>
-    <loc>http://luxiaowan.github.io/2019/10/23/MongoDB%E8%BF%9E%E6%8E%A5%E6%8A%A5%E9%94%99java.lang.NoSuchFieldError-ACKNOWLEDGED/</loc>
+    <loc>http://luxiaowan.github.io/2019/10/23/MongoDB%E5%9F%BA%E7%A1%80%E5%BA%94%E7%94%A8/</loc>
     
     <lastmod>2019-10-24T13:20:12.764Z</lastmod>
     
