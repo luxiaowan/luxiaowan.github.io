@@ -29,7 +29,7 @@
 <meta property="og:image" content="http://luxiaowan.github.io/images/image-20200411134658642.png">
 <meta property="og:image" content="http://luxiaowan.github.io/images/image-20200411134915369.png">
 <meta property="og:image" content="http://luxiaowan.github.io/images/image-20200411143623870.png">
-<meta property="og:updated_time" content="2020-04-11T06:57:12.925Z">
+<meta property="og:updated_time" content="2020-04-11T07:17:46.106Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Eureka集群搭建">
 <meta name="twitter:description" content="Eureka集群 Eureka是基于AP的分布式服务注册中心，集群中所有的Server节点都互为对方的备份，可以把所有的节点都看作是Master节点，也可以把所有的节点都看作是Slave节点，任一节点接收到新的服务注册请求后，都会在registry完成之后同步给其他的Server节点，续约操作renew和registry的逻辑一样。  当集群中一个Server节点宕机之后，Client会把自动切">
@@ -418,7 +418,7 @@
         <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
         
 	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 822(字)</span>
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 960(字)</span>
 	
 	
 		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 3(分)</span>
@@ -459,6 +459,8 @@
 <p><img src="/images/image-20200411143623870.png" alt="image-20200411143623870"></p>
 <p>当我们关闭掉其他Server节点，只留一个可用节点的时候，注册中心仍然可以提供服务。但如果我们在Client的defaultZone只设置一个节点的信息的话，那么在这个节点宕机之后，Client就找不到可以继续renew的节点了，最终整个集群都收不到这个Client的续约，在<code>lease-expiration-duration-in-seconds</code>之后，集群会将这个Client从服务列表移除，这损失可就太大了。</p>
 <p>所以应该把Server和Client节点的defaultZone要设置齐全。Client把所有Server节点都设置进来，Server节点也把所有的Server节点都设置进来。</p>
+<h3 id="集群参数"><a class="markdownIt-Anchor" href="#集群参数"></a> 集群参数</h3>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Eureka Server启动时，从远程Eureka Server读取不到注册信息时，多长时间不允许Client访问，默认5分钟</span></span><br><span class="line"><span class="attr">eureka.server.wait-time-in-ms-when-sync-empty</span></span><br><span class="line"><span class="comment"># Eureka Server 集群节点更新频率，单位：毫秒，默认10分钟</span></span><br><span class="line"><span class="attr">eureka.server.peer-eureka-nodes-update-interval-ms</span></span><br><span class="line"><span class="comment"># 初始化实例信息到Eureka服务端的间隔时间，单位为秒，默认40秒</span></span><br><span class="line"><span class="attr">eureka.client.initial-instance-info-replication-interval-seconds</span></span><br><span class="line"><span class="comment"># 更新实例信息的变化到Eureka服务端的间隔时间，单位为秒，默认30秒</span></span><br><span class="line"><span class="attr">eureka.client.instance-info-replication-interval-seconds</span></span><br></pre></td></tr></table></figure>
 
       
     </div>
