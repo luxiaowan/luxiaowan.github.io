@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://luxiaowan.github.io/"/>
-  <updated>2020-04-10T18:45:18.617Z</updated>
+  <updated>2020-04-11T06:57:12.925Z</updated>
   <id>http://luxiaowan.github.io/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Eureka集群搭建</title>
+    <link href="http://luxiaowan.github.io/2020/04/11/Eureka%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/"/>
+    <id>http://luxiaowan.github.io/2020/04/11/Eureka集群搭建/</id>
+    <published>2020-04-11T05:16:00.000Z</published>
+    <updated>2020-04-11T06:57:12.925Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="eureka集群"><a class="markdownIt-Anchor" href="#eureka集群"></a> Eureka集群</h3><p>Eureka是基于AP的分布式服务注册中心，集群中所有的Server节点都互为对方的备份，可以把所有的节点都看作是Master节点，也可以把所有的节点都看作是Slave节点，任一节点接收到新的服务注册请求后，都会在registry完成之后同步给其他的Server节点，续约操作renew和registry的逻辑一样。</p><img src="/images/image-20200411134658642.png" alt="image-20200411134658642" style="zoom:50%;"><p>当集群中一个Server节点宕机之后，Client会把自动切换到存活的节点，由于集群中的所有Server之间是相互同步的，所以各个Server节点之间的信息是相同的，除非是在一个Client刚注册到Server1还未同步给其他节点时宕机了，会造成信息不一致的情况，但当节点将续约请求发送给其他节点时，如果这个节点没有这个Client的信息，则会重新进行registry，并同步给集群中的其他节点。</p><img src="/images/image-20200411134915369.png" alt="image-20200411134915369" style="zoom:50%;"><p>因为Eureka集群是基于AP的，所以只要有一个Server节点可用，那么整个集群就是可用的，每一个Server节点都有一个server_id属性，当节点宕机后，会选择server_id值靠的最近的Server接收宕机节点的请求。</p><h3 id="搭建集群"><a class="markdownIt-Anchor" href="#搭建集群"></a> 搭建集群</h3><p>Eureka Server搭建很简单，最主要的就是节点配置文件的内容</p><ol><li>Eureka Server</li></ol><ul><li>peer1</li></ul><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line"><span class="attr">  port:</span> <span class="number">9001</span> <span class="comment">#服务端口</span></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line"><span class="attr">  instance:</span></span><br><span class="line"><span class="attr">    hostname:</span> <span class="string">peer1</span></span><br><span class="line"><span class="attr">  client:</span></span><br><span class="line"><span class="attr">    register-with-eureka:</span> <span class="literal">false</span> <span class="comment">#是否将eureka自身作为应用注册到eureka注册中心</span></span><br><span class="line"><span class="attr">    fetch-registry:</span> <span class="literal">false</span> <span class="comment">#为true时，可以启动，但报异常：Cannot execute request on any known server</span></span><br><span class="line"><span class="attr">    serviceUrl:</span></span><br><span class="line"><span class="attr">      defaultZone:</span> <span class="attr">http://peer2:9002/eureka/,http://peer3:9003/eureka/</span></span><br><span class="line"><span class="attr">  server:</span></span><br><span class="line"><span class="attr">    enable-self-preservation:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure><ul><li>peer2</li></ul><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line"><span class="attr">  port:</span> <span class="number">9002</span> <span class="comment">#服务端口</span></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line"><span class="attr">  instance:</span></span><br><span class="line"><span class="attr">    hostname:</span> <span class="string">peer2</span></span><br><span class="line"><span class="attr">  client:</span></span><br><span class="line"><span class="attr">    register-with-eureka:</span> <span class="literal">false</span> <span class="comment">#是否将eureka自身作为应用注册到eureka注册中心</span></span><br><span class="line"><span class="attr">    fetch-registry:</span> <span class="literal">false</span> <span class="comment">#为true时，可以启动，但报异常：Cannot execute request on any known server</span></span><br><span class="line"><span class="attr">    serviceUrl:</span></span><br><span class="line"><span class="attr">      defaultZone:</span> <span class="attr">http://peer1:9001/eureka/,http://peer3:9003/eureka/</span></span><br><span class="line"><span class="attr">  server:</span></span><br><span class="line"><span class="attr">    enable-self-preservation:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure><ul><li>peer3</li></ul><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line"><span class="attr">  port:</span> <span class="number">9003</span> <span class="comment">#服务端口</span></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line"><span class="attr">  instance:</span></span><br><span class="line"><span class="attr">    hostname:</span> <span class="string">peer3</span></span><br><span class="line"><span class="attr">  client:</span></span><br><span class="line"><span class="attr">    register-with-eureka:</span> <span class="literal">false</span> <span class="comment">#是否将eureka自身作为应用注册到eureka注册中心</span></span><br><span class="line"><span class="attr">    fetch-registry:</span> <span class="literal">false</span> <span class="comment">#为true时，可以启动，但报异常：Cannot execute request on any known server</span></span><br><span class="line"><span class="attr">    serviceUrl:</span></span><br><span class="line"><span class="attr">      defaultZone:</span> <span class="attr">http://peer1:9001/eureka/,http://peer2:9002/eureka/</span></span><br><span class="line"><span class="attr">  server:</span></span><br><span class="line"><span class="attr">    enable-self-preservation:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure><ol start="2"><li>Eureka Client</li></ol><figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">server.port</span>=<span class="string">7080</span></span><br><span class="line"><span class="meta">spring.application.name</span>=<span class="string">eureka-health</span></span><br><span class="line"><span class="meta">eureka.client.service-url.defaultZone</span>=<span class="string">http://127.0.0.1:9001/eureka/</span></span><br><span class="line"><span class="meta">eureka.instance.health-check-url-path</span>=<span class="string">/cc/health</span></span><br><span class="line"><span class="meta">eureka.instance.lease-renewal-interval-in-seconds</span>=<span class="string">5</span></span><br><span class="line"><span class="meta">eureka.instance.lease-expiration-duration-in-seconds</span>=<span class="string">15</span></span><br></pre></td></tr></table></figure><p>在客户端的defaultZone不论设置集群中的哪一个节点或哪几个节点，整个集群的所有节点都会有这个Client的注册信息，这就是因为Server节点的replicate功能。</p><p><img src="/images/image-20200411143623870.png" alt="image-20200411143623870"></p><p>当我们关闭掉其他Server节点，只留一个可用节点的时候，注册中心仍然可以提供服务。但如果我们在Client的defaultZone只设置一个节点的信息的话，那么在这个节点宕机之后，Client就找不到可以继续renew的节点了，最终整个集群都收不到这个Client的续约，在<code>lease-expiration-duration-in-seconds</code>之后，集群会将这个Client从服务列表移除，这损失可就太大了。</p><p>所以应该把Server和Client节点的defaultZone要设置齐全。Client把所有Server节点都设置进来，Server节点也把所有的Server节点都设置进来。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;eureka集群&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#eureka集群&quot;&gt;&lt;/a&gt; Eureka集群&lt;/h3&gt;
+&lt;p&gt;Eureka是基于AP的分布式服务注册中心，集群中所有的Server节点都互为对方的备份，可以把所有的节点都
+      
+    
+    </summary>
+    
+    
+      <category term="SpringBoot" scheme="http://luxiaowan.github.io/categories/SpringBoot/"/>
+    
+    
+      <category term="SpringCloud" scheme="http://luxiaowan.github.io/tags/SpringCloud/"/>
+    
+  </entry>
   
   <entry>
     <title>Eureka心跳检测</title>
@@ -400,31 +427,6 @@
   </entry>
   
   <entry>
-    <title>浅谈RPC</title>
-    <link href="http://luxiaowan.github.io/2020/04/02/%E6%B5%85%E8%B0%88RPC/"/>
-    <id>http://luxiaowan.github.io/2020/04/02/浅谈RPC/</id>
-    <published>2020-04-01T17:10:00.000Z</published>
-    <updated>2020-04-07T15:44:11.888Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h3><p>RPC是Remote Procedure Call的简称，译为远程过程调用，何为远程？就是从这个地方到另一个地方，也就是调用双方不在同一个进程或者不在同一台服务器上，由于双方不在一个内存空间中，所以需要借助网络来实现通信和数据传递。</p><h3 id="工作过程"><a class="markdownIt-Anchor" href="#工作过程"></a> 工作过程</h3><p>A服务器上的进程P1调用A服务器上的进程P2，或者A服务器上的进程P1调用B服务器上的P2，P1发起调用行为之后，进程被挂起，P2接收到请求之后开始执行，然后返回结果给P1，P1继续执行。P1可以使用参数将信息传递给P2，然后通过P2传回的消息得到结果。</p><p><img src="/images/45366c44f775abfd0ac3b43bccc1abc3_1440w.png" alt="img"></p><ol><li>Client function中像调用本地方法一样调用远程服务</li><li>Client stub接收到调用请求后，将方法、参数序列化</li><li>Client通过Socket将消息发送到远程服务</li><li>Server接收到消息后转发给Server stub，Server stub将消息进行解码（反序列化）</li><li>Server stub根据解码后的内容调用本地Server服务</li><li>Server执行完本地方法后，将执行结果返回给Server stub</li><li>Server stub将结果进行编码（序列化），然后传给Socket</li><li>然后通过Socket将消息发送给Client</li><li>Client接收到返回的消息后转发给Client stub，随之进行解码（反序列化）</li><li>Client接收到返回数据做最终处理</li></ol><p>以上就是一次RPC请求的全过程，整个RPC调用过程有同步和异步两种方式，同步也就是Client在接收到Server返回的消息之前一直将请求保持在运行中状态，例如IO和BIO；异步则是Client将请求发出去之后就将请求挂起，然后Server执行完后再发消息过来通知服务唤醒对应的请求继续处理，例如NIO和AIO。</p><h3 id="特点"><a class="markdownIt-Anchor" href="#特点"></a> 特点</h3><p>在RPC理论被提出时就被赋予了简单、高效、通用三个特点。</p><p>简单：RPC概念语义清晰，使建立分布式应用更加简单，服务之间调用方式简单</p><p>高效：过程调用使用起来很高效，会隐藏底层的通信细节，不需要我们之间去处理Socket通信</p><p>通用：RPC是一个请求响应模型，调用双方可以使用不同的编程语言去实现，选择合适的序列化方式即可</p><p>简单点说，就是RPC能够使我们像调用本地方法一样去调用远程方法，并且调用者不需要知道远程服务到底部署在何处，达到像傻子一样去编程。</p><h3 id="序列化"><a class="markdownIt-Anchor" href="#序列化"></a> 序列化</h3><p>在说到RPC调用过程的时候，有反复的提到序列化和反序列化，RPC支持的数据序列化方式有Java序列化、JSON、Hessian、Kryo等，还有我们很早之前WebService常用的XML。</p><ul><li>JSON：<ul><li>可读性较高</li><li>无法表示数据内的引用关系</li><li>统一JSON字段命名规范较困难</li></ul></li><li>Hessian二进制<ul><li>几乎无可读性而言</li><li>支持的语言不够多，比如直接忽略了对js的支持</li><li>二进制兼容性较高</li><li>二进制传输速度比XML、JSON快</li></ul></li></ul><h3 id="rpc框架"><a class="markdownIt-Anchor" href="#rpc框架"></a> RPC框架</h3><ul><li><p>Dubbo</p><p>阿里研发的，后由当当网扩展出了Dubbox，阿里的已经不维护了，现在丢给Apache了</p></li><li><p>Feign</p><p>Netflix的一套，由Spring Cloud拓展出来了一套轻量级的，很好的融合于Spring Cloud，微服务中还是常用的，适用于Java</p></li><li><p>gRPC</p><p>谷歌的一套RPC框架，基于HTTP/2 协议传输，在多语言服务之间交互时常被采用</p></li><li><p>Java RMI</p><p>较古老的一款RPC框架，仅适用于Java程序，无法跨语言，用起来也不方便</p></li><li><p>Thrift</p><p>Facebook开源的一套RPC框架，它主要是一种接口描述语言和二进制通信协议，跨语言协作，现在丢给Apache了</p></li><li><p>SOAP</p><p>由XML-RPC演变而来，不常用，老项目里可能会用到</p></li></ul>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h3 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;&lt;/a&gt; 前言&lt;/h3&gt;
-&lt;p&gt;RPC是Remote Procedure Call的简称，译为远程过程调用，何为远程？就是从这个地方到另一个地方，也就是调用双方不在同一个进程或
-      
-    
-    </summary>
-    
-    
-      <category term="分布式" scheme="http://luxiaowan.github.io/categories/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
-    
-    
-  </entry>
-  
-  <entry>
     <title>聊一聊SPI</title>
     <link href="http://luxiaowan.github.io/2020/04/02/%E8%81%8A%E4%B8%80%E8%81%8ASPI/"/>
     <id>http://luxiaowan.github.io/2020/04/02/聊一聊SPI/</id>
@@ -439,6 +441,31 @@
       
         &lt;h3 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;&lt;/a&gt; 前言&lt;/h3&gt;
 &lt;p&gt;SPI全称是Service Provider Interface，是一种服务发现机制（哎，服务发现机制？和Zookeeper什么关系？）。SPI
+      
+    
+    </summary>
+    
+    
+      <category term="分布式" scheme="http://luxiaowan.github.io/categories/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>浅谈RPC</title>
+    <link href="http://luxiaowan.github.io/2020/04/02/%E6%B5%85%E8%B0%88RPC/"/>
+    <id>http://luxiaowan.github.io/2020/04/02/浅谈RPC/</id>
+    <published>2020-04-01T17:10:00.000Z</published>
+    <updated>2020-04-07T15:44:11.888Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h3><p>RPC是Remote Procedure Call的简称，译为远程过程调用，何为远程？就是从这个地方到另一个地方，也就是调用双方不在同一个进程或者不在同一台服务器上，由于双方不在一个内存空间中，所以需要借助网络来实现通信和数据传递。</p><h3 id="工作过程"><a class="markdownIt-Anchor" href="#工作过程"></a> 工作过程</h3><p>A服务器上的进程P1调用A服务器上的进程P2，或者A服务器上的进程P1调用B服务器上的P2，P1发起调用行为之后，进程被挂起，P2接收到请求之后开始执行，然后返回结果给P1，P1继续执行。P1可以使用参数将信息传递给P2，然后通过P2传回的消息得到结果。</p><p><img src="/images/45366c44f775abfd0ac3b43bccc1abc3_1440w.png" alt="img"></p><ol><li>Client function中像调用本地方法一样调用远程服务</li><li>Client stub接收到调用请求后，将方法、参数序列化</li><li>Client通过Socket将消息发送到远程服务</li><li>Server接收到消息后转发给Server stub，Server stub将消息进行解码（反序列化）</li><li>Server stub根据解码后的内容调用本地Server服务</li><li>Server执行完本地方法后，将执行结果返回给Server stub</li><li>Server stub将结果进行编码（序列化），然后传给Socket</li><li>然后通过Socket将消息发送给Client</li><li>Client接收到返回的消息后转发给Client stub，随之进行解码（反序列化）</li><li>Client接收到返回数据做最终处理</li></ol><p>以上就是一次RPC请求的全过程，整个RPC调用过程有同步和异步两种方式，同步也就是Client在接收到Server返回的消息之前一直将请求保持在运行中状态，例如IO和BIO；异步则是Client将请求发出去之后就将请求挂起，然后Server执行完后再发消息过来通知服务唤醒对应的请求继续处理，例如NIO和AIO。</p><h3 id="特点"><a class="markdownIt-Anchor" href="#特点"></a> 特点</h3><p>在RPC理论被提出时就被赋予了简单、高效、通用三个特点。</p><p>简单：RPC概念语义清晰，使建立分布式应用更加简单，服务之间调用方式简单</p><p>高效：过程调用使用起来很高效，会隐藏底层的通信细节，不需要我们之间去处理Socket通信</p><p>通用：RPC是一个请求响应模型，调用双方可以使用不同的编程语言去实现，选择合适的序列化方式即可</p><p>简单点说，就是RPC能够使我们像调用本地方法一样去调用远程方法，并且调用者不需要知道远程服务到底部署在何处，达到像傻子一样去编程。</p><h3 id="序列化"><a class="markdownIt-Anchor" href="#序列化"></a> 序列化</h3><p>在说到RPC调用过程的时候，有反复的提到序列化和反序列化，RPC支持的数据序列化方式有Java序列化、JSON、Hessian、Kryo等，还有我们很早之前WebService常用的XML。</p><ul><li>JSON：<ul><li>可读性较高</li><li>无法表示数据内的引用关系</li><li>统一JSON字段命名规范较困难</li></ul></li><li>Hessian二进制<ul><li>几乎无可读性而言</li><li>支持的语言不够多，比如直接忽略了对js的支持</li><li>二进制兼容性较高</li><li>二进制传输速度比XML、JSON快</li></ul></li></ul><h3 id="rpc框架"><a class="markdownIt-Anchor" href="#rpc框架"></a> RPC框架</h3><ul><li><p>Dubbo</p><p>阿里研发的，后由当当网扩展出了Dubbox，阿里的已经不维护了，现在丢给Apache了</p></li><li><p>Feign</p><p>Netflix的一套，由Spring Cloud拓展出来了一套轻量级的，很好的融合于Spring Cloud，微服务中还是常用的，适用于Java</p></li><li><p>gRPC</p><p>谷歌的一套RPC框架，基于HTTP/2 协议传输，在多语言服务之间交互时常被采用</p></li><li><p>Java RMI</p><p>较古老的一款RPC框架，仅适用于Java程序，无法跨语言，用起来也不方便</p></li><li><p>Thrift</p><p>Facebook开源的一套RPC框架，它主要是一种接口描述语言和二进制通信协议，跨语言协作，现在丢给Apache了</p></li><li><p>SOAP</p><p>由XML-RPC演变而来，不常用，老项目里可能会用到</p></li></ul>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;&lt;/a&gt; 前言&lt;/h3&gt;
+&lt;p&gt;RPC是Remote Procedure Call的简称，译为远程过程调用，何为远程？就是从这个地方到另一个地方，也就是调用双方不在同一个进程或
       
     
     </summary>
@@ -528,31 +555,6 @@
     
     
       <category term="Spring" scheme="http://luxiaowan.github.io/categories/Spring/"/>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>TCP三次握手和四次挥手</title>
-    <link href="http://luxiaowan.github.io/2020/03/29/TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%92%8C%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B/"/>
-    <id>http://luxiaowan.github.io/2020/03/29/TCP三次握手和四次挥手/</id>
-    <published>2020-03-29T12:20:00.000Z</published>
-    <updated>2020-03-29T15:32:38.853Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="简介"><a class="markdownIt-Anchor" href="#简介"></a> 简介</h3><p>传输控制协议(Transmission Control Protocol，简称TCP)是一种面向连接的、可靠的、基于字节流的传输层通信协议，应用层向TCP层发送用于网间传输的用8位字节表示的数据流，TCP将数据流做分隔处理后透传给IP层，然后由IP层将数据传输给目标端TCP层。</p><p>TCP为保证不发生丢包，会对所有的包进行编号，接收端依据编号按序接收，全部数据包接收完成后按序号进行合并，这里可能会发生粘包、拆包的问题(暂不介绍)。接收端在每次接收到数据包的时候都会返回给发送端一个确认信息(ACK)，若发送端在一定时间内未接收到ACK信息，则主观认为数据发送失败或数据丢失，会重新发送丢失序号的包。</p><h3 id="三次握手"><a class="markdownIt-Anchor" href="#三次握手"></a> 三次握手</h3><p>TCP在发送数据之前，需要先建立连接，客户端主动，TCP使用三次握手的方式建立连接，三次握手的意思就是客户端和服务端进行三次通信，三次握手的目的是为了确认通信双方的发送和接收能力是否正常。主要过程：</p><img src="/images/tcp_connect.png" alt="tcp_connect" style="zoom:67%;"><ul><li><p>第一次握手：客户端：服务端，我想要向你发送数据</p><ul><li>客户端向服务端发送一个SYN包，并指明客户端的初始化序列号ISN，随后客户端进入SYN_SEND状态。</li><li>同部位SYN=1，初始序列号seq=x，此报文不能携带任何的数据，却会消耗掉一个序列号</li></ul></li><li><p>第二次握手：服务端：客户端，我准备好了，你可以把数据发过来了</p><ul><li>服务端接收到客户端发送的消息，需要返回一个SYN/ACK包进行响应，否则客户端会以为消息跑丢了造成重发，SYN/ACK以服务端的为准，SYN=1, ACK=x+1</li><li>服务端响应消息也属于是一次通信，所以服务端需要将自己的序列号放入到报文中携带给客户端，初始化序列号seq=y</li><li>总的响应报文：SYN=1 ACK=x+1 seq=y</li><li>服务端进入SYN_RECV状态</li></ul></li><li><p>第三次握手：客户端：服务端，我知道了，敌人还有三秒到达战场</p><ul><li>客户端接收到服务端的响应之后，要告诉服务端老子收到你的响应了，不要以为消息丢了，等着接收数据吧您嘞</li><li>这次握手等于是服务端响应的翻版，报文包括ACK=y+1 seq=x+1</li><li>客户端和服务端均进入ESTABLISHED（TCP连接成功）状态</li></ul></li></ul><blockquote><p>为什么使用三次握手，两次是否可以？</p><p>*** 之所以进行三次握手，是保证客户端和服务端均可以进行一次发送、接收和发送接收反馈，目的是让客户端和服务端各自确认自己的发送和接收能力都正常**</p></blockquote><h3 id="四次挥手"><a class="markdownIt-Anchor" href="#四次挥手"></a> 四次挥手</h3><p>TCP发送完数据之后，需要将连接断开，当然断开连接的也需要客户端主动发起，因为数据是否发送完毕只有发送者知道。断开连接需要通过四次挥手(也可以叫四次握手)来保证合理性。</p><img src="/images/tcp_disconnect.png" alt="tcp_disconnect" style="zoom:67%;"><ul><li>第一次挥手：客户端：我数据发送完了，可以断开连接了，我先进入准备断开状态<ul><li>客户端发送完数据之后，向服务端发送断开请求报文，FIN=1 seq=u</li><li>客户端进入FIN-WAIT-1状态，等待服务端的响应</li><li>表示客户端没有数据要发给服务端了</li></ul></li><li>第二次挥手：服务端：我收到了，我同意你的请求，但我要看下我是否还有数据尚在发送，你等会<ul><li>服务端接收到客户端的断开请求之后，根据序列号进行反馈，ACK=1 seq=v ack=u+1</li><li>服务端反馈之后进入CLOSE-WAIT状态，客户端接收到反馈之后进入FIN-WAIT-2状态，等待服务端的确认断开请求</li></ul></li><li>第三次挥手：服务端：我的数据也都发完了，可以断开了<ul><li>服务端再处理完自己的事情之后，向客户端发送确认断开报文，FIN=1 ACK=1 seq=w ack=u+1</li><li>这里的ack=u+1，发现和第二次挥手时候的ack一模一样，这也就是和客户端的断开请求对应起来，否则把别的给断开了岂不是很尴尬</li><li>服务端进入LAST-ACK状态，等待客户端的回应</li></ul></li><li>第四次挥手：客户端：我知道了，断开<ul><li>客户端接收到确认断开报文后，向服务端反馈断开报文，ACK=1 seq=u+1 ack=w+1</li><li>服务端接收到反馈后关闭连接</li><li>客户端等待2MSL后关闭连接</li></ul></li></ul><p>看一个官方描述图片：</p><img src="/images/tcp_disconnect.jpg" alt="tcp_disconnect" style="zoom:75%;"><h5 id="为什么要等待2msl"><a class="markdownIt-Anchor" href="#为什么要等待2msl"></a> 为什么要等待2MSL</h5><ul><li><p>目的是防止ACK消息丢失，服务端重发消息后可以再次接收并反馈；</p></li><li><p>如果在第三次挥手反馈后客户端立刻关闭，如果反馈报文丢失，那么服务端可能就会一直处于重发第三次挥手的报文中，服务端将无法正常进入关闭状态</p></li><li><p>如果第四次挥手的报文丢失，服务端会再次发送确认关闭消息，客户端重新等待2MSL</p></li></ul>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h3 id=&quot;简介&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#简介&quot;&gt;&lt;/a&gt; 简介&lt;/h3&gt;
-&lt;p&gt;传输控制协议(Transmission Control Protocol，简称TCP)是一种面向连接的、可靠的、基于字节流的传输层通信协议，应用
-      
-    
-    </summary>
-    
-    
-      <category term="杂谈" scheme="http://luxiaowan.github.io/categories/%E6%9D%82%E8%B0%88/"/>
     
     
   </entry>
