@@ -17,20 +17,26 @@
   <meta http-equiv="window-target" content="_top">
   
   
-  <title>运行Jar包时指定启动端口 | 串一串</title>
-  <meta name="description" content="java -jar xxx.jar --server.port=9090  –server.port一定要在最后">
+  <title>Consul是什么 | 串一串</title>
+  <meta name="description" content="前言 Consul是一个基于CP的轻量级分布式高可用的系统，提供服务发现、健康检查、K-V存储、多数据中心等功能，不需要再依赖其他组件(Zk、Eureka、Etcd等)。  服务发现：Consul可以提供一个服务，比如api或者MySQL之类的，其他客户端可以使用Consul发现一个指定的服务提供者，并通过DNS和HTTP应用程序可以很容易的找到所依赖的服务。 健康检查：Consul客户端提供相">
+<meta name="keywords" content="SpringCloud">
 <meta property="og:type" content="article">
-<meta property="og:title" content="运行Jar包时指定启动端口">
-<meta property="og:url" content="http://luxiaowan.github.io/2020/04/02/运行jar包时指定启动端口/index.html">
+<meta property="og:title" content="Consul是什么">
+<meta property="og:url" content="http://luxiaowan.github.io/2020/04/11/Consul是什么/index.html">
 <meta property="og:site_name" content="串一串">
-<meta property="og:description" content="java -jar xxx.jar --server.port=9090  –server.port一定要在最后">
+<meta property="og:description" content="前言 Consul是一个基于CP的轻量级分布式高可用的系统，提供服务发现、健康检查、K-V存储、多数据中心等功能，不需要再依赖其他组件(Zk、Eureka、Etcd等)。  服务发现：Consul可以提供一个服务，比如api或者MySQL之类的，其他客户端可以使用Consul发现一个指定的服务提供者，并通过DNS和HTTP应用程序可以很容易的找到所依赖的服务。 健康检查：Consul客户端提供相">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-04-02T13:32:00.255Z">
+<meta property="og:image" content="http://luxiaowan.github.io/images/consul-arch-420ce04a.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/consol_service.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/raft-status.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200411225129805.png">
+<meta property="og:updated_time" content="2020-04-11T15:37:22.399Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="运行Jar包时指定启动端口">
-<meta name="twitter:description" content="java -jar xxx.jar --server.port=9090  –server.port一定要在最后">
+<meta name="twitter:title" content="Consul是什么">
+<meta name="twitter:description" content="前言 Consul是一个基于CP的轻量级分布式高可用的系统，提供服务发现、健康检查、K-V存储、多数据中心等功能，不需要再依赖其他组件(Zk、Eureka、Etcd等)。  服务发现：Consul可以提供一个服务，比如api或者MySQL之类的，其他客户端可以使用Consul发现一个指定的服务提供者，并通过DNS和HTTP应用程序可以很容易的找到所依赖的服务。 健康检查：Consul客户端提供相">
+<meta name="twitter:image" content="http://luxiaowan.github.io/images/consul-arch-420ce04a.png">
   <!-- Canonical links -->
-  <link rel="canonical" href="http://luxiaowan.github.io/2020/04/02/运行jar包时指定启动端口/index.html">
+  <link rel="canonical" href="http://luxiaowan.github.io/2020/04/11/Consul是什么/index.html">
   
     <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
   
@@ -234,7 +240,7 @@
           <li>
             
             <div class="item-thumb">
-              <a href="../../11/Consul是什么/" class="thumb">
+              <a href="" class="thumb">
     
     
         <span class="thumb-image thumb-none"></span>
@@ -248,7 +254,7 @@
                 <a class="category-link" href="../../../../categories/SpringBoot/">SpringBoot</a>
               </p>
               <p class="item-title">
-                <a href="../../11/Consul是什么/" class="title">Consul是什么</a>
+                <a href="" class="title">Consul是什么</a>
               </p>
               <p class="item-date">
                 <time datetime="2020-04-11T07:32:00.000Z" itemprop="datePublished">2020-04-11</time>
@@ -259,7 +265,7 @@
           <li>
             
             <div class="item-thumb">
-              <a href="../../11/Eureka集群搭建/" class="thumb">
+              <a href="../Eureka集群搭建/" class="thumb">
     
     
         <span class="thumb-image thumb-none"></span>
@@ -273,7 +279,7 @@
                 <a class="category-link" href="../../../../categories/SpringBoot/">SpringBoot</a>
               </p>
               <p class="item-title">
-                <a href="../../11/Eureka集群搭建/" class="title">Eureka集群搭建</a>
+                <a href="../Eureka集群搭建/" class="title">Eureka集群搭建</a>
               </p>
               <p class="item-date">
                 <time datetime="2020-04-11T05:16:00.000Z" itemprop="datePublished">2020-04-11</time>
@@ -369,14 +375,14 @@
   
 <main class="main" role="main">
   <div class="content">
-  <article id="post-运行jar包时指定启动端口" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+  <article id="post-Consul是什么" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
     
     <div class="article-header">
       
         
   
     <h1 class="article-title" itemprop="name">
-      运行Jar包时指定启动端口
+      Consul是什么
     </h1>
   
 
@@ -385,16 +391,21 @@
         <span class="article-date">
     <i class="icon icon-calendar-check"></i>
 	<a href="" class="article-date">
-	  <time datetime="2020-04-02T13:30:00.000Z" itemprop="datePublished">2020-04-02</time>
+	  <time datetime="2020-04-11T07:32:00.000Z" itemprop="datePublished">2020-04-11</time>
 	</a>
 </span>
         
   <span class="article-category">
     <i class="icon icon-folder"></i>
-    <a class="article-category-link" href="../../../../categories/Java/">Java</a>
+    <a class="article-category-link" href="../../../../categories/SpringBoot/">SpringBoot</a>
   </span>
 
         
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="../../../../tags/SpringCloud/">SpringCloud</a>
+  </span>
+
 
         
 	<span class="article-read hidden-xs">
@@ -408,20 +419,132 @@
         <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
         
 	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 15(字)</span>
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 2.1k(字)</span>
 	
 	
-		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 1(分)</span>
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 7(分)</span>
 	
 
       </div>
     </div>
     <div class="article-entry marked-body" itemprop="articleBody">
       
-        <p>java -jar xxx.jar --server.port=9090</p>
-<blockquote>
-<p>–server.port一定要在最后</p>
-</blockquote>
+        <h3 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h3>
+<p>Consul是一个基于CP的轻量级分布式高可用的系统，提供服务发现、健康检查、K-V存储、多数据中心等功能，不需要再依赖其他组件(Zk、Eureka、Etcd等)。</p>
+<ul>
+<li>服务发现：Consul可以提供一个服务，比如api或者MySQL之类的，其他客户端可以使用Consul发现一个指定的服务提供者，并通过DNS和HTTP应用程序可以很容易的找到所依赖的服务。</li>
+<li>健康检查：Consul客户端提供相应的健康检查接口，Consul服务端通过调用健康检查接口检测客户端是否正常</li>
+<li>K-V存储：客户端可以使用Consul层级的Key/Value存储，比如动态配置,功能标记,协调,领袖选举等等</li>
+<li>多数据中心：Consul支持开箱即用的多数据中心</li>
+</ul>
+<h3 id="架构介绍"><a class="markdownIt-Anchor" href="#架构介绍"></a> 架构介绍</h3>
+<img src="/images/consul-arch-420ce04a.png" alt="Consul Architecture" style="zoom: 30%;">
+<p>看得出一个Consul集群是由N个Server和M个Client节点组成的。</p>
+<ul>
+<li>Client节点：使用的client模式，该模式下可以接收服务的注册请求，但是会把请求转发给Server节点，自身不做处理，并且不持久化在本地</li>
+<li>Server节点：使用server模式，处理注册请求，将注册信息持久化到本地，用作故障恢复。
+<ul>
+<li>Server节点分为Leader和Follower两个身份，Leader负责监控Follower，同步注册信息给所有的Follower，一个集群中只能有一个Leader</li>
+<li>Server之间通过RPC消息通信，Follower不会主动发起RPC请求，只会有Leader或选举时的Candidate主动发起</li>
+<li>Follower节点接收到RPC请求后，会将请求转发给Leader节点，由Leader节点处理后进行相应的ACK，请求分为事务型和非事务型，非事务型的请求由Leader节点直接响应，事务型的请求</li>
+<li>集群一般推荐3或5个节点比较合适，因为Raft选举时，4和3、5和6的结果是一样的</li>
+</ul>
+</li>
+</ul>
+<h4 id="gossip是什么"><a class="markdownIt-Anchor" href="#gossip是什么"></a> Gossip是什么</h4>
+<p>从架构图中发现有一个Gossip，一个DC中涵盖了两个Gossip池，LAN池和WAN池，为什么会有Gossip，因为Consul是建立在Serf基础之上的，Gossip由Serf提供，Gossip是一个去中心化的协议。Consul中用Gossip维护节点关系，告知当前节点集群中还有哪些节点，其他节点的身份，是Follower还是Leader。</p>
+<ul>
+<li>LAN Gossip：局域网内唯一，LAN池是用于局域网内的节点消息广播，Consul的Client和Server节点全部都在LAN池中，LAN池中的客户端可以自动发现服务器，不需要进行过多的配置，LAN池能保证快速可靠的消息传播，比如Leader选举。</li>
+<li>WAN Gossip：WAN是全局唯一的，无论属于哪一个DC，所有Server应该加入到WAN中，由WAN提供信息让Server节点可以执行跨数据中心的请求。</li>
+</ul>
+<h3 id="工作原理"><a class="markdownIt-Anchor" href="#工作原理"></a> 工作原理</h3>
+<img src="/images/consol_service.png" alt="consol_service" style="zoom:75%;">
+<ol>
+<li>Producer启动之后，会向Consul注册中心发送一个POST请求，上报自己的id、name、ip、port、健康检查接口、心跳频率等信息</li>
+<li>Consul接收到Producer上报的信息之后，根据上报的心跳频率和健康检查接口对Producer进行健康检查，检验Producer是否健康</li>
+<li>Consumer启动之后，会从Consul拉取Producer的列表缓存在本地，后续的请求都会从本地选举发出，使用RestTemplate发出请求的时候，每次都会从Consul同步一下服务者信息。</li>
+</ol>
+<h3 id="leader选举"><a class="markdownIt-Anchor" href="#leader选举"></a> Leader选举</h3>
+<p>一个DC可以有多个Server，但是只能有一个Leader，Leader基于Raft算法进行选举，在Leader选举过程中，整个集群都无法对外提供服务。</p>
+<p>节点的身份有Follower、Candidate、Leader三种，所有的节点在初始化的时候都为Follower，节点加入到LAN Gossip池后，由Raft协议的Leader-Follower模式进行Leader选举。</p>
+<p><img src="/images/raft-status.png" alt="Raft状态变更"></p>
+<ul>
+<li>
+<p>概念</p>
+<ul>
+<li>Leader：集群中仅有一个，处理客户端所有的请求，遇到事务型的请求时会在本地处理后再生成同步日志，由Gossip通知到各个Follower节点进行同步</li>
+<li>Follower：所有节点的初始状态，正常集群中可以有多个Follower，不处理任何请求也不发送任何请求，只响应来自Leader和Candidate的请求，当接收到客户端发来的请求时会自动将请求转发给Leader节点处理</li>
+<li>Candidate：Follower超过选举器时都未收到来自Leader的心跳时，自动转换身份为Candidate，并根据Raft算法执行新一轮的Leader选举</li>
+<li>Election Time(选举超时时间)：每一个节点都维护着自己的选举计时器，这个计时器的值需要大于心跳间隔，Follower收到Leader的心跳请求后会重置选举计时器，如果这个计时器归零了，则将节点身份转换为Candidate，并向其他节点发送投票。设置选举计时器主要是为了防止因为网络抖动等问题而引起心跳消息丢失，不然可能一旦心跳丢失了就立刻进入选举</li>
+<li>Heart time(心跳超时时间)：Leader向Follower发送心跳的时间间隔</li>
+<li>Term(任期)：任期是一个全局递增的数字，没进行一次选举，任期数就+1，每个节点都记录该值</li>
+</ul>
+</li>
+<li>
+<p>Raft算法</p>
+<p>Raft是一个共识算法，也就是当大多数对某个事情都赞同的情况下执行该事情，主要为解决分布式一致性的问题。Raft算法是从Paxos的理论演变而来，Raft把问题分解成领导选举、日志复制、安全和成员变化</p>
+<ul>
+<li>领导选举：集群中必须存在一个Leader节点</li>
+<li>日志复制：Leader节点接收并处理客户端的请求，然后将这些请求序列化成日志再同步到集群中的其他节点</li>
+<li>安全性：已经被Raft状态机记录过的数据，就不能被再次输入到Raft状态机中</li>
+</ul>
+</li>
+<li>
+<p>Leader选举过程</p>
+<ul>
+<li>
+<p>选举过程</p>
+<p>在节点刚开始启动时，初始状态是Follower状态。一个Follower状态的节点，只要一直收到来自Leader或者Candidate的正确RPC消息的话，将一直保持在Follower状态。Leader节点通过周期性的发送心跳请求（一般使用带有空数据的AppendEntries RPC来进行心跳）来维持着Leader节点状态。每个Follower同时还有一个选举超时（Election timeout）定时器，如果在这个定时器超时之前都没有收到来自Leader的心跳请求，那么Follower将认为当前集群中没有Leader了，将发起一次新的选举。</p>
+<p>发起选举时，Follower将递增它的任期号然后切换到Candidate状态。然后通过向集群中其它节点发送RequestVote RPC请求来发起一次新的选举，一个节点将保持在该任期内的Candidate状态下。</p>
+</li>
+<li>
+<p>选举过程中可能遇到的问题</p>
+<ul>
+<li>
+<p>该Candidate节点收到超过半数以上集群中其它节点的投票赢得选举</p>
+<p>如果Candidate节点收到了集群中半数以上节点的投票，那么此Candidate节点将成为新的Leader。每个节点在一个任期中只能给一个节点投票，而且遵守“先来后到”的原则，这样就保证每个任期最多只有一个节点会赢得选举成为leader。</p>
+</li>
+<li>
+<p>收到任期号比当前节点任期号不一致的请求</p>
+<ul>
+<li>比当前节点任期号小：说明当前集群已经进入了下一轮选举，则自动拒绝收到的请求，继续保持在Candidate状态</li>
+<li>比当前节点任期号大：说明集群中已经存在了Leader，节点从Candidate切换到Follower</li>
+</ul>
+</li>
+<li>
+<p>选举后没有任何一个节点成为Leader</p>
+<p>本次选举未选举出Leader，则将集群中的任期号+1，再次进行选举</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="springcloud使用consul"><a class="markdownIt-Anchor" href="#springcloud使用consul"></a> SpringCloud使用Consul</h3>
+<ol>
+<li>
+<p>安装并启动Consul Server</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./consul agent -dev</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>创建SpringCloud项目</p>
+<ul>
+<li>服务提供方</li>
+</ul>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">server.port</span>=<span class="string">7702</span></span><br><span class="line"><span class="meta">spring.application.name</span>=<span class="string">consul-demo</span></span><br><span class="line"><span class="meta">spring.cloud.consul.host</span>=<span class="string">127.0.0.1</span></span><br><span class="line"><span class="meta">spring.cloud.consul.port</span>=<span class="string">8500</span></span><br><span class="line"><span class="meta">spring.cloud.consul.discovery.health-check-path</span>=<span class="string">/health</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@GetMapping</span>(<span class="string">"/health"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">health</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  System.out.println(<span class="string">"----health check----"</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="string">"hello consul"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>服务调用方</li>
+</ul>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">server.port</span>=<span class="string">18090</span></span><br><span class="line"><span class="meta">spring.application.name</span>=<span class="string">consul-demo-client</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@LoadBalanced</span></span><br><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> RestTemplate <span class="title">restTemplate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> RestTemplate();</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@Resource</span></span><br><span class="line"><span class="keyword">private</span> RestTemplate restTemplate;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"/hello"</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">hello</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> restTemplate.getForObject(<span class="string">"http://consul-demo/health"</span>, String.class);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>两个项目启动后，查看服务注册情况：<a href="http://127.0.0.1:8500/" target="_blank" rel="noopener">http://127.0.0.1:8500/</a></li>
+</ul>
+<p><img src="/images/image-20200411225129805.png" alt="image-20200411225129805"></p>
+<p>访问接口测试：<a href="http://127.0.0.1:18090/hello" target="_blank" rel="noopener">http://127.0.0.1:18090/hello</a></p>
+</li>
+</ol>
 
       
     </div>
@@ -431,7 +554,7 @@
     
     <li class="post-copyright-link hidden-xs">
       <strong>本文链接：</strong>
-      <a href="http://luxiaowan.github.io/2020/04/02/运行jar包时指定启动端口/" title="运行Jar包时指定启动端口" target="_blank" rel="external">http://luxiaowan.github.io/2020/04/02/运行jar包时指定启动端口/</a>
+      <a href="http://luxiaowan.github.io/2020/04/11/Consul是什么/" title="Consul是什么" target="_blank" rel="external">http://luxiaowan.github.io/2020/04/11/Consul是什么/</a>
     </li>
     
     <li class="post-copyright-license">
@@ -475,13 +598,9 @@
   
   <ul class="pager pull-left">
     
-    <li class="prev">
-      <a href="../../07/Java获取项目中的文件/" title="Java获取项目中的文件"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
-    </li>
-    
     
     <li class="next">
-      <a href="../聊一聊SPI/" title="聊一聊SPI"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+      <a href="../Eureka集群搭建/" title="Eureka集群搭建"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
     </li>
     
     
