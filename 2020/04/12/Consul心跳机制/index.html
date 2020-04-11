@@ -28,7 +28,7 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://luxiaowan.github.io/images/image-20200412013415372.png">
 <meta property="og:image" content="http://luxiaowan.github.io/images/image-20200412020911482.png">
-<meta property="og:updated_time" content="2020-04-11T18:21:03.310Z">
+<meta property="og:updated_time" content="2020-04-11T18:25:09.519Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Consul心跳机制">
 <meta name="twitter:description" content="前言 我们知道Eureka是通过Client向Server发送renew通知来续命，属于是&amp;quot;去中心化&amp;quot;的设计，而Consul是&amp;quot;中心化&amp;quot;设计，Consul的心跳由Server端发起  Consul心跳 Client在注册到Consul Server的时候(ConsulServiceRegistry#register)，会将客户端的注册信息全部发送给注册中心">
@@ -417,7 +417,7 @@
         <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
         
 	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 786(字)</span>
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 784(字)</span>
 	
 	
 		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 3(分)</span>
@@ -440,7 +440,6 @@
 <p>默认情况下Consul会每隔10秒，通过一个HTTP接口<code>/health</code>来检测节点的健康情况。 如果健康检测失败，那服务实例就会被标记成critical，可以通过在检查定义中指定超时字段来配置自定义HTTP检查超时值，检查的输出限制在大约4KB，大于此值的响应将被截断，会被认为健康检查未通过。</p>
 <blockquote>
 <p>spring.cloud.consul.discovery.prefer-ip-address参数决定上报给注册中心的健康接口是IP还是hostname</p>
-<p>构建</p>
 </blockquote>
 <ul>
 <li>
