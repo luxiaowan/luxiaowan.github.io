@@ -25,7 +25,7 @@
 <meta property="og:site_name" content="串一串">
 <meta property="og:description" content="前言 一个MySQL服务和一个Redis服务，用户的数据存储持久化在MySQL中，缓存在Redis中，有请求的时候从Redis中获取缓存的用户数据，有修改则同时修改MySQL和Redis中的数据。现在问题是：不论是先保存到MySQL还是Redis，都面临着此成功彼失败的情况，那么如何保证MySQL与Redis中的数据一致？  数据一致性 数据一致性主要出现在使用不同存储组件的情况下，存储组件之间">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-04-12T14:50:06.176Z">
+<meta property="og:updated_time" content="2020-04-12T14:50:23.244Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Redis和MySQL分布式双写一致性">
 <meta name="twitter:description" content="前言 一个MySQL服务和一个Redis服务，用户的数据存储持久化在MySQL中，缓存在Redis中，有请求的时候从Redis中获取缓存的用户数据，有修改则同时修改MySQL和Redis中的数据。现在问题是：不论是先保存到MySQL还是Redis，都面临着此成功彼失败的情况，那么如何保证MySQL与Redis中的数据一致？  数据一致性 数据一致性主要出现在使用不同存储组件的情况下，存储组件之间">
@@ -403,7 +403,7 @@
         <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
         
 	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 925(字)</span>
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 922(字)</span>
 	
 	
 		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 3(分)</span>
@@ -429,9 +429,6 @@
 <li>使用Canal中间件</li>
 </ul>
 <h4 id="先删除缓存再更新数据库不可取"><a class="markdownIt-Anchor" href="#先删除缓存再更新数据库不可取"></a> 先删除缓存，再更新数据库（不可取）</h4>
-<blockquote>
-<p>伪代码</p>
-</blockquote>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">method</span><span class="params">()</span>:</span></span><br><span class="line">  deleteRedis()</span><br><span class="line">  updateDB()</span><br></pre></td></tr></table></figure>
 <p>第一步先删除缓存，第二步再更新数据库，如果在第一步之后，其他线程发生了数据库读操作，然后读到的旧数据又set到了Redis中，然后第二步执行，最终Redis和MySQL中的数据出现了不一致</p>
 <h4 id="先更新缓存再更新数据库不可取"><a class="markdownIt-Anchor" href="#先更新缓存再更新数据库不可取"></a> 先更新缓存，再更新数据库（不可取）</h4>
