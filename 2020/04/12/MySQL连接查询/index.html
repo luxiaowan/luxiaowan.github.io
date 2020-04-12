@@ -18,17 +18,17 @@
   
   
   <title>MySQL连接查询 | 串一串</title>
-  <meta name="description" content="左连接 左连接基本格式为A left join B on A.key=B.key，比如以下语句： select * from A left join B on A.id=B.id; 如果A、B表的数据结构为：    table A table B     id, name id, name   1, xiaolu 1, xiaolu   2, chuanchuan 3, chuanchuan">
+  <meta name="description" content="左连接 左连接基本格式为A left join B on A.key=B.key，比如以下语句： 1select * from A left join B on A.id=B.id; 如果A、B表的数据结构为：    table A table B     id, name id, name   1, xiaolu 1, xiaolu   2, chuanchuan 3, chuanchuan">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL连接查询">
 <meta property="og:url" content="http://luxiaowan.github.io/2020/04/12/MySQL连接查询/index.html">
 <meta property="og:site_name" content="串一串">
-<meta property="og:description" content="左连接 左连接基本格式为A left join B on A.key=B.key，比如以下语句： select * from A left join B on A.id=B.id; 如果A、B表的数据结构为：    table A table B     id, name id, name   1, xiaolu 1, xiaolu   2, chuanchuan 3, chuanchuan">
+<meta property="og:description" content="左连接 左连接基本格式为A left join B on A.key=B.key，比如以下语句： 1select * from A left join B on A.id=B.id; 如果A、B表的数据结构为：    table A table B     id, name id, name   1, xiaolu 1, xiaolu   2, chuanchuan 3, chuanchuan">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-04-12T16:59:40.954Z">
+<meta property="og:updated_time" content="2020-04-12T17:08:48.838Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL连接查询">
-<meta name="twitter:description" content="左连接 左连接基本格式为A left join B on A.key=B.key，比如以下语句： select * from A left join B on A.id=B.id; 如果A、B表的数据结构为：    table A table B     id, name id, name   1, xiaolu 1, xiaolu   2, chuanchuan 3, chuanchuan">
+<meta name="twitter:description" content="左连接 左连接基本格式为A left join B on A.key=B.key，比如以下语句： 1select * from A left join B on A.id=B.id; 如果A、B表的数据结构为：    table A table B     id, name id, name   1, xiaolu 1, xiaolu   2, chuanchuan 3, chuanchuan">
   <!-- Canonical links -->
   <link rel="canonical" href="http://luxiaowan.github.io/2020/04/12/MySQL连接查询/index.html">
   
@@ -419,14 +419,14 @@
     <div class="article-entry marked-body" itemprop="articleBody">
       
         <h3 id="左连接"><a class="markdownIt-Anchor" href="#左连接"></a> 左连接</h3>
-<p>左连接基本格式为A left join B on A.key=B.key，比如以下语句：</p>
-<p>select * from A left join B on <a href="http://A.id=B.id" target="_blank" rel="noopener">A.id=B.id</a>;</p>
+<p>左连接基本格式为<code>A left join B on A.key=B.key</code>，比如以下语句：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from A left join B on A.id=B.id;</span><br></pre></td></tr></table></figure>
 <p>如果A、B表的数据结构为：</p>
 <table>
 <thead>
 <tr>
-<th>table A</th>
-<th>table B</th>
+<th><code>table A</code></th>
+<th><code>table B</code></th>
 </tr>
 </thead>
 <tbody>
@@ -448,10 +448,10 @@
 <table>
 <thead>
 <tr>
-<th><a href="http://A.id" target="_blank" rel="noopener">A.id</a></th>
-<th><a href="http://A.name" target="_blank" rel="noopener">A.name</a></th>
-<th><a href="http://B.id" target="_blank" rel="noopener">B.id</a></th>
-<th><a href="http://B.name" target="_blank" rel="noopener">B.name</a></th>
+<th><code>A.id</code></th>
+<th><code>A.name</code></th>
+<th><code>B.id</code></th>
+<th><code>B.name</code></th>
 </tr>
 </thead>
 <tbody>
@@ -471,14 +471,14 @@
 </table>
 <p>由上述结果可以看出，左连接是以左表为坐标，首先将A表中所有的数据列出来，然后根据on的匹配条件查出B表中的数据并将数据列在A表数据后面，如果在B表中没有与A表中匹配的数据，则显示为null，查询出的总数据数为A表中的数据条目个数。</p>
 <h3 id="右连接"><a class="markdownIt-Anchor" href="#右连接"></a> 右连接</h3>
-<p>右连接基本格式为A right join B on A.key=B.key，比如以下语句：</p>
-<p>select * from A right join B on <a href="http://A.id=B.id" target="_blank" rel="noopener">A.id=B.id</a>;</p>
+<p>右连接基本格式为<code>A right join B on A.key=B.key</code>，比如以下语句：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from A right join B on A.id=B.id;</span><br></pre></td></tr></table></figure>
 <p>如果A、B表的数据结构为：</p>
 <table>
 <thead>
 <tr>
-<th>table A</th>
-<th>table B</th>
+<th><code>table A</code></th>
+<th><code>table B</code></th>
 </tr>
 </thead>
 <tbody>
@@ -500,10 +500,10 @@
 <table>
 <thead>
 <tr>
-<th><a href="http://B.id" target="_blank" rel="noopener">B.id</a></th>
-<th><a href="http://B.name" target="_blank" rel="noopener">B.name</a></th>
-<th><a href="http://A.id" target="_blank" rel="noopener">A.id</a></th>
-<th><a href="http://A.name" target="_blank" rel="noopener">A.name</a></th>
+<th><code>B.id</code></th>
+<th><code>B.name</code></th>
+<th><code>A.id</code></th>
+<th><code>A.name</code></th>
 </tr>
 </thead>
 <tbody>
@@ -523,14 +523,14 @@
 </table>
 <p>由上述结果可以看出，左连接是以左表为坐标，首先将B表中所有的数据列出来，然后根据on的匹配条件查出A表中的数据并将A表的数据列在B表的前面，如果在A表中没有与B表中匹配的数据，则显示为null，查询出的总数据数为B表中的数据条目个数。</p>
 <h3 id="内链接"><a class="markdownIt-Anchor" href="#内链接"></a> 内链接</h3>
-<p>内连接基本格式为A inner join B on A.key=B.key，比如以下语句：</p>
-<p>select * from A inner join B on <a href="http://A.id=B.id" target="_blank" rel="noopener">A.id=B.id</a>;</p>
+<p>内连接基本格式为<code>A inner join B on A.key=B.key</code>，比如以下语句：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from A inner join B on A.id=B.id;</span><br></pre></td></tr></table></figure>
 <p>如果A、B表的数据结构为：</p>
 <table>
 <thead>
 <tr>
-<th>table A</th>
-<th>table B</th>
+<th><code>table A</code></th>
+<th><code>table B</code></th>
 </tr>
 </thead>
 <tbody>
@@ -552,10 +552,10 @@
 <table>
 <thead>
 <tr>
-<th><a href="http://B.id" target="_blank" rel="noopener">B.id</a></th>
-<th><a href="http://B.name" target="_blank" rel="noopener">B.name</a></th>
-<th><a href="http://A.id" target="_blank" rel="noopener">A.id</a></th>
-<th><a href="http://A.name" target="_blank" rel="noopener">A.name</a></th>
+<th><code>B.id</code></th>
+<th><code>B.name</code></th>
+<th><code>A.id</code></th>
+<th><code>A.name</code></th>
 </tr>
 </thead>
 <tbody>
