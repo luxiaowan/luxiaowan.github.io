@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://luxiaowan.github.io/"/>
-  <updated>2020-04-12T17:12:27.401Z</updated>
+  <updated>2020-04-12T17:13:19.959Z</updated>
   <id>http://luxiaowan.github.io/</id>
   
   <author>
@@ -21,15 +21,15 @@
     <link href="http://luxiaowan.github.io/2020/04/13/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8BJMM/"/>
     <id>http://luxiaowan.github.io/2020/04/13/Java内存模型JMM/</id>
     <published>2020-04-12T17:11:00.000Z</published>
-    <updated>2020-04-12T17:12:27.401Z</updated>
+    <updated>2020-04-12T17:13:19.959Z</updated>
     
-    <content type="html"><![CDATA[<p><img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/jmm.png" alt="JMM"></p>]]></content>
+    <content type="html"><![CDATA[<p><img src="/images/jmm.png" alt="JMM"></p>]]></content>
     
     <summary type="html">
     
       
       
-        &lt;p&gt;&lt;img src=&quot;/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/jmm.png&quot; alt=&quot;JMM&quot;&gt;&lt;/p&gt;
+        &lt;p&gt;&lt;img src=&quot;/images/jmm.png&quot; alt=&quot;JMM&quot;&gt;&lt;/p&gt;
 
       
     
