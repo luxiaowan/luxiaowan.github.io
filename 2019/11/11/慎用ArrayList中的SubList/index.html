@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>慎用ArrayList中的SubList | 串一串</title>
+  <meta name="description" content="双十一了，大家都省了多少钱啊？ 题外话：此处交给大家一个查看商品历史价格的小方法：   在商品链接的域名后加上三个v就能查看到该商品的历史价格啦   🌰  http://shop.taobao.com/xxxx ↓ http://shop.taobaovvv.com/xxx     步入正题，为什么说我们在实际开发过程中要慎用ArrayList的subList呢？其实这也是阿里军规中的一条，原">
+<meta property="og:type" content="article">
+<meta property="og:title" content="慎用ArrayList中的SubList">
+<meta property="og:url" content="http://luxiaowan.github.io/2019/11/11/慎用ArrayList中的SubList/index.html">
+<meta property="og:site_name" content="串一串">
+<meta property="og:description" content="双十一了，大家都省了多少钱啊？ 题外话：此处交给大家一个查看商品历史价格的小方法：   在商品链接的域名后加上三个v就能查看到该商品的历史价格啦   🌰  http://shop.taobao.com/xxxx ↓ http://shop.taobaovvv.com/xxx     步入正题，为什么说我们在实际开发过程中要慎用ArrayList的subList呢？其实这也是阿里军规中的一条，原">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-12-19T16:51:55.997Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="慎用ArrayList中的SubList">
+<meta name="twitter:description" content="双十一了，大家都省了多少钱啊？ 题外话：此处交给大家一个查看商品历史价格的小方法：   在商品链接的域名后加上三个v就能查看到该商品的历史价格啦   🌰  http://shop.taobao.com/xxxx ↓ http://shop.taobaovvv.com/xxx     步入正题，为什么说我们在实际开发过程中要慎用ArrayList的subList呢？其实这也是阿里军规中的一条，原">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://luxiaowan.github.io/2019/11/11/慎用ArrayList中的SubList/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="../../../../css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/luxiaowan" target="_blank">
+          <img class="img-circle img-rotate" src="../../../../images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">串一串</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">浪人</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Suzhou, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="../../../../.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="../../../../archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="../../../../repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="../../../../books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="../../../../links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="../../../../about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>断舍离!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Docker/">Docker</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Git/">Git</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Java/">Java</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kubernates/">Kubernates</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Linux/">Linux</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MongoDB/">MongoDB</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MyBatis/">MyBatis</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MySQL/">MySQL</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Nacos/">Nacos</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/NoSQL/">NoSQL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Redis/">Redis</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Spring/">Spring</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/SpringBoot/">SpringBoot</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/分布式/">分布式</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/杂谈/">杂谈</a><span class="category-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Docker/">Docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Eureka/">Eureka</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/GC/">GC</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java与MongoDB/">Java与MongoDB</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Maven/">Maven</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MongoDB错误记录/">MongoDB错误记录</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MySQL/">MySQL</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Sentinel/">Sentinel</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/SpringCloud/">SpringCloud</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基本指令/">基本指令</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基础应用/">基础应用</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/服务治理/">服务治理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/监控/">监控</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/索引/">索引</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/阿里/">阿里</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/面试/">面试</a><span class="tag-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="../../../../tags/Docker/" style="font-size: 13px;">Docker</a> <a href="../../../../tags/Eureka/" style="font-size: 13.25px;">Eureka</a> <a href="../../../../tags/GC/" style="font-size: 13px;">GC</a> <a href="../../../../tags/Java/" style="font-size: 13.25px;">Java</a> <a href="../../../../tags/Java与MongoDB/" style="font-size: 13px;">Java与MongoDB</a> <a href="../../../../tags/Maven/" style="font-size: 13.25px;">Maven</a> <a href="../../../../tags/MongoDB错误记录/" style="font-size: 13px;">MongoDB错误记录</a> <a href="../../../../tags/MySQL/" style="font-size: 13px;">MySQL</a> <a href="../../../../tags/Sentinel/" style="font-size: 13px;">Sentinel</a> <a href="../../../../tags/SpringCloud/" style="font-size: 13.75px;">SpringCloud</a> <a href="../../../../tags/基本指令/" style="font-size: 13px;">基本指令</a> <a href="../../../../tags/基础应用/" style="font-size: 13.25px;">基础应用</a> <a href="../../../../tags/服务治理/" style="font-size: 13px;">服务治理</a> <a href="../../../../tags/监控/" style="font-size: 13px;">监控</a> <a href="../../../../tags/索引/" style="font-size: 14px;">索引</a> <a href="../../../../tags/阿里/" style="font-size: 13.25px;">阿里</a> <a href="../../../../tags/面试/" style="font-size: 13.5px;">面试</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/04/">四月 2020</a><span class="archive-list-count">25</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/03/">三月 2020</a><span class="archive-list-count">18</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/01/">一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/12/">十二月 2019</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/11/">十一月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/10/">十月 2019</a><span class="archive-list-count">16</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/01/">一月 2019</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled ">
+        
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../../2020/04/13/查看字节码javap/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../../2020/04/13/查看字节码javap/" class="title">查看字节码Javap</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-12T16:45:00.000Z" itemprop="datePublished">2020-04-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../../2020/04/13/GC日志分析/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../../2020/04/13/GC日志分析/" class="title">GC日志分析</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-12T16:40:00.000Z" itemprop="datePublished">2020-04-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../../2020/04/12/MySQL连接查询/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/MySQL/">MySQL</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../../2020/04/12/MySQL连接查询/" class="title">MySQL连接查询</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-12T15:36:00.000Z" itemprop="datePublished">2020-04-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../../2020/04/12/MySQL联合索引底层数据结构/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/MySQL/">MySQL</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../../2020/04/12/MySQL联合索引底层数据结构/" class="title">MySQL联合索引底层数据结构</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-12T07:36:00.000Z" itemprop="datePublished">2020-04-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../../2020/04/12/Redis和MySQL分布式双写一致性/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="../../../../2020/04/12/Redis和MySQL分布式双写一致性/" class="title">Redis和MySQL分布式双写一致性</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-12T06:37:00.000Z" itemprop="datePublished">2020-04-12</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-慎用ArrayList中的SubList" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      慎用ArrayList中的SubList
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="" class="article-date">
+	  <time datetime="2019-11-10T17:11:00.000Z" itemprop="datePublished">2019-11-11</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="../../../../categories/Java/">Java</a>
+  </span>
+
+        
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 2k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 8(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <blockquote>
+<p>双十一了，大家都省了多少钱啊？</p>
+<p>题外话：此处交给大家一个查看商品历史价格的小方法：</p>
+<ul>
+<li>
+<p>在商品链接的域名后加上三个v就能查看到该商品的历史价格啦</p>
+</li>
+<li>
+<p>🌰</p>
+<blockquote>
+<p><a href="http://shop.taobao.com/xxxx" target="_blank" rel="noopener">http://shop.taobao.com/xxxx</a></p>
+<p>↓</p>
+<p><a href="http://shop.taobaovvv.com/xxx" target="_blank" rel="noopener">http://shop.taobaovvv.com/xxx</a></p>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+<p>步入正题，为什么说我们在实际开发过程中要慎用ArrayList的subList呢？其实这也是阿里军规中的一条，原因其实很简单：不稳定！也许看到这里会觉得&quot;就是创建一个独立的新的SubList的实例，怎么会不稳定！&quot;，如果你是这么想的，那么恭喜你，这篇文章真的能够帮助到你，且往下看：</p>
+<hr>
+<h3 id="1-看看sublist的set方法"><a class="markdownIt-Anchor" href="#1-看看sublist的set方法"></a> 1. 看看SubList的set方法：</h3>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        List&lt;String&gt; sourceList = <span class="keyword">new</span> ArrayList&lt;String&gt;() &#123;</span><br><span class="line">            &#123;</span><br><span class="line">                add(<span class="string">"H"</span>); add(<span class="string">"E"</span>); add(<span class="string">"L"</span>); add(<span class="string">"L"</span>); add(<span class="string">"O"</span>);</span><br><span class="line">                add(<span class="string">"W"</span>); add(<span class="string">"O"</span>); add(<span class="string">"R"</span>); add(<span class="string">"L"</span>); add(<span class="string">"D"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        List&lt;String&gt; subList = sourceList.subList(<span class="number">2</span>, <span class="number">5</span>);</span><br><span class="line">        System.out.println(<span class="string">"sourceList: "</span> + sourceList);</span><br><span class="line">        System.out.println(<span class="string">"sourceList.subList(2, 5)得到: "</span> + subList);</span><br><span class="line"></span><br><span class="line">        subList.set(<span class="number">1</span>, <span class="string">"cc"</span>);</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">"sourceList: "</span> + sourceList);</span><br><span class="line">        System.out.println(<span class="string">"subList: "</span> + subList);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面代码的执行结果是什么？先不要看下面的答案，自己想一想。</p>
+<blockquote>
+<p>答案</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sourceList: [H, E, L, L, O, W, O, R, L, D]</span><br><span class="line">subList: [L, L, O]</span><br><span class="line">sourceList: [H, E, L, cc, O, W, O, R, L, D]</span><br><span class="line">subList: [L, cc, O]</span><br></pre></td></tr></table></figure>
+<p>哦吼~！答案和你自己想的有没有出入？奇妙吧，为什么修改了subList中的元素，会影响到sourceList？我们来看下ArrayList的subList方法都做了些什么：</p>
+<blockquote>
+<p>JDK源码</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns a view of the portion of this list between the specified</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@code</span> fromIndex&#125;, inclusive, and &#123;<span class="doctag">@code</span> toIndex&#125;, exclusive. </span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> List&lt;E&gt; <span class="title">subList</span><span class="params">(<span class="keyword">int</span> fromIndex, <span class="keyword">int</span> toIndex)</span> </span>&#123;</span><br><span class="line">    subListRangeCheck(fromIndex, toIndex, size);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> SubList(<span class="keyword">this</span>, <span class="number">0</span>, fromIndex, toIndex);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先是检查我们的fromIndex和toIndex是否合法，然后调用ArrayList的内部类SubList创建一个SubList的实例。好像还真如我们之前想的一样，创建了一个独立的SubList的对象，没什么不对的，那我们来看一下SubList的构造器中都做了些什么吧。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">SubList(AbstractList&lt;E&gt; parent, <span class="keyword">int</span> offset, <span class="keyword">int</span> fromIndex, <span class="keyword">int</span> toIndex) &#123;</span><br><span class="line">  <span class="keyword">this</span>.parent = parent;</span><br><span class="line">  <span class="keyword">this</span>.parentOffset = fromIndex;</span><br><span class="line">  <span class="keyword">this</span>.offset = offset + fromIndex;</span><br><span class="line">  <span class="keyword">this</span>.size = toIndex - fromIndex;</span><br><span class="line">  <span class="keyword">this</span>.modCount = ArrayList.<span class="keyword">this</span>.modCount;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这是个什么鬼？ArrayList的实例对象(也就是parent)竟然作为参数传到了SubList中，SubList的偏移量为0+fromIndex，大小size为toIndex - fromIndex（也就是和String的substring方法一样，fromIndex到(toIndex -1)的数据集），修改次数modCount和ArrayList的modCount相等，那么我们猜测一下：SubList实例的变动，是否和ArrayList有关呢？</p>
+<p>我们看到subList方法的注释中有这么一句话：<font color="red">Returns a view of the portion of this list</font>。难道SubList仅仅是ArrayList的一个被fromIndex和toIndex的区间视图？</p>
+<p>上面的例子中，subList调用了它的set方法，我们来看一下这个set方法内部逻辑是什么：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">set</span><span class="params">(<span class="keyword">int</span> index, E e)</span> </span>&#123;</span><br><span class="line">  rangeCheck(index);<span class="comment">// 下标校验</span></span><br><span class="line">  checkForComodification();<span class="comment">// 校验合法性</span></span><br><span class="line">  <span class="comment">// ***重点</span></span><br><span class="line">  <span class="comment">// 根据偏移量和下标，获取ArrayList对象的elementData数组中下标为(offset + index)的元素</span></span><br><span class="line">  <span class="comment">// offset是什么？从构造器中我们可以看到offset就是0 + fromIndex，也就是我们截取的起始下标，也就是SubList的set方法是直接在原ArrayList实例的内部数组上进行的操作</span></span><br><span class="line">  E oldValue = ArrayList.<span class="keyword">this</span>.elementData(offset + index);</span><br><span class="line">  ArrayList.<span class="keyword">this</span>.elementData[offset + index] = e;</span><br><span class="line">  <span class="keyword">return</span> oldValue;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>看到这里就一目了然了，怪不得我们修改了SubList的元素会影响到创建它的对象的值。所以在使用SubList的时候，如果需要修改SubList里面的值，一定要注意一下是否会影响到原List中的数据所涉及的业务，否则这个坑一旦踩上了，不太容易排查啊。</p>
+<h3 id="2-再看看sublist的add方法"><a class="markdownIt-Anchor" href="#2-再看看sublist的add方法"></a> 2. 再看看SubList的add方法</h3>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        List&lt;String&gt; sourceList = <span class="keyword">new</span> ArrayList&lt;String&gt;() &#123;</span><br><span class="line">            &#123;</span><br><span class="line">                add(<span class="string">"H"</span>); add(<span class="string">"E"</span>); add(<span class="string">"L"</span>); add(<span class="string">"L"</span>); add(<span class="string">"O"</span>);</span><br><span class="line">                add(<span class="string">"W"</span>); add(<span class="string">"O"</span>); add(<span class="string">"R"</span>); add(<span class="string">"L"</span>); add(<span class="string">"D"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        List&lt;String&gt; subList = sourceList.subList(<span class="number">2</span>, <span class="number">5</span>);</span><br><span class="line">        System.out.println(<span class="string">"sourceList: "</span> + sourceList);</span><br><span class="line">        System.out.println(<span class="string">"sourceList.subList(2, 5)得到: "</span> + subList);</span><br><span class="line"></span><br><span class="line">        subList.add(<span class="string">"cc"</span>);</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">"sourceList: "</span> + sourceList);</span><br><span class="line">        System.out.println(<span class="string">"subList: "</span> + subList);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面代码的执行结果又是什么呢？如果我们稍微思考一下，大致能正确的分析出结果：</p>
+<blockquote>
+<p>答案</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sourceList: [H, E, L, L, O, W, O, R, L, D]</span><br><span class="line">subList: [L, L, O]</span><br><span class="line">sourceList: [H, E, L, L, O, cc, W, O, R, L, D]</span><br><span class="line">subList: [L, L, O, cc]</span><br></pre></td></tr></table></figure>
+<p>我们向subList中添加一个元素，原列表sourceList在toIndex的位置插入了subList中add的元素，也就是我们在SubList中新增一个元素，同时会将这个元素添加到原List中。</p>
+<blockquote>
+<p>JDK源码</p>
+</blockquote>
+<p>我们查看SubList的源码，发现并没有add(E e)方法，那我们调用的add(“cc”)是调用到哪里去了呢？我们查看SubList类的声明，可以看到它是继承了<code>AbstractList</code>抽象类，所以这里应该是调用了超类里的add(E e)方法，</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** AbstractList.java */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">add</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">  add(size(), e);</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里可以看到是调用了add(int index, E element)方法进行数据新增的，然而SubList里面实现了这个方法，那么我们来看下SubList中的这个方法实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> index, E e)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 校验下标是否越界</span></span><br><span class="line">  rangeCheckForAdd(index);</span><br><span class="line">  <span class="comment">// 校验原List是否有过修改</span></span><br><span class="line">  checkForComodification();</span><br><span class="line">  <span class="comment">// parent即是在构造器中注入的原List</span></span><br><span class="line">  parent.add(parentOffset + index, e);</span><br><span class="line">  <span class="comment">// 同步列表修改次数</span></span><br><span class="line">  <span class="keyword">this</span>.modCount = parent.modCount;</span><br><span class="line">  <span class="comment">// 本列表的长度+1</span></span><br><span class="line">  <span class="keyword">this</span>.size++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由SubList的源码可以看出，SubList实例的add方法实际上就是在修改原List，包括SubList中所有的方法均是在parent列表上进行操作。</p>
+<h3 id="3-奇葩操作最坑的坑"><a class="markdownIt-Anchor" href="#3-奇葩操作最坑的坑"></a> 3. 奇葩操作，最坑的坑</h3>
+<p>仔细分析如下代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">  List&lt;String&gt; sourceList = <span class="keyword">new</span> ArrayList&lt;String&gt;() &#123;</span><br><span class="line">    &#123;</span><br><span class="line">      	add(<span class="string">"H"</span>); add(<span class="string">"E"</span>); add(<span class="string">"L"</span>); add(<span class="string">"L"</span>); add(<span class="string">"O"</span>);</span><br><span class="line">      	add(<span class="string">"W"</span>); add(<span class="string">"O"</span>); add(<span class="string">"R"</span>); add(<span class="string">"L"</span>); add(<span class="string">"D"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;;</span><br><span class="line">  List&lt;String&gt; subList = sourceList.subList(<span class="number">2</span>, <span class="number">5</span>);</span><br><span class="line">  System.out.println(<span class="string">"sourceList: "</span> + sourceList);</span><br><span class="line">  System.out.println(<span class="string">"subList: "</span> + subList);</span><br><span class="line"></span><br><span class="line">  sourceList.add(<span class="string">"cc"</span>);</span><br><span class="line"></span><br><span class="line">  System.out.println(<span class="string">"sourceList: "</span> + sourceList);</span><br><span class="line">  System.out.println(<span class="string">"subList: "</span> + subList);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这段代码的执行结果是什么？在不执行这段代码的情况下，是不是以为是下面的结果？</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sourceList: [H, E, L, L, O, W, O, R, L, D]</span><br><span class="line">subList: [L, L, O]</span><br><span class="line">sourceList: [H, E, L, L, O, W, O, R, L, D, cc]</span><br><span class="line">subList: [L, L, O]</span><br></pre></td></tr></table></figure>
+<p>如果你说对，就是这个，那你可就说错咯，实际上在执行到<code>System.out.println(&quot;sourceList: &quot; + sourceList);</code>这一句代码的时候整个程序的输出都是正常的，但在执行最后一句代码的时候，就会报错了，错误信息是：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Exception in thread <span class="string">"main"</span> java.util.ConcurrentModificationException</span><br><span class="line">	at java.util.ArrayList$SubList.checkForComodification(ArrayList.java:<span class="number">1239</span>)</span><br><span class="line">	at java.util.ArrayList$SubList.listIterator(ArrayList.java:<span class="number">1099</span>)</span><br><span class="line">	at java.util.AbstractList.listIterator(AbstractList.java:<span class="number">299</span>)</span><br><span class="line">	at java.util.ArrayList$SubList.iterator(ArrayList.java:<span class="number">1095</span>)</span><br><span class="line">	at java.util.AbstractCollection.toString(AbstractCollection.java:<span class="number">454</span>)</span><br><span class="line">	at java.lang.String.valueOf(String.java:<span class="number">2994</span>)</span><br><span class="line">	at java.lang.StringBuilder.append(StringBuilder.java:<span class="number">131</span>)</span><br><span class="line">	at cc.kevinlu.sublist.SubListTest.main(SubListTest.java:<span class="number">31</span>)</span><br></pre></td></tr></table></figure>
+<p>哦吼~！竟然报错了，我们可以看到是在<code>ArrayList$SubList.checkForComodificatio</code>方法中报的错，我们来看一下这个方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">checkForComodification</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 比较原列表修改次数和SubList的修改次数是否相等</span></span><br><span class="line">  <span class="keyword">if</span> (ArrayList.<span class="keyword">this</span>.modCount != <span class="keyword">this</span>.modCount)</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> ConcurrentModificationException();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里抛出异常，说明这两个数是不相等的，那为什么会不相等呢？我们看SubList的add方法中有同步主、'子’列表的语句<code>this.modCount = parent.modCount;</code>，也就是说我们在修改subList的时候，会同步更新主列表的modCount，以保证主、'子’列表始终是一致的。</p>
+<p>但是我们在修改主List的时候是不会去同步SubList的modCount的，我们输出SubList的实例实际上就是调用<code>iterator</code>方法，最终是调用了SubList的<code>public ListIterator&lt;E&gt; listIterator(final int index)</code>方法，该方法第一句就是调用<code>checkForComodification</code>方法检查modCount，这里自然就会报错咯！</p>
+<h3 id="4-填坑"><a class="markdownIt-Anchor" href="#4-填坑"></a> 4. 填坑</h3>
+<p>既然有坑，就有填坑的办法，不可能一直把坑放在那，是吧。</p>
+<p>如果既想修改subList，又不想影响到原list。那么可以创建一个机遇subList的拷贝:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>.创建新的List：</span><br><span class="line">  subList = Lists.newArrayList(subList);</span><br><span class="line"></span><br><span class="line"><span class="number">2</span>.lambda表达式：</span><br><span class="line">	sourceList.stream().skip(fromIndex).limit(size).collect(Collectors.toList());</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="5-总结"><a class="markdownIt-Anchor" href="#5-总结"></a> 5. 总结</h3>
+<p>并不是说使用SubList一定不妥，文章开头我们也说的是慎用，所以，根据具体业务进行选择吧。</p>
+<hr>
+<hr>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://luxiaowan.github.io/2019/11/11/慎用ArrayList中的SubList/" title="慎用ArrayList中的SubList" target="_blank" rel="external">http://luxiaowan.github.io/2019/11/11/慎用ArrayList中的SubList/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/luxiaowan" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="../../../../images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/luxiaowan" target="_blank"><span class="text-dark">串一串</span><small class="ml-1x">浪人</small></a></h3>
+        <div>断舍离</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="../../20/ThreadLocal是怎么实现线程隔离的/" title="ThreadLocal是怎么实现线程隔离的"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="../../08/Redis基本命令使用—zset篇/" title="Redis基本命令使用::zset篇"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2020 cc
+        
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="../../../../js/plugin.min.js"></script>
+<script src="../../../../js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '../../../../content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="../../../../js/insight.js"></script>
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+
+
+
+
+
+
+</body>
+</html>

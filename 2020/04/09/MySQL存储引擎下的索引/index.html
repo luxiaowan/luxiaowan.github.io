@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>MySQL存储引擎下的索引 | 串一串</title>
+  <meta name="description" content="MySQL存储引擎 MySQL支持多种存储引擎，我们可以通过show engines命令查看当前数据库所支持的存储引擎列表，那么不同存储引擎下的索引实现方式是否会有所不同？那是当然的，但只不过都大同小异而已，我们目前常用的存储引擎大多是InnoDB，主要是因为InnoDB支持事务、行锁、外键等功能，第二常用的就是MyIsam，但是在MySQL5.5版本之后，InnoDB就变成了默认的存储引擎，也">
+<meta name="keywords" content="索引">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL存储引擎下的索引">
+<meta property="og:url" content="http://luxiaowan.github.io/2020/04/09/MySQL存储引擎下的索引/index.html">
+<meta property="og:site_name" content="串一串">
+<meta property="og:description" content="MySQL存储引擎 MySQL支持多种存储引擎，我们可以通过show engines命令查看当前数据库所支持的存储引擎列表，那么不同存储引擎下的索引实现方式是否会有所不同？那是当然的，但只不过都大同小异而已，我们目前常用的存储引擎大多是InnoDB，主要是因为InnoDB支持事务、行锁、外键等功能，第二常用的就是MyIsam，但是在MySQL5.5版本之后，InnoDB就变成了默认的存储引擎，也">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200409120924556.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200409111403166.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200409111450620.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200409120652368.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200409121451757.png">
+<meta property="og:updated_time" content="2020-04-09T06:39:18.806Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MySQL存储引擎下的索引">
+<meta name="twitter:description" content="MySQL存储引擎 MySQL支持多种存储引擎，我们可以通过show engines命令查看当前数据库所支持的存储引擎列表，那么不同存储引擎下的索引实现方式是否会有所不同？那是当然的，但只不过都大同小异而已，我们目前常用的存储引擎大多是InnoDB，主要是因为InnoDB支持事务、行锁、外键等功能，第二常用的就是MyIsam，但是在MySQL5.5版本之后，InnoDB就变成了默认的存储引擎，也">
+<meta name="twitter:image" content="http://luxiaowan.github.io/images/image-20200409120924556.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://luxiaowan.github.io/2020/04/09/MySQL存储引擎下的索引/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="../../../../css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/luxiaowan" target="_blank">
+          <img class="img-circle img-rotate" src="../../../../images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">串一串</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">浪人</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Suzhou, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="../../../../.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="../../../../archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="../../../../repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="../../../../books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="../../../../links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="../../../../about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>断舍离!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Docker/">Docker</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Git/">Git</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Java/">Java</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kubernates/">Kubernates</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Linux/">Linux</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MongoDB/">MongoDB</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MyBatis/">MyBatis</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MySQL/">MySQL</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Nacos/">Nacos</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/NoSQL/">NoSQL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Redis/">Redis</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Spring/">Spring</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/SpringBoot/">SpringBoot</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/分布式/">分布式</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/杂谈/">杂谈</a><span class="category-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Docker/">Docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Eureka/">Eureka</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/GC/">GC</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java与MongoDB/">Java与MongoDB</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Maven/">Maven</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MongoDB错误记录/">MongoDB错误记录</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MySQL/">MySQL</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Sentinel/">Sentinel</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/SpringCloud/">SpringCloud</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基本指令/">基本指令</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基础应用/">基础应用</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/服务治理/">服务治理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/监控/">监控</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/索引/">索引</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/阿里/">阿里</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/面试/">面试</a><span class="tag-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="../../../../tags/Docker/" style="font-size: 13px;">Docker</a> <a href="../../../../tags/Eureka/" style="font-size: 13.25px;">Eureka</a> <a href="../../../../tags/GC/" style="font-size: 13px;">GC</a> <a href="../../../../tags/Java/" style="font-size: 13.25px;">Java</a> <a href="../../../../tags/Java与MongoDB/" style="font-size: 13px;">Java与MongoDB</a> <a href="../../../../tags/Maven/" style="font-size: 13.25px;">Maven</a> <a href="../../../../tags/MongoDB错误记录/" style="font-size: 13px;">MongoDB错误记录</a> <a href="../../../../tags/MySQL/" style="font-size: 13px;">MySQL</a> <a href="../../../../tags/Sentinel/" style="font-size: 13px;">Sentinel</a> <a href="../../../../tags/SpringCloud/" style="font-size: 13.75px;">SpringCloud</a> <a href="../../../../tags/基本指令/" style="font-size: 13px;">基本指令</a> <a href="../../../../tags/基础应用/" style="font-size: 13.25px;">基础应用</a> <a href="../../../../tags/服务治理/" style="font-size: 13px;">服务治理</a> <a href="../../../../tags/监控/" style="font-size: 13px;">监控</a> <a href="../../../../tags/索引/" style="font-size: 14px;">索引</a> <a href="../../../../tags/阿里/" style="font-size: 13.25px;">阿里</a> <a href="../../../../tags/面试/" style="font-size: 13.5px;">面试</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/04/">四月 2020</a><span class="archive-list-count">25</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/03/">三月 2020</a><span class="archive-list-count">18</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/01/">一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/12/">十二月 2019</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/11/">十一月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/10/">十月 2019</a><span class="archive-list-count">16</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/01/">一月 2019</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled ">
+        
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../13/查看字节码javap/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../13/查看字节码javap/" class="title">查看字节码Javap</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-12T16:45:00.000Z" itemprop="datePublished">2020-04-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../13/GC日志分析/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../13/GC日志分析/" class="title">GC日志分析</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-12T16:40:00.000Z" itemprop="datePublished">2020-04-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../12/MySQL连接查询/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/MySQL/">MySQL</a>
+              </p>
+              <p class="item-title">
+                <a href="../../12/MySQL连接查询/" class="title">MySQL连接查询</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-12T15:36:00.000Z" itemprop="datePublished">2020-04-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../12/MySQL联合索引底层数据结构/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/MySQL/">MySQL</a>
+              </p>
+              <p class="item-title">
+                <a href="../../12/MySQL联合索引底层数据结构/" class="title">MySQL联合索引底层数据结构</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-12T07:36:00.000Z" itemprop="datePublished">2020-04-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../12/Redis和MySQL分布式双写一致性/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="../../12/Redis和MySQL分布式双写一致性/" class="title">Redis和MySQL分布式双写一致性</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-12T06:37:00.000Z" itemprop="datePublished">2020-04-12</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-MySQL存储引擎下的索引" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      MySQL存储引擎下的索引
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="" class="article-date">
+	  <time datetime="2020-04-09T01:55:00.000Z" itemprop="datePublished">2020-04-09</time>
+	</a>
+</span>
+        
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="../../../../tags/索引/">索引</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1.7k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 5(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h3 id="mysql存储引擎"><a class="markdownIt-Anchor" href="#mysql存储引擎"></a> MySQL存储引擎</h3>
+<p>MySQL支持多种存储引擎，我们可以通过<code>show engines</code>命令查看当前数据库所支持的存储引擎列表，那么不同存储引擎下的索引实现方式是否会有所不同？那是当然的，但只不过都大同小异而已，我们目前常用的存储引擎大多是InnoDB，主要是因为InnoDB支持事务、行锁、外键等功能，第二常用的就是MyIsam，但是在MySQL5.5版本之后，InnoDB就变成了默认的存储引擎，也可以看出InnoDB的强大和普适性。我们主要记录InnoDB和MyIsam下的索引实现。</p>
+<h3 id="myisam下的索引"><a class="markdownIt-Anchor" href="#myisam下的索引"></a> MyIsam下的索引</h3>
+<p>MyIsam使用B+树作为索引结构，叶子节点存储的是目标数据的内存地址，大致结构图如下：</p>
+<img src="/images/image-20200409120924556.png" alt="image-20200409120924556" style="zoom: 33%;">
+<p>我们发现，每一个叶子节点内存储的都是指向具体数据的内存地址，可以通过地址直接找到数据。那么我们是不是可以推算出MyIsam的索引在磁盘上是怎么存储的？</p>
+<p>第一：索引存储的是具体数据的地址，和数据没有关系，只要通过地址就可以找到具体数据了</p>
+<p>第二：索引可以单独维护，数据也可以单独维护，就比如是两个微服务项目</p>
+<p>由这两点，我们可以推断出MyIsam的索引和数据应该是分开存储的，即索引存储一个文件，数据存储一个文件，当然还应该有表结构定义要单独一个文件，那么一张表是可以创建非常多的索引，是所有的索引都放在一个文件里，还是每个索引都创建一个文件，文件怎么命名？我们去MySQL的data目录下看看</p>
+<img src="/images/image-20200409111403166.png" alt="image-20200409111403166" style="zoom: 50%;">
+<p>这个目录下有很多的文件夹，每一个文件夹都对应了我们一个用户库，这说明每个库其实都是相互隔离的，隔离的方式就是以目录的形式，我们进到db_test目录下</p>
+<img src="/images/image-20200409111450620.png" alt="image-20200409111450620" style="zoom:50%;">
+<p>我们事先在db_test库中创建了一张MyIsam引擎的表myisam_db(id, name)，并且创建了name字段的索引和id的主键索引，看到这一张表对应了三个文件，且文件是以表的名字命名的</p>
+<ul>
+<li>*.frm：记录描述表结构文件，字段长度等</li>
+<li>*.MYI：索引信息文件，记录所有的索引，My Index</li>
+<li>*.MYD：数据信息文件，存储数据信息， My Data</li>
+</ul>
+<h4 id="总结"><a class="markdownIt-Anchor" href="#总结"></a> 总结</h4>
+<p>MyIsam的索引是B+树的数据结构，叶子节点中存储的是数据的地址，实现了索引和数据分离，查询的过程中通过值找到数据地址，然后再根据数据地址将地址内存储的数据捞出返回。</p>
+<p>其实我们可以单独的根据文件的存储方式反推出索引的存储策略了，自己反推试试</p>
+<h3 id="innodb下的索引"><a class="markdownIt-Anchor" href="#innodb下的索引"></a> InnoDB下的索引</h3>
+<p>InnoDB和MyIsam一样都是采用B+树作为索引的数据结构，不同的在于InnoDB的叶子节点存储的是具体数据，而不是内存地址</p>
+<p><img src="/images/image-20200409120652368.png" alt="image-20200409120652368"></p>
+<p>我们都知道MySQL的每张表都必须创建一个主键索引，如果建表时未指定主键，那么MySQL引擎会选择一个非空唯一索引来当主键，若非空唯一索引也没有，那就会自动给添加一个自增的列来作为虚主键，InnoDB和MyIsam在存储上最大的一个区别就是索引和数据在同一个文件中，我们看一下InnoDB的表在磁盘上是怎么存储的。我们先在db_test中创建一张使用InnoDB存储引擎的表innodb_db，然后到/data/db_test目录下查看文件</p>
+<img src="/images/image-20200409121451757.png" alt="image-20200409121451757" style="zoom:50%;">
+<p>磁盘上针对innodb_test表仅生成了两个文件，*.frm是表结构和字段描述等基础信息文件，重点来说一下*.ibd文件。</p>
+<ul>
+<li>表空间(Tablespace)</li>
+</ul>
+<p>ibd是单表表空间文件，每个表使用一个表空间文件，存放用户数据库表数据、索引，InnoDB的每个数据文件都归属于一个表空间，不同的表空间都有唯一的标识space id来标记，系统表空间文件为ibdata1, ibdata2…，公用同一个表空间，用户创建的表产生的ibd文件都使用唯一的space id，只包含一个文件。</p>
+<ul>
+<li>页(Page)</li>
+</ul>
+<p>表空间文件，其中最基本的单位是页(Page)，每一个Page的大小默认为16k，所以ibd的大小必定是16k的整数倍，当然也可以通过<code>innodb_page_size</code>选项将页大小减少到8KB或4KB，或增加到32KB或64KB，但是只能在实例初始化之前设置，不支持动态设置。每个页由header、body、trailer等组成，header标识了类型和checksum信息，可以根据header的类型将body解析成对应的类型，body记录详细的内容，trailer则通过记录checksum等信息来确认该页是否已经写入完成。</p>
+<ul>
+<li>区(Extent)</li>
+</ul>
+<p>Extent用于管理Page，每64个Page组成一个Extent，大小默认为1M，一个Extent内的所有页都是连续的，当表空间页容量不足要分配新页的时候，不会一页一页的分配，会一次性分配一个Extent，也就是连续的64个Page</p>
+<ul>
+<li>段(Segment)</li>
+</ul>
+<p>Segment用于管理Extent，一个表至少会有两个Segment，一个用于管理叶子节点的Extent，一个用于管理非叶子节点的Extent，每增加一个索引就会多出两个Segment，一张表的Segment数量=索引数量*2</p>
+<h3 id="memory下的索引"><a class="markdownIt-Anchor" href="#memory下的索引"></a> Memory下的索引</h3>
+<p>memory存储引擎是MySQL中的一类特殊的存储引擎。其使用存储在内存中的内容来创建表，而且所有数据也放在内存中，很少用到，至今我没用到过，不过在information_schema库中有很多使用Memory引擎的表。</p>
+<p>Memory存储引擎默认使用哈希(HASH)索引，其速度比使用B型树(BTREE)索引快。如果我们需要使用B型树索引，可以在创建索引时选择使用。</p>
+<p>Hash索引基于哈希表实现，只有匹配所有列的查询才有效。对于每一行数据，存储引擎都会对所有索引列计算一个哈希码，哈希码是一个较小的值，不同键值的行计算出的哈希码也不一样。哈希索引将所有的哈希码存储在索引中，同时保存指向每个数据行的指针。如果多个列的哈希值相同，索引会以链表的方式存放多个记录指针到同一个哈希条目中去。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://luxiaowan.github.io/2020/04/09/MySQL存储引擎下的索引/" title="MySQL存储引擎下的索引" target="_blank" rel="external">http://luxiaowan.github.io/2020/04/09/MySQL存储引擎下的索引/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/luxiaowan" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="../../../../images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/luxiaowan" target="_blank"><span class="text-dark">串一串</span><small class="ml-1x">浪人</small></a></h3>
+        <div>断舍离</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="../MySQL的Hash索引相关/" title="MySQL的Hash索引相关"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="../../08/MySQL索引初识/" title="MySQL索引初识"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2020 cc
+        
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="../../../../js/plugin.min.js"></script>
+<script src="../../../../js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '../../../../content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="../../../../js/insight.js"></script>
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+
+
+
+
+
+
+</body>
+</html>

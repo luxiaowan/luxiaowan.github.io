@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>Redis基本命令使用::zset篇 | 串一串</title>
+  <meta name="description" content="Redis有6大基本类型，分别是字符串(String)、列表(List)、集合(set)、哈希结构(hash)、有序集合(zset)和基数(HyperLogLog)  redis在线体验地址：http://try.redis.io/  有序集合(ZSet)  介绍:  Redis的有序集合和集合一样是一个简单的字符串集合，但该集合是有序的，且集合内的元素都是唯一的，也就是集合内不会出现重复元素，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis基本命令使用::zset篇">
+<meta property="og:url" content="http://luxiaowan.github.io/2019/11/08/Redis基本命令使用—zset篇/index.html">
+<meta property="og:site_name" content="串一串">
+<meta property="og:description" content="Redis有6大基本类型，分别是字符串(String)、列表(List)、集合(set)、哈希结构(hash)、有序集合(zset)和基数(HyperLogLog)  redis在线体验地址：http://try.redis.io/  有序集合(ZSet)  介绍:  Redis的有序集合和集合一样是一个简单的字符串集合，但该集合是有序的，且集合内的元素都是唯一的，也就是集合内不会出现重复元素，">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-11-21T16:05:02.245Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis基本命令使用::zset篇">
+<meta name="twitter:description" content="Redis有6大基本类型，分别是字符串(String)、列表(List)、集合(set)、哈希结构(hash)、有序集合(zset)和基数(HyperLogLog)  redis在线体验地址：http://try.redis.io/  有序集合(ZSet)  介绍:  Redis的有序集合和集合一样是一个简单的字符串集合，但该集合是有序的，且集合内的元素都是唯一的，也就是集合内不会出现重复元素，">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://luxiaowan.github.io/2019/11/08/Redis基本命令使用—zset篇/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="../../../../css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/luxiaowan" target="_blank">
+          <img class="img-circle img-rotate" src="../../../../images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">串一串</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">浪人</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Suzhou, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="../../../../.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="../../../../archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="../../../../repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="../../../../books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="../../../../links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="../../../../about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>断舍离!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Docker/">Docker</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Git/">Git</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Java/">Java</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kubernates/">Kubernates</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Linux/">Linux</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MongoDB/">MongoDB</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MyBatis/">MyBatis</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MySQL/">MySQL</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Nacos/">Nacos</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/NoSQL/">NoSQL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Redis/">Redis</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Spring/">Spring</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/SpringBoot/">SpringBoot</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/分布式/">分布式</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/杂谈/">杂谈</a><span class="category-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Docker/">Docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Eureka/">Eureka</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/GC/">GC</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java与MongoDB/">Java与MongoDB</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Maven/">Maven</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MongoDB错误记录/">MongoDB错误记录</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MySQL/">MySQL</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Sentinel/">Sentinel</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/SpringCloud/">SpringCloud</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基本指令/">基本指令</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基础应用/">基础应用</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/服务治理/">服务治理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/监控/">监控</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/索引/">索引</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/阿里/">阿里</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/面试/">面试</a><span class="tag-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="../../../../tags/Docker/" style="font-size: 13px;">Docker</a> <a href="../../../../tags/Eureka/" style="font-size: 13.25px;">Eureka</a> <a href="../../../../tags/GC/" style="font-size: 13px;">GC</a> <a href="../../../../tags/Java/" style="font-size: 13.25px;">Java</a> <a href="../../../../tags/Java与MongoDB/" style="font-size: 13px;">Java与MongoDB</a> <a href="../../../../tags/Maven/" style="font-size: 13.25px;">Maven</a> <a href="../../../../tags/MongoDB错误记录/" style="font-size: 13px;">MongoDB错误记录</a> <a href="../../../../tags/MySQL/" style="font-size: 13px;">MySQL</a> <a href="../../../../tags/Sentinel/" style="font-size: 13px;">Sentinel</a> <a href="../../../../tags/SpringCloud/" style="font-size: 13.75px;">SpringCloud</a> <a href="../../../../tags/基本指令/" style="font-size: 13px;">基本指令</a> <a href="../../../../tags/基础应用/" style="font-size: 13.25px;">基础应用</a> <a href="../../../../tags/服务治理/" style="font-size: 13px;">服务治理</a> <a href="../../../../tags/监控/" style="font-size: 13px;">监控</a> <a href="../../../../tags/索引/" style="font-size: 14px;">索引</a> <a href="../../../../tags/阿里/" style="font-size: 13.25px;">阿里</a> <a href="../../../../tags/面试/" style="font-size: 13.5px;">面试</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/04/">四月 2020</a><span class="archive-list-count">25</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/03/">三月 2020</a><span class="archive-list-count">18</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/01/">一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/12/">十二月 2019</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/11/">十一月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/10/">十月 2019</a><span class="archive-list-count">16</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/01/">一月 2019</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled ">
+        
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../../2020/04/13/查看字节码javap/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../../2020/04/13/查看字节码javap/" class="title">查看字节码Javap</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-12T16:45:00.000Z" itemprop="datePublished">2020-04-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../../2020/04/13/GC日志分析/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../../2020/04/13/GC日志分析/" class="title">GC日志分析</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-12T16:40:00.000Z" itemprop="datePublished">2020-04-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../../2020/04/12/MySQL连接查询/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/MySQL/">MySQL</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../../2020/04/12/MySQL连接查询/" class="title">MySQL连接查询</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-12T15:36:00.000Z" itemprop="datePublished">2020-04-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../../2020/04/12/MySQL联合索引底层数据结构/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/MySQL/">MySQL</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../../2020/04/12/MySQL联合索引底层数据结构/" class="title">MySQL联合索引底层数据结构</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-12T07:36:00.000Z" itemprop="datePublished">2020-04-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../../2020/04/12/Redis和MySQL分布式双写一致性/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="../../../../2020/04/12/Redis和MySQL分布式双写一致性/" class="title">Redis和MySQL分布式双写一致性</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-12T06:37:00.000Z" itemprop="datePublished">2020-04-12</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-Redis基本命令使用—zset篇" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Redis基本命令使用::zset篇
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="" class="article-date">
+	  <time datetime="2019-11-08T04:55:00.000Z" itemprop="datePublished">2019-11-08</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="../../../../categories/Redis/">Redis</a>
+  </span>
+
+        
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1.2k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 4(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <blockquote>
+<p>Redis有6大基本类型，分别是字符串(String)、列表(List)、集合(set)、哈希结构(hash)、有序集合(zset)和基数(HyperLogLog)</p>
+</blockquote>
+<p><strong>redis在线体验地址：<a href="http://try.redis.io/" target="_blank" rel="noopener">http://try.redis.io/</a></strong></p>
+<h2 id="有序集合zset"><a class="markdownIt-Anchor" href="#有序集合zset"></a> 有序集合(ZSet)</h2>
+<blockquote>
+<p>介绍:</p>
+</blockquote>
+<p>Redis的有序集合和集合一样是一个简单的字符串集合，但该集合是有序的，且集合内的元素都是唯一的，也就是集合内不会出现重复元素，与集合唯一不同的是，有序集合中每一个元素都有一个double类型的score属性，Redis通过score的大小对元素进行排序的。有序集合中元素不能重复，但是元素的score值可以重复。</p>
+<p>常用于做排行榜功能。</p>
+<p>Redis中的集合是通过哈希表来实现的，所以获取集合中元素的时间复杂度为O(1)。</p>
+<blockquote>
+<p>创建缓存</p>
+</blockquote>
+<ol>
+<li>
+<p>创建一个集合缓存，为集合新增元素</p>
+<ul>
+<li>
+<p>命令格式：<code>zadd key score member [score member ...]</code></p>
+</li>
+<li>
+<blockquote>
+<p>🌰</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">zadd zk1 1 c 1 cc 1 ccc 2 cccc</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">创建有序集合zk1，元素为：</span><br><span class="line">key: c, score: 1</span><br><span class="line">key: cc, score: 1</span><br><span class="line">key: ccc, score: 1</span><br><span class="line">key: cccc, score: 2</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li>
+<p>创建一个元素或修改元素的score值（一次只能修改一个元素）</p>
+<ul>
+<li>
+<p>命令格式：<code>zincrby key increment member</code></p>
+</li>
+<li>
+<blockquote>
+<p>🌰</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">zincrby zk1 1 cc</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">1. 为集合zk1的元素cc的score进行+1操作</span><br><span class="line">2. 若集合zk1不存在，则创建</span><br><span class="line">3. 若元素cc不存在，则创建，且cc的score为1</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>查询缓存</p>
+</blockquote>
+<ol>
+<li>
+<p>查询缓存中元素个数</p>
+<ul>
+<li>
+<p>命令格式：<code>zcard key</code></p>
+</li>
+<li>
+<blockquote>
+<p>🌰</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">zcard zk1</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">查询集合zk1内的元素总个数</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li>
+<p>查询集合指定范围的元素</p>
+<ul>
+<li>
+<p>命令格式：<code>zrange key start stop [withscores]</code></p>
+</li>
+<li>
+<blockquote>
+<p>🌰</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">1. 返回元素名称</span><br><span class="line">zrange zk1 0 1</span><br><span class="line">---</span><br><span class="line">返回集合zk1中从下标0到下标1的元素名称，start和stop都是从0开始</span><br><span class="line"></span><br><span class="line">2. 返回元素和元素score</span><br><span class="line">zrange zk1 0 -1 withscores</span><br><span class="line">---</span><br><span class="line">返回集合zk1中全部元素的名称和分数</span><br><span class="line">member1</span><br><span class="line">score1</span><br><span class="line">member2</span><br><span class="line">score2</span><br><span class="line">★常用于查询排行榜及分数</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li>
+<p>查询集合中某元素的下标（下标从0开始）</p>
+<ul>
+<li>
+<p>命令格式：<code>zrank key member</code></p>
+</li>
+<li>
+<blockquote>
+<p>🌰</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">zrank zk1 c</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">返回元素c在集合zk1中的下标</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li>
+<p>查询集合中某元素的分数</p>
+<ul>
+<li>
+<p>命令格式：<code>zscore key member</code></p>
+</li>
+<li>
+<blockquote>
+<p>🌰</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">zscore zk1 c</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">查询集合zk1中元素c的分数</span><br><span class="line">★常用于点赞数类别查询等</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li>
+<p>查询集合中指定范围的元素，按照score从大到小排序</p>
+<ul>
+<li>
+<p>命令格式：<code>zrevrange key start stop [withscores]</code></p>
+</li>
+<li>
+<blockquote>
+<p>🌰</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">zrevrange zk1 0 3 withscore</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">返回集合zk1中从1~4位元素，按照score从大到小</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li>
+<p>查询集合中某元素的排名</p>
+<ul>
+<li>
+<p>命令格式：<code>zrevrank key member</code></p>
+</li>
+<li>
+<blockquote>
+<p>🌰</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">zrevrank zk1 c</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">返回元素c在集合zk1中的排名</span><br><span class="line">★常用于名次查询</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li>
+<p>查询指定分数范围内的元素，可分页</p>
+<ul>
+<li>
+<p>命令格式：<code>zrevrangebyscore key maxScore minScore [withscores] [limit offset count]</code></p>
+</li>
+<li>
+<blockquote>
+<p>🌰</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">zrevrangebyscore zk1 3 2 withscores limit 0 1</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">分页返回集合zk1中分数从2~3的元素</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li>
+<p>查询指定成员区间内的成员</p>
+<ul>
+<li>
+<p>命令格式：<code>zrangebylex key minChar maxChar [limit offset count]</code></p>
+</li>
+<li>
+<blockquote>
+<p>🌰</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">zrangebylex zk1 - (c1 limit 0 12</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">返回从第一个元素到元素c1之间的位置</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>是否必须</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ZRANGEBYLEX</td>
+<td>是</td>
+<td>指令</td>
+</tr>
+<tr>
+<td>key</td>
+<td>是</td>
+<td>有序集合键名称</td>
+</tr>
+<tr>
+<td>minChar</td>
+<td>是</td>
+<td>字典中排序位置较小的成员,必须以”[“(包含)开头,或者以”(“(不包含)开头,可使用”-“代替，&quot;-&quot;表示取最小值</td>
+</tr>
+<tr>
+<td>maxChar</td>
+<td>是</td>
+<td>字典中排序位置较大的成员,必须以”[“(包含)开头,或者以”(“(不包含)开头,可使用”+”代替，&quot;+&quot;表示取最大值</td>
+</tr>
+<tr>
+<td>limit</td>
+<td>否</td>
+<td>返回结果是否分页,指令中包含LIMIT后offset、count必须输入</td>
+</tr>
+<tr>
+<td>offset</td>
+<td>否</td>
+<td>返回结果起始位置</td>
+</tr>
+<tr>
+<td>count</td>
+<td>否</td>
+<td>返回结果数量</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</li>
+<li>
+<p>查询指定分数区间内的元素数</p>
+<ul>
+<li>
+<p>命令格式：<code>zcount key min max</code></p>
+</li>
+<li>
+<blockquote>
+<p>🌰</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">zcount zk1 1 2</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">返回score值为1~2的所有元素总数</span><br><span class="line">★计算排行榜中某一分数区间的数量</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li>
+<p>查询指定元素区间内的元素总数</p>
+<ul>
+<li>
+<p>命令格式：<code>zlexcount key min max</code></p>
+</li>
+<li>
+<blockquote>
+<p>🌰</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">zlexcount zk1 (c [cccc</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">查询c~cccc之间的元素总数，不包括c，但包括cccc</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>移除缓存元素</p>
+</blockquote>
+<ol>
+<li>
+<p>移除集合中指定的元素</p>
+<ul>
+<li>
+<p>命令格式：<code>zrem key member [member ...]</code></p>
+</li>
+<li>
+<blockquote>
+<p>🌰</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">zrem zk1 cc c1</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">移除集合zk1中的元素cc、c1</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li>
+<p>移除指定元素区间的所有成员</p>
+<ul>
+<li>
+<p>命令格式：<code>zremrangebylex key min max</code></p>
+</li>
+<li>
+<blockquote>
+<p>🌰</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">zremrangebylex zk1 [c (ccc</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">移除集合zk1中元素c到元素ccc之间的所有成员，包括c，但不包括ccc</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li>
+<p>移除指定排名区间所有成员</p>
+<ul>
+<li>
+<p>命令格式：<code>zremrangebyrank key start stop</code></p>
+</li>
+<li>
+<blockquote>
+<p>🌰</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">zremrangebyrank zk1 0 1</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">移除集合zk1中0~1下标的所有元素</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li>
+<p>移除指定分数区间所有成员</p>
+<ul>
+<li>
+<p>命令格式：<code>zremrangebyscore key min max</code></p>
+</li>
+<li>
+<blockquote>
+<p>🌰</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">zremrangebyscore zk1 0 1</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">移除集合zk1中score值为0~1的所有元素</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>特殊操作</p>
+</blockquote>
+<ol>
+<li>
+<p>计算多个集合的并集，并存入新的集合</p>
+<ul>
+<li>
+<p>命令格式：<code>zunionstore destinationKey numkeys key[key ...]</code></p>
+</li>
+<li>
+<blockquote>
+<p>🌰</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">zunionstore zku 2 zk1 zk2</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">合并集合zk1和zk2，将并集存入zku，集合zku中元素的score为所有参与计算的集合中相同的元素的score之和</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ol>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://luxiaowan.github.io/2019/11/08/Redis基本命令使用—zset篇/" title="Redis基本命令使用::zset篇" target="_blank" rel="external">http://luxiaowan.github.io/2019/11/08/Redis基本命令使用—zset篇/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/luxiaowan" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="../../../../images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/luxiaowan" target="_blank"><span class="text-dark">串一串</span><small class="ml-1x">浪人</small></a></h3>
+        <div>断舍离</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="../../11/慎用ArrayList中的SubList/" title="慎用ArrayList中的SubList"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="../Java命令—jstat/" title="Java命令::jstat"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2020 cc
+        
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="../../../../js/plugin.min.js"></script>
+<script src="../../../../js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '../../../../content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="../../../../js/insight.js"></script>
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+
+
+
+
+
+
+</body>
+</html>

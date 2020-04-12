@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>MongoDB基础应用 | 串一串</title>
+  <meta name="description" content="索引  说明：索引是为了加快查询速度，可以对集合中的一列或多列设置索引。 – 无索引：扫描整个集合的文档，查找符合条件的文档 – 有索引：查找索引，根据索引取出文档数据    创建索引 db.&amp;lt;collection_name&amp;gt;.createIndex(keys, option)  栗子：  123456789101. 单索引db.user.createIndex(&amp;#123;age:">
+<meta name="keywords" content="基础应用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MongoDB基础应用">
+<meta property="og:url" content="http://luxiaowan.github.io/2019/10/23/MongoDB基础应用/index.html">
+<meta property="og:site_name" content="串一串">
+<meta property="og:description" content="索引  说明：索引是为了加快查询速度，可以对集合中的一列或多列设置索引。 – 无索引：扫描整个集合的文档，查找符合条件的文档 – 有索引：查找索引，根据索引取出文档数据    创建索引 db.&amp;lt;collection_name&amp;gt;.createIndex(keys, option)  栗子：  123456789101. 单索引db.user.createIndex(&amp;#123;age:">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-10-24T13:20:12.764Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MongoDB基础应用">
+<meta name="twitter:description" content="索引  说明：索引是为了加快查询速度，可以对集合中的一列或多列设置索引。 – 无索引：扫描整个集合的文档，查找符合条件的文档 – 有索引：查找索引，根据索引取出文档数据    创建索引 db.&amp;lt;collection_name&amp;gt;.createIndex(keys, option)  栗子：  123456789101. 单索引db.user.createIndex(&amp;#123;age:">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://luxiaowan.github.io/2019/10/23/MongoDB基础应用/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="../../../../css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/luxiaowan" target="_blank">
+          <img class="img-circle img-rotate" src="../../../../images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">串一串</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">浪人</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Suzhou, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="../../../../.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="../../../../archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="../../../../repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="../../../../books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="../../../../links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="../../../../about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>断舍离!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Docker/">Docker</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Git/">Git</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Java/">Java</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kubernates/">Kubernates</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Linux/">Linux</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MongoDB/">MongoDB</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MyBatis/">MyBatis</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MySQL/">MySQL</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Nacos/">Nacos</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/NoSQL/">NoSQL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Redis/">Redis</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Spring/">Spring</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/SpringBoot/">SpringBoot</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/分布式/">分布式</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/杂谈/">杂谈</a><span class="category-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Docker/">Docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Eureka/">Eureka</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/GC/">GC</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java与MongoDB/">Java与MongoDB</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Maven/">Maven</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MongoDB错误记录/">MongoDB错误记录</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MySQL/">MySQL</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Sentinel/">Sentinel</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/SpringCloud/">SpringCloud</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基本指令/">基本指令</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基础应用/">基础应用</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/服务治理/">服务治理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/监控/">监控</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/索引/">索引</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/阿里/">阿里</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/面试/">面试</a><span class="tag-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="../../../../tags/Docker/" style="font-size: 13px;">Docker</a> <a href="../../../../tags/Eureka/" style="font-size: 13.25px;">Eureka</a> <a href="../../../../tags/GC/" style="font-size: 13px;">GC</a> <a href="../../../../tags/Java/" style="font-size: 13.25px;">Java</a> <a href="../../../../tags/Java与MongoDB/" style="font-size: 13px;">Java与MongoDB</a> <a href="../../../../tags/Maven/" style="font-size: 13.25px;">Maven</a> <a href="../../../../tags/MongoDB错误记录/" style="font-size: 13px;">MongoDB错误记录</a> <a href="../../../../tags/MySQL/" style="font-size: 13px;">MySQL</a> <a href="../../../../tags/Sentinel/" style="font-size: 13px;">Sentinel</a> <a href="../../../../tags/SpringCloud/" style="font-size: 13.75px;">SpringCloud</a> <a href="../../../../tags/基本指令/" style="font-size: 13px;">基本指令</a> <a href="../../../../tags/基础应用/" style="font-size: 13.25px;">基础应用</a> <a href="../../../../tags/服务治理/" style="font-size: 13px;">服务治理</a> <a href="../../../../tags/监控/" style="font-size: 13px;">监控</a> <a href="../../../../tags/索引/" style="font-size: 14px;">索引</a> <a href="../../../../tags/阿里/" style="font-size: 13.25px;">阿里</a> <a href="../../../../tags/面试/" style="font-size: 13.5px;">面试</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/04/">四月 2020</a><span class="archive-list-count">25</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/03/">三月 2020</a><span class="archive-list-count">18</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/01/">一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/12/">十二月 2019</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/11/">十一月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/10/">十月 2019</a><span class="archive-list-count">16</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/01/">一月 2019</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled ">
+        
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../../2020/04/13/查看字节码javap/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../../2020/04/13/查看字节码javap/" class="title">查看字节码Javap</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-12T16:45:00.000Z" itemprop="datePublished">2020-04-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../../2020/04/13/GC日志分析/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../../2020/04/13/GC日志分析/" class="title">GC日志分析</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-12T16:40:00.000Z" itemprop="datePublished">2020-04-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../../2020/04/12/MySQL连接查询/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/MySQL/">MySQL</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../../2020/04/12/MySQL连接查询/" class="title">MySQL连接查询</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-12T15:36:00.000Z" itemprop="datePublished">2020-04-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../../2020/04/12/MySQL联合索引底层数据结构/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/MySQL/">MySQL</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../../2020/04/12/MySQL联合索引底层数据结构/" class="title">MySQL联合索引底层数据结构</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-12T07:36:00.000Z" itemprop="datePublished">2020-04-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../../2020/04/12/Redis和MySQL分布式双写一致性/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                
+              </p>
+              <p class="item-title">
+                <a href="../../../../2020/04/12/Redis和MySQL分布式双写一致性/" class="title">Redis和MySQL分布式双写一致性</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-12T06:37:00.000Z" itemprop="datePublished">2020-04-12</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-MongoDB基础应用" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      MongoDB基础应用
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="" class="article-date">
+	  <time datetime="2019-10-22T16:00:00.000Z" itemprop="datePublished">2019-10-23</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="../../../../categories/MongoDB/">MongoDB</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="../../../../tags/基础应用/">基础应用</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1.4k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 6(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h3 id="索引"><a class="markdownIt-Anchor" href="#索引"></a> 索引</h3>
+<blockquote>
+<p>说明：索引是为了加快查询速度，可以对集合中的一列或多列设置索引。</p>
+<p>– 无索引：扫描整个集合的文档，查找符合条件的文档</p>
+<p>– 有索引：查找索引，根据索引取出文档数据</p>
+</blockquote>
+<ol>
+<li>
+<p>创建索引</p>
+<p><code>db.&lt;collection_name&gt;.createIndex(keys, option)</code></p>
+<blockquote>
+<p>栗子：</p>
+</blockquote>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">1. 单索引</span><br><span class="line"><span class="selector-tag">db</span><span class="selector-class">.user</span><span class="selector-class">.createIndex</span>(&#123;<span class="attribute">age</span>:-<span class="number">1</span>&#125;)</span><br><span class="line"></span><br><span class="line"><span class="selector-tag">---</span></span><br><span class="line"><span class="selector-tag">age</span>:索引列名</span><br><span class="line"><span class="selector-tag">-1</span>:倒序索引</span><br><span class="line">1:正序索引</span><br><span class="line"></span><br><span class="line">2. 多索引(复合索引)</span><br><span class="line"><span class="selector-tag">db</span><span class="selector-class">.user</span><span class="selector-class">.createIndex</span>(&#123;<span class="attribute">age</span>:<span class="number">1</span>, gender:-<span class="number">1</span>&#125;)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>可选参数</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>background</td>
+<td>Boolean</td>
+<td>指定创建索引时是否阻塞集合的其他操作。true:后台执行，不阻塞；false:阻塞，默认</td>
+</tr>
+<tr>
+<td>unique</td>
+<td>Boolean</td>
+<td>指定索引是否为唯一索引。true:唯一索引；false:不唯一，默认</td>
+</tr>
+<tr>
+<td>name</td>
+<td>String</td>
+<td>索引名称，默认为字段名+索引顺序</td>
+</tr>
+<tr>
+<td>v</td>
+<td>index<br>version</td>
+<td>索引版本号，默认为当前mongo的版本号</td>
+</tr>
+<tr>
+<td>weights</td>
+<td>Integer</td>
+<td>1~99999之间，值越大权重越大</td>
+</tr>
+<tr>
+<td>expireAfterSeconds</td>
+<td>Integer</td>
+<td>指定集合生存时间。秒级，TTL</td>
+</tr>
+<tr>
+<td>sparse</td>
+<td>Boolean</td>
+<td>指定是否忽略不存在的字段。true:不查出不包含查询字段的文档；false:查询所有文档，默认</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>栗子：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt; db.user.create<span class="constructor">Index(&#123;<span class="params">name</span>:1&#125;, &#123;<span class="params">background</span>: <span class="params">true</span>, <span class="params">unique</span>: <span class="params">true</span>, <span class="params">name</span>: <span class="string">"idx_user_name"</span>, <span class="params">v</span>: 1, <span class="params">weights</span>: 99, <span class="params">sparse</span>: <span class="params">true</span>&#125;)</span></span><br><span class="line">&gt; </span><br><span class="line">&gt; ---</span><br><span class="line">&gt; 后台不阻塞集合的方式创建一个name列正序,版本号为<span class="number">1</span>,权重<span class="number">99</span>,忽略无name字段的文档的唯一索引idx_user_name</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+</li>
+<li>
+<p>查看所有索引</p>
+<p><code>db.&lt;collection_name&gt;.getIndexes()</code></p>
+<blockquote>
+<p>栗子：</p>
+<p><code>db.user.getIndexes()</code></p>
+</blockquote>
+</li>
+<li>
+<p>重建索引</p>
+<ul>
+<li>
+<p>方法1：<code>db.&lt;collection_name&gt;.reIndex()</code></p>
+</li>
+<li>
+<p>方法2：先删除原索引，然后再创建</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">db.<span class="tag">&lt;<span class="name">collection_name</span>&gt;</span>.dropIndex(<span class="tag">&lt;<span class="name">idx_name</span>&gt;</span>)</span><br><span class="line">db.<span class="tag">&lt;<span class="name">collection_name</span>&gt;</span>.createIndex(...)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li>
+<p>删除索引</p>
+<ul>
+<li>
+<p>删除指定名称的索引：</p>
+<p><code>db.user.dropIndex(&lt;idx_name&gt;)</code></p>
+</li>
+<li>
+<p>删除集合中所有索引</p>
+<p><code>db.user.dropIndexes()</code></p>
+<blockquote>
+<p>说明：只会删除自建的索引，集合中_id列的索引不会被删除</p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="聚合查询"><a class="markdownIt-Anchor" href="#聚合查询"></a> 聚合查询</h3>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">创建集合并插入数据：</span><br><span class="line"><span class="selector-tag">db</span><span class="selector-class">.agg</span><span class="selector-class">.save</span>([&#123;</span><br><span class="line">   <span class="attribute">title</span>: <span class="string">'MongoDB Overview'</span>, </span><br><span class="line">   <span class="attribute">description</span>: <span class="string">'MongoDB is no sql database'</span>,</span><br><span class="line">   <span class="attribute">by_user</span>: <span class="string">'runoob.com'</span>,</span><br><span class="line">   <span class="attribute">url</span>: <span class="string">'http://www.runoob.com'</span>,</span><br><span class="line">   <span class="attribute">tags</span>: [<span class="string">'mongodb'</span>, <span class="string">'database'</span>, <span class="string">'NoSQL'</span>],</span><br><span class="line">   <span class="attribute">likes</span>: <span class="number">100</span></span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">   <span class="attribute">title</span>: <span class="string">'NoSQL Overview'</span>, </span><br><span class="line">   <span class="attribute">description</span>: <span class="string">'No sql database is very fast'</span>,</span><br><span class="line">   <span class="attribute">by_user</span>: <span class="string">'runoob.com'</span>,</span><br><span class="line">   <span class="attribute">url</span>: <span class="string">'http://www.runoob.com'</span>,</span><br><span class="line">   <span class="attribute">tags</span>: [<span class="string">'mongodb'</span>, <span class="string">'database'</span>, <span class="string">'NoSQL'</span>],</span><br><span class="line">   <span class="attribute">likes</span>: <span class="number">10</span></span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">   <span class="attribute">title</span>: <span class="string">'Neo4j Overview'</span>, </span><br><span class="line">   <span class="attribute">description</span>: <span class="string">'Neo4j is no sql database'</span>,</span><br><span class="line">   <span class="attribute">by_user</span>: <span class="string">'Neo4j'</span>,</span><br><span class="line">   <span class="attribute">url</span>: <span class="string">'http://www.neo4j.com'</span>,</span><br><span class="line">   <span class="attribute">tags</span>: [<span class="string">'neo4j'</span>, <span class="string">'database'</span>, <span class="string">'NoSQL'</span>],</span><br><span class="line">   <span class="attribute">likes</span>: <span class="number">750</span></span><br><span class="line">&#125;])</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>格式：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash"> db.&lt;collection_name&gt;.aggregate(condition)</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> ---</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> condition:</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> 	[&#123;<span class="variable">$group</span>:&#123;_id:<span class="string">"$&lt;key&gt;"</span>, num_tutorial:&#123;$&lt;fun_expression&gt;:<span class="string">"$&lt;key&gt;"</span>&#125;&#125;&#125;]</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> 	<span class="variable">$group</span>:一个组</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> 	_id:组合列，类同于MySQL的group by后面的字段，默认_id的列会在查询结果中显示</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> 	num_tutorial:输出的列名</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> 	$&lt;fun_expression&gt;:聚合表达式</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> 	$&lt;key&gt;:运算的列名</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"></span></span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<p>关键字：aggregate</p>
+<p>说明：聚合查询就是求和、最大、最小、最前、最后、平均数的统称，类似于MySQL的count()、sum()、avg()</p>
+</blockquote>
+<blockquote>
+<p>栗子：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt; db.user.aggregate([&#123;<span class="variable">$group</span>: <span class="variable">$&#123;_id:"$gender", num_tutorial:&#123;$sum:1&#125;</span>&#125;&#125;])</span><br><span class="line">&gt; </span><br><span class="line">&gt; ---</span><br><span class="line">&gt; 等同于MySQL：select gender, count(1) <span class="keyword">from</span><span class="built_in"> user group </span>by gender</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<ol>
+<li>聚合表达式</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>表达式</th>
+<th>描述</th>
+<th>案例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$sum</td>
+<td>计算总和</td>
+<td><code>db.agg.aggregate([{$group:{_id:&quot;$by_user&quot;, num_tutorial:{$sum:&quot;$likes&quot;}}}])</code><br>—<br>等同于MySQL：<code>select by_user, sum(likes) from agg group by by_user</code></td>
+</tr>
+<tr>
+<td>$avg</td>
+<td>计算平均值</td>
+<td><code>db.agg.aggregate([{$group:{_id:&quot;$by_user&quot;, num_tutorial:{$avg:&quot;$likes&quot;}}}])</code><br>—<br>等同于MySQL：<code>select by_user, avg(likes) from agg group by by_user</code></td>
+</tr>
+<tr>
+<td>$min</td>
+<td>获取集合中指定列的最小值记录</td>
+<td><code>db.agg.aggregate([{$group:{_id:&quot;$by_user&quot;, num_tutorial:{$min:&quot;$like&quot;}}}])</code><br>—<br>等同于MySQL：<code>select by_user, min(likes) from agg group by by_user</code></td>
+</tr>
+<tr>
+<td>$max</td>
+<td>获取集合中指定列的最大值记录</td>
+<td><code>db.agg.aggregate([{$group:{_id:&quot;$by_user&quot;, num_tutorial:{$max:&quot;$likes&quot;}}}])</code><br>—<br>等同于MySQL：<code>select by_user, max(likes) from agg group by by_user</code></td>
+</tr>
+<tr>
+<td>$push</td>
+<td>在结果文档中插入值到数组</td>
+<td><code>db.agg.aggregate([{$group:{_id:&quot;$by_user&quot;, num_tutorial:{$push:&quot;$url&quot;}}}])</code><br>—<br>等同于MySQL：查出所有数据，然后取字段url写入同一个列表中，url不去重，然后输出</td>
+</tr>
+<tr>
+<td>$addToSet</td>
+<td>在结果文档中插入值到一个数组中，但不创建副本</td>
+<td><code>db.agg.aggregate([{$group:{_id:&quot;$by_user&quot;, num_tutorial:{$addToSet:&quot;$url&quot;}}}])</code><br>—<br>等同于MySQL：查出所有数据，然后取字段url写入同一个列表中，url去重，然后输出</td>
+</tr>
+<tr>
+<td>$first</td>
+<td>根据资源文档的排序获取第一个文档数据</td>
+<td><code>db.agg.aggregate([{$group:{_id:&quot;$by_user&quot;, num_tutorial:{$first:&quot;$title&quot;}}}])</code></td>
+</tr>
+<tr>
+<td>$last</td>
+<td>根据资源文档的排序获取最后一个文档数据</td>
+<td><code>db.agg.aggregate([{$group:{_id:&quot;$by_user&quot;, num_tutorial:{$last:&quot;$title&quot;}}}])</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="管道函数"><a class="markdownIt-Anchor" href="#管道函数"></a> 管道函数</h3>
+<blockquote>
+<p>说明：管道函数类似于Linux系统中的管道操作，将上一步的运算结果作为下一步的输入值，最终达到理想计算结果的运算方式</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$project</td>
+<td>指定需要输出的列，默认显示_id，格式：{$project:{by_user:1, title:1, url:1, _id:0<code>不显示id</code>}},</td>
+</tr>
+<tr>
+<td>$limit</td>
+<td>限制查询返回的文档数，格式：{$limit: 1},只返回一个文档</td>
+</tr>
+<tr>
+<td>$skip</td>
+<td>跳过指定数量的文档，返回之后的所有文档，格式：{$skip: 1},从第二个文档开始输出</td>
+</tr>
+<tr>
+<td>$match</td>
+<td>条件筛选，格式：{<span class="katex-error" title="ParseError: KaTeX parse error: Expected &#039;}&#039;, got &#039;EOF&#039; at end of input: …atch: {likes: {">match: {likes: {</span>gte: 10}}}</td>
+</tr>
+<tr>
+<td>$group</td>
+<td>聚合条件，格式：{<span class="katex-error" title="ParseError: KaTeX parse error: Expected &#039;}&#039;, got &#039;EOF&#039; at end of input: group: {_id: &quot;">group: {_id: &quot;</span>by_user&quot;, count: {$sum: -1}}}</td>
+</tr>
+<tr>
+<td>$sort</td>
+<td>排序，格式：{$sort: {likes: -1}}，-1:倒序; 1:正序</td>
+</tr>
+<tr>
+<td>$unwind</td>
+<td>将文档中的某一个数组类型字段拆分成多条，每条包含数组中的一个值</td>
+</tr>
+<tr>
+<td>$geoNear</td>
+<td>输出接近某一地理位置的有序文档。</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>栗子：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash"> db.agg.aggregate(&#123;<span class="variable">$match</span>: &#123;likes: &#123;<span class="variable">$gte</span>: 10&#125;&#125;&#125;, &#123; <span class="variable">$project</span>: &#123;_id: 0, title: 1, by_user: 1, likes: 1&#125;&#125;, &#123;<span class="variable">$limit</span>: 5&#125;, &#123;<span class="variable">$skip</span>: 1&#125;, &#123;<span class="variable">$sort</span>: &#123;likes: -1&#125;&#125;)</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> </span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> ---</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> 等同于MySQL: </span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> select title, by_user, likes from agg <span class="built_in">where</span> likes &gt;= 10 order by likes desc <span class="built_in">limit</span> 1,5</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"></span></span><br></pre></td></tr></table></figure>
+</blockquote>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://luxiaowan.github.io/2019/10/23/MongoDB基础应用/" title="MongoDB基础应用" target="_blank" rel="external">http://luxiaowan.github.io/2019/10/23/MongoDB基础应用/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/luxiaowan" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="../../../../images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/luxiaowan" target="_blank"><span class="text-dark">串一串</span><small class="ml-1x">浪人</small></a></h3>
+        <div>断舍离</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="../../24/MongoDB监控、分片及备份恢复/" title="MongoDB监控、分片及备份恢复"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="../MongoDB基本指令/" title="MongoDB基本指令"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2020 cc
+        
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="../../../../js/plugin.min.js"></script>
+<script src="../../../../js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '../../../../content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="../../../../js/insight.js"></script>
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+
+
+
+
+
+
+</body>
+</html>
