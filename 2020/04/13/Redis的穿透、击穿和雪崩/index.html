@@ -17,29 +17,20 @@
   <meta http-equiv="window-target" content="_top">
   
   
-  <title>MySQL回表、索引覆盖、索引下推 | 串一串</title>
-  <meta name="description" content="准备 创建一张表，并创建一个自增主键索引和一个组合索引 12345678910CREATE TABLE index_opt_test (  id int(11) NOT NULL AUTO_INCREMENT,  name varchar(11) DEFAULT NULL,  title varchar(11) DEFAULT NULL,  age int(11) DEFAULT NULL,">
-<meta name="keywords" content="索引">
+  <title>Redis的穿透、击穿和雪崩 | 串一串</title>
+  <meta name="description" content="前言 不论是我们在使用Redis还是准备面试，都逃不掉一块我们必须要考虑到的内容，也是使用Redis不精细的话必定会遇到的问题，就是缓存穿透、击穿和雪崩，这三个问题严重情况下，会使服务无法继续正常使用。从名字上来看，好像雪崩最严重，眼前突然浮现出电影《攀登者》里面的画面=。=  缓存穿透 缓存穿透是指访问一个DB和Redis中必定不存在的key，如果不对这类请求进行过滤拦截的话，请求每次都会穿过">
 <meta property="og:type" content="article">
-<meta property="og:title" content="MySQL回表、索引覆盖、索引下推">
-<meta property="og:url" content="http://luxiaowan.github.io/2020/04/09/MySQL回表、索引覆盖、索引下推/index.html">
+<meta property="og:title" content="Redis的穿透、击穿和雪崩">
+<meta property="og:url" content="http://luxiaowan.github.io/2020/04/13/Redis的穿透、击穿和雪崩/index.html">
 <meta property="og:site_name" content="串一串">
-<meta property="og:description" content="准备 创建一张表，并创建一个自增主键索引和一个组合索引 12345678910CREATE TABLE index_opt_test (  id int(11) NOT NULL AUTO_INCREMENT,  name varchar(11) DEFAULT NULL,  title varchar(11) DEFAULT NULL,  age int(11) DEFAULT NULL,">
+<meta property="og:description" content="前言 不论是我们在使用Redis还是准备面试，都逃不掉一块我们必须要考虑到的内容，也是使用Redis不精细的话必定会遇到的问题，就是缓存穿透、击穿和雪崩，这三个问题严重情况下，会使服务无法继续正常使用。从名字上来看，好像雪崩最严重，眼前突然浮现出电影《攀登者》里面的画面=。=  缓存穿透 缓存穿透是指访问一个DB和Redis中必定不存在的key，如果不对这类请求进行过滤拦截的话，请求每次都会穿过">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200410003327016.png">
-<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200410003348304.png">
-<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200410001946545.png">
-<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200410002144781.png">
-<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200410002324446.png">
-<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200410001946545.png">
-<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200410002808326.png">
-<meta property="og:updated_time" content="2020-04-09T16:37:44.165Z">
+<meta property="og:updated_time" content="2020-04-14T16:52:33.336Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="MySQL回表、索引覆盖、索引下推">
-<meta name="twitter:description" content="准备 创建一张表，并创建一个自增主键索引和一个组合索引 12345678910CREATE TABLE index_opt_test (  id int(11) NOT NULL AUTO_INCREMENT,  name varchar(11) DEFAULT NULL,  title varchar(11) DEFAULT NULL,  age int(11) DEFAULT NULL,">
-<meta name="twitter:image" content="http://luxiaowan.github.io/images/image-20200410003327016.png">
+<meta name="twitter:title" content="Redis的穿透、击穿和雪崩">
+<meta name="twitter:description" content="前言 不论是我们在使用Redis还是准备面试，都逃不掉一块我们必须要考虑到的内容，也是使用Redis不精细的话必定会遇到的问题，就是缓存穿透、击穿和雪崩，这三个问题严重情况下，会使服务无法继续正常使用。从名字上来看，好像雪崩最严重，眼前突然浮现出电影《攀登者》里面的画面=。=  缓存穿透 缓存穿透是指访问一个DB和Redis中必定不存在的key，如果不对这类请求进行过滤拦截的话，请求每次都会穿过">
   <!-- Canonical links -->
-  <link rel="canonical" href="http://luxiaowan.github.io/2020/04/09/MySQL回表、索引覆盖、索引下推/index.html">
+  <link rel="canonical" href="http://luxiaowan.github.io/2020/04/13/Redis的穿透、击穿和雪崩/index.html">
   
     <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
   
@@ -243,7 +234,7 @@
           <li>
             
             <div class="item-thumb">
-              <a href="../../13/Redis的穿透、击穿和雪崩/" class="thumb">
+              <a href="" class="thumb">
     
     
         <span class="thumb-image thumb-none"></span>
@@ -257,7 +248,7 @@
                 <a class="category-link" href="../../../../categories/Redis/">Redis</a>
               </p>
               <p class="item-title">
-                <a href="../../13/Redis的穿透、击穿和雪崩/" class="title">Redis的穿透、击穿和雪崩</a>
+                <a href="" class="title">Redis的穿透、击穿和雪崩</a>
               </p>
               <p class="item-date">
                 <time datetime="2020-04-13T14:23:00.000Z" itemprop="datePublished">2020-04-13</time>
@@ -268,7 +259,7 @@
           <li>
             
             <div class="item-thumb">
-              <a href="../../13/Java内存模型JMM/" class="thumb">
+              <a href="../Java内存模型JMM/" class="thumb">
     
     
         <span class="thumb-image thumb-none"></span>
@@ -282,7 +273,7 @@
                 <a class="category-link" href="../../../../categories/Java/">Java</a>
               </p>
               <p class="item-title">
-                <a href="../../13/Java内存模型JMM/" class="title">Java内存模型JMM</a>
+                <a href="../Java内存模型JMM/" class="title">Java内存模型JMM</a>
               </p>
               <p class="item-date">
                 <time datetime="2020-04-12T17:11:00.000Z" itemprop="datePublished">2020-04-13</time>
@@ -293,7 +284,7 @@
           <li>
             
             <div class="item-thumb">
-              <a href="../../13/查看字节码javap/" class="thumb">
+              <a href="../查看字节码javap/" class="thumb">
     
     
         <span class="thumb-image thumb-none"></span>
@@ -307,7 +298,7 @@
                 <a class="category-link" href="../../../../categories/Java/">Java</a>
               </p>
               <p class="item-title">
-                <a href="../../13/查看字节码javap/" class="title">查看字节码Javap</a>
+                <a href="../查看字节码javap/" class="title">查看字节码Javap</a>
               </p>
               <p class="item-date">
                 <time datetime="2020-04-12T16:45:00.000Z" itemprop="datePublished">2020-04-13</time>
@@ -318,7 +309,7 @@
           <li>
             
             <div class="item-thumb">
-              <a href="../../13/GC日志分析/" class="thumb">
+              <a href="../GC日志分析/" class="thumb">
     
     
         <span class="thumb-image thumb-none"></span>
@@ -332,7 +323,7 @@
                 <a class="category-link" href="../../../../categories/Java/">Java</a>
               </p>
               <p class="item-title">
-                <a href="../../13/GC日志分析/" class="title">GC日志分析</a>
+                <a href="../GC日志分析/" class="title">GC日志分析</a>
               </p>
               <p class="item-date">
                 <time datetime="2020-04-12T16:40:00.000Z" itemprop="datePublished">2020-04-13</time>
@@ -378,14 +369,14 @@
   
 <main class="main" role="main">
   <div class="content">
-  <article id="post-MySQL回表、索引覆盖、索引下推" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+  <article id="post-Redis的穿透、击穿和雪崩" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
     
     <div class="article-header">
       
         
   
     <h1 class="article-title" itemprop="name">
-      MySQL回表、索引覆盖、索引下推
+      Redis的穿透、击穿和雪崩
     </h1>
   
 
@@ -394,21 +385,16 @@
         <span class="article-date">
     <i class="icon icon-calendar-check"></i>
 	<a href="" class="article-date">
-	  <time datetime="2020-04-09T13:01:00.000Z" itemprop="datePublished">2020-04-09</time>
+	  <time datetime="2020-04-13T14:23:00.000Z" itemprop="datePublished">2020-04-13</time>
 	</a>
 </span>
         
   <span class="article-category">
     <i class="icon icon-folder"></i>
-    <a class="article-category-link" href="../../../../categories/MySQL/">MySQL</a>
+    <a class="article-category-link" href="../../../../categories/Redis/">Redis</a>
   </span>
 
         
-  <span class="article-tag">
-    <i class="icon icon-tags"></i>
-	<a class="article-tag-link" href="../../../../tags/索引/">索引</a>
-  </span>
-
 
         
 	<span class="article-read hidden-xs">
@@ -422,122 +408,52 @@
         <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
         
 	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1.6k(字)</span>
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1.3k(字)</span>
 	
 	
-		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 6(分)</span>
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 4(分)</span>
 	
 
       </div>
     </div>
     <div class="article-entry marked-body" itemprop="articleBody">
       
-        <h3 id="准备"><a class="markdownIt-Anchor" href="#准备"></a> 准备</h3>
-<p>创建一张表，并创建一个自增主键索引和一个组合索引</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE index_opt_test (</span><br><span class="line">  id int(11) NOT NULL AUTO_INCREMENT,</span><br><span class="line">  name varchar(11) DEFAULT NULL,</span><br><span class="line">  title varchar(11) DEFAULT NULL,</span><br><span class="line">  age int(11) DEFAULT NULL,</span><br><span class="line">  sex varchar(11) DEFAULT NULL,</span><br><span class="line">  content varchar(500) DEFAULT NULL,</span><br><span class="line">  PRIMARY KEY (id),</span><br><span class="line">  KEY idx_cb (name,title,age)</span><br><span class="line">) ENGINE=InnoDB;</span><br></pre></td></tr></table></figure>
-<h3 id="回表"><a class="markdownIt-Anchor" href="#回表"></a> 回表</h3>
+        <h3 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h3>
+<p>不论是我们在使用Redis还是准备面试，都逃不掉一块我们必须要考虑到的内容，也是使用Redis不精细的话必定会遇到的问题，就是缓存穿透、击穿和雪崩，这三个问题严重情况下，会使服务无法继续正常使用。从名字上来看，好像雪崩最严重，眼前突然浮现出电影《攀登者》里面的画面=。=</p>
+<h3 id="缓存穿透"><a class="markdownIt-Anchor" href="#缓存穿透"></a> 缓存穿透</h3>
+<p>缓存穿透是指访问一个DB和Redis中必定不存在的key，如果不对这类请求进行过滤拦截的话，请求每次都会穿过Redis直接打到DB上，并且我们一般是缓存中没数据的时候去DB中取，取出来之后再放到缓存中，但这类请求所需要的数据在DB中也不存在，所以即使请求打到DB上，最终缓存中还是没有数据，在这类请求特别多的情况下，DB很快就会被拖垮，引起服务异常。</p>
+<blockquote>
+<p>解决方案</p>
+</blockquote>
 <ol>
-<li>
-<p>什么是回表</p>
-<p>回表是发生在二级索引上的一种数据查询操作，简单点讲就是我们要查询的列不在二级索引的列中，那么就必须根据二级索引查到主键ID，然后再根据主键ID到聚簇索引树上去查询整行的数据，这一过程就叫作回表。</p>
-</li>
-<li>
-<p>为什么会回表</p>
-<p>写一个会回表查询的SQL：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select id, name, age, sex from index_opt_test where name=&apos;cc&apos; and title=&apos;T7&apos; and age=35;</span><br></pre></td></tr></table></figure>
-<p>解析：</p>
-<p>​	SQL需要查询的列包括<code>id、name、age、sex</code>，查询条件命中索引<code>idx_cb</code>，其中列<code>id、name、age</code>都在索引<code>idx_cb</code>中可以获取到，但是<code>sex</code>不能通过索引获取到，必须要获取到整行数据之后再从结果中捞出来<code>sex</code>列的数据，这种情况就必须要回表。</p>
-</li>
-<li>
-<p>什么情况下不需要回表</p>
-<p>当所有的列都能在二级索引树中查询到，就不需要再回表了，这种情况就是索引覆盖。</p>
-</li>
+<li>布隆过滤器：我们可以在做事务型处理之后，将需要缓存的key放到布隆过滤器中，但是由于布隆过滤器只能保证可能存在，所以在使用过程中还是会有穿透的可能性存在，但概率极小，所以不用过多担心</li>
+<li>短期null：此方案是在DB中查询不到数据的时候，就往Redis中设置一个短时间内就会过期的null值，比如30秒，1分钟等，不过时间还是要根据自己的业务性质来定。为什么要给不存在的key在缓存中设置一个null值？其实不一定是null，只要团队约定一个特殊字符即可，因为我们到数据库里取不出来数据，缓存里取个null（或者nil），也就代表了这个key不存在与数据库中</li>
 </ol>
-<h3 id="索引覆盖"><a class="markdownIt-Anchor" href="#索引覆盖"></a> 索引覆盖</h3>
+<h3 id="缓存雪崩"><a class="markdownIt-Anchor" href="#缓存雪崩"></a> 缓存雪崩</h3>
+<p>大量的key在同一时刻同时失效，这些key并不一定是设置了相同的时间，也可能是凑巧时间累计在一起了，恰巧大量的针对这些失效的key的请求在同一时间大量的打了进来，这时缓存全部未命中，所有的请求都透传到DB上，引起DB压力瞬间扩大数倍，极易导致DB因负载过高而崩溃，危害极大。</p>
+<blockquote>
+<p>解决方案</p>
+</blockquote>
 <ol>
-<li>
-<p>什么是索引覆盖</p>
-<p>当SQL语句中查询的列都在索引中时，我们就不需要回表去把整行数据都捞出来了，可以从非聚簇索引树中直接获取到我们需要的列的数据，这就叫索引覆盖。简单点来讲就是：所有不需要回表的查询操作都叫索引覆盖。</p>
-</li>
-<li>
-<p>为什么会发生索引覆盖</p>
-<p>关于为什么会发生索引覆盖这个问题，通过一条SQL来理解：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select id, name, age from index_opt_test where name=&apos;cc&apos; and title=&apos;T7&apos;;</span><br></pre></td></tr></table></figure>
-<p>这条SQL要查询的列<code>id、name、age</code>全部都能从非聚簇索引<code>idx_cb</code>中直接查询出来，可能会有个疑问：我们的索引列是name、title和age，为什么id明明不在组合索引中却还能发生索引覆盖？提出这个问题的同学真的是欠我一顿小烧烤，非聚簇索引的叶子节点里存的是什么东西：主键的关键字啊，我们这里主键是id，他的关键字就是id的值啊，那我们通过非聚簇索引是不是可以直接将主键id查出来，是不是就不用再回表了，不用回表是不是就发生了索引覆盖啊，就是那么简单。</p>
-</li>
+<li>加锁：对访问的key进行加锁，同时只放一个请求透传到DB，从一定程度上缓解了DB的压力，这也是缓存击穿的一种解决方案</li>
+<li>队列：所有的请求全部塞入到队列中，依次打到DB上，这种方式能解决DB的压力，但是会给请求处理效率带来一些延迟</li>
+<li>随机过期时间：给key设置过期时间时，在原过期时间的基础上加一个随机时间，比如3000毫秒以内的随机数，这样过期时间重复或者累计重复的可能性降低了很多，不太容易引起大量的key同时失效，并且成本较低。</li>
 </ol>
-<h3 id="索引下推"><a class="markdownIt-Anchor" href="#索引下推"></a> 索引下推</h3>
+<h3 id="缓存击穿"><a class="markdownIt-Anchor" href="#缓存击穿"></a> 缓存击穿</h3>
+<p>缓存雪崩是说的大量的key，缓存击穿说的是某一个热点key，也就是在某些时间点会被超高的并发访问。key在某个时间点过期的时候，恰好在对这个Key有大量的并发请求过来，缓存中无法命中则会把请求全部打到DB端，如此大量的请求可能会瞬间把DB压爆。</p>
+<blockquote>
+<p>解决方案</p>
+</blockquote>
 <ol>
 <li>
-<p>什么是索引下推</p>
-<p>索引下推又叫索引条件下推(Index Condition Pushdown，简称ICP)，ICP默认是开启的，使用ICP可以减少存储引擎访问基础表的次数和Server访问存储引擎的次数。</p>
-<ul>
-<li>
-<p>ICP没有启用：Server层会根据索引的断桥原则将命中的索引字段推送到引擎层获取数据，并把匹配到的数据全部返回到Server层，由Server层再根据剩余的where条件进行过滤，即使where条件中有组合索引的其他未命中的字段，也会保留在Server层做筛选，然后返回给Client</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select id, name, sex from index_opt_test where name=&apos;cc&apos; and title like &apos;%7&apos; and sex=&apos;male&apos;;</span><br></pre></td></tr></table></figure>
-<p>执行过程：</p>
-<ol>
-<li>Server层把name推到引擎层</li>
-<li>引擎层根据name去idx_cb的索引树中匹配主键</li>
-<li>回表去捞数据返回给Server层</li>
-<li>Server层再根据title、sex筛选出最终的数据</li>
-<li>最后返回给客户端</li>
-</ol>
-<p><img src="/images/image-20200410003327016.png" alt="image-20200410003327016"></p>
+<p>临时加锁：对key加上互斥锁，若缓存中命中不了的时候，先给这个key设置一个锁（SETNX），锁的过期时间要非常简短，只有加锁成功的线程才透传到DB，加载完数据后set到缓存中，并释放锁</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">function get(key):</span><br><span class="line">  var v = redis.get(key)</span><br><span class="line">  <span class="keyword">if</span> v eq null:</span><br><span class="line">    <span class="keyword">if</span> setnx(key_lock, val, timeout):</span><br><span class="line">      var v = db.get(key)</span><br><span class="line">      redis.set(key, v, timeout)</span><br><span class="line">      release(key_lock)</span><br><span class="line">      <span class="keyword">return</span> v</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">      sleep(<span class="number">30</span>)</span><br><span class="line">      <span class="keyword">return</span> get(key)</span><br><span class="line"> <span class="keyword">else</span>:</span><br><span class="line">  <span class="keyword">return</span> v;</span><br></pre></td></tr></table></figure>
 </li>
 <li>
-<p>ICP启用：Server层会将where条件中在组合索引中的字段全部推送到引擎层，引擎层根据断桥原则匹配出索引数据，然后将其他索引字段带入再进行一次筛选，然后拿最终匹配的主键关键字回表查询出数据后返回给Server层，Server层再根据剩余的where条件做一次筛选，然后返回给Client</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select id, name, sex from index_opt_test where name=&apos;cc&apos; and title like &apos;%7&apos; and sex=&apos;male&apos;;</span><br></pre></td></tr></table></figure>
-<p>执行过程：</p>
-<ol>
-<li>Server把name和title都推到引擎层</li>
-<li>引擎层根据name去idx_cb中查询出主键关键字和title、age</li>
-<li>再由title筛选出匹配的主键关键字</li>
-<li>回表去捞数据返回给Server层</li>
-<li>Server层再根据sex筛选出最终的数据</li>
-<li>再返回给客户端</li>
-</ol>
-<p><img src="/images/image-20200410003348304.png" alt="image-20200410003348304"></p>
-</li>
-</ul>
-</li>
-<li>
-<p>索引下推适用条件</p>
-<ul>
-<li>ICP 用于访问方法是 <code>range/ref/eq_ref/ref_or_null</code>，且需要访问表的完整行记录。</li>
-<li>ICP适用于 InnoDB 和 MyISAM 的表，包括分区的表。</li>
-<li>对于 InnoDB 表，ICP只适用于二级索引。ICP 的目标是减少访问表的完整行的读数量从而减少 I/O 操作。对于 InnoDB 的聚簇索引，完整的记录已经读进 InnoDB 的缓存，使用 ICP 不能减少 I/O 。</li>
-<li>ICP 不支持建立在虚拟列上的二级索引（InnoDB 支持在虚拟列上建立二级索引）。</li>
-<li>引用子查询、存储函数的条件没法下推，Triggered conditions 也没法下推。</li>
-</ul>
-<p>所以ICP 适用的一个隐含前提是二级索引必须是组合索引、且在使用索引进行扫描时只能采用最左前缀匹配原则。组合索引后面的列出现在 where 条件里，因此可以先过滤索引元组、从而减少回表读的数量。</p>
-</li>
-<li>
-<p>为什么会发生索引下推</p>
-<p>索引下推在5.6版本加入的，默认开启，可以通过命令<code>SHOW VARIABLES like '%optimizer_switch%'</code>查看当前状态</p>
-<img src="/images/image-20200410001946545.png" alt="image-20200410001946545" style="zoom: 50%;">
-<ul>
-<li>
-<p>关闭索引下推</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SET optimizer_switch = &apos;index_condition_pushdown=off&apos;;</span><br></pre></td></tr></table></figure>
-<p>执行之后查看一下状态：</p>
-<img src="/images/image-20200410002144781.png" alt="image-20200410002144781" style="zoom:50%;">
-<p>然后我们执行一下SQL语句：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">explain</span><br><span class="line">select id, name, sex from index_opt_test where name=&apos;cc&apos; and title like &apos;%7&apos; and sex=&apos;male&apos;;</span><br></pre></td></tr></table></figure>
-<p><img src="/images/image-20200410002324446.png" alt="image-20200410002324446"></p>
-<p>从执行计划我们可以看出当我们关闭索引下推后，Extra中的是<code>Using where</code></p>
-</li>
-<li>
-<p>开启索引下推</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SET optimizer_switch = &apos;index_condition_pushdown=on&apos;;</span><br></pre></td></tr></table></figure>
-<p>执行之后查看一下状态：</p>
-<img src="/images/image-20200410001946545.png" alt="image-20200410001946545" style="zoom: 50%;">
-<p>然后我们执行以下SQL语句：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">explain</span><br><span class="line">select id, name, sex from index_opt_test where name=&apos;cc&apos; and title like &apos;%7&apos; and sex=&apos;male&apos;;</span><br></pre></td></tr></table></figure>
-<p><img src="/images/image-20200410002808326.png" alt="image-20200410002808326"></p>
-<p>从执行计划中看到使用了<code>Using index condition</code>和<code>Using where</code>，<code>Using index condition</code>说明ICP生效了，title被推到了引擎层，而<code>Using where</code>是因为where条件中的sex字段</p>
-</li>
-</ul>
+<p>同步锁：对于热点key，set缓存的时候同时set一个针对这个key的监视key，监视key的过期时间一定要小于被监视的key，每次获取缓存数据的时候都获取一下这个监视key，并判断监视key是否过期了，如果过期了，则重置一下key的过期时间，并重新设置这个监视key</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">function get(key):</span><br><span class="line">  var v = redis.get(key)</span><br><span class="line">  <span class="keyword">if</span> v eq null:</span><br><span class="line">    <span class="keyword">if</span> setnx(key_lock, val, timeout):</span><br><span class="line">      var v = db.get(key)</span><br><span class="line">      redis.set(key, v, timeout)</span><br><span class="line">      redis.set(key_monitor, now() + timeout - time, timeout - time)</span><br><span class="line">      release(key_lock)</span><br><span class="line">      <span class="keyword">return</span> v</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">      sleep(<span class="number">30</span>)</span><br><span class="line">      <span class="keyword">return</span> get(key)</span><br><span class="line"> <span class="keyword">else</span>:</span><br><span class="line">  var vm = redis.get(key_monitor)</span><br><span class="line">  <span class="keyword">if</span> now() - vm lt <span class="number">10</span>:</span><br><span class="line">    redis.expire(key ,timeout)</span><br><span class="line">    reids.expire(key_monitor, now() + timeout - time)</span><br><span class="line">  <span class="keyword">else</span>:</span><br><span class="line">    <span class="keyword">return</span> v</span><br></pre></td></tr></table></figure>
+<h3 id="总结"><a class="markdownIt-Anchor" href="#总结"></a> 总结</h3>
+<p>若是想更好的使用Redis，那么穿透、击穿、雪崩必定是要慎重考虑的东西，解决方案有多种，应根据自己的实际业务做更优选择</p>
 </li>
 </ol>
 
@@ -549,7 +465,7 @@
     
     <li class="post-copyright-link hidden-xs">
       <strong>本文链接：</strong>
-      <a href="http://luxiaowan.github.io/2020/04/09/MySQL回表、索引覆盖、索引下推/" title="MySQL回表、索引覆盖、索引下推" target="_blank" rel="external">http://luxiaowan.github.io/2020/04/09/MySQL回表、索引覆盖、索引下推/</a>
+      <a href="http://luxiaowan.github.io/2020/04/13/Redis的穿透、击穿和雪崩/" title="Redis的穿透、击穿和雪崩" target="_blank" rel="external">http://luxiaowan.github.io/2020/04/13/Redis的穿透、击穿和雪崩/</a>
     </li>
     
     <li class="post-copyright-license">
@@ -593,13 +509,9 @@
   
   <ul class="pager pull-left">
     
-    <li class="prev">
-      <a href="../../10/MySQL索引建立原则/" title="MySQL索引建立原则"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
-    </li>
-    
     
     <li class="next">
-      <a href="../MySQL聚簇索引和非聚簇索引/" title="MySQL聚簇索引和非聚簇索引"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+      <a href="../Java内存模型JMM/" title="Java内存模型JMM"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
     </li>
     
     
