@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>Kafka初探 | 串一串</title>
+  <meta name="description" content="基本名词  消息：kafka中的数据单元称为消息，也可以叫记录，相当于MySQL表中的一条记录 批次：为了提高效率，kafka可以一次性写入一批数据(消息)，批次指的就是一组消息 主题：相当于MySQL的表，一个主题(Topic)代表着一类消息，kafka使用主题对消息分类 分区：分区(partition)归属于主题，一个主题可以划分为若干个分区，分区可以分布在不同的broker上，也可以在同一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kafka初探">
+<meta property="og:url" content="http://luxiaowan.github.io/2020/04/16/Kafka初探/index.html">
+<meta property="og:site_name" content="串一串">
+<meta property="og:description" content="基本名词  消息：kafka中的数据单元称为消息，也可以叫记录，相当于MySQL表中的一条记录 批次：为了提高效率，kafka可以一次性写入一批数据(消息)，批次指的就是一组消息 主题：相当于MySQL的表，一个主题(Topic)代表着一类消息，kafka使用主题对消息分类 分区：分区(partition)归属于主题，一个主题可以划分为若干个分区，分区可以分布在不同的broker上，也可以在同一">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://luxiaowan.github.io/images/log_anatomy.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/log_consumer.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/consumer-groups.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200416173858298.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200416173919621.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200416220029587.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/kafka-apis.png">
+<meta property="og:updated_time" content="2020-04-16T15:27:53.076Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kafka初探">
+<meta name="twitter:description" content="基本名词  消息：kafka中的数据单元称为消息，也可以叫记录，相当于MySQL表中的一条记录 批次：为了提高效率，kafka可以一次性写入一批数据(消息)，批次指的就是一组消息 主题：相当于MySQL的表，一个主题(Topic)代表着一类消息，kafka使用主题对消息分类 分区：分区(partition)归属于主题，一个主题可以划分为若干个分区，分区可以分布在不同的broker上，也可以在同一">
+<meta name="twitter:image" content="http://luxiaowan.github.io/images/log_anatomy.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://luxiaowan.github.io/2020/04/16/Kafka初探/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="../../../../css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/luxiaowan" target="_blank">
+          <img class="img-circle img-rotate" src="../../../../images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">串一串</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">浪人</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Suzhou, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="../../../../.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="../../../../archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="../../../../repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="../../../../books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="../../../../links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="../../../../about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>断舍离!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Docker/">Docker</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Git/">Git</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Java/">Java</a><span class="category-list-count">18</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kafka/">Kafka</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kubernates/">Kubernates</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Linux/">Linux</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MongoDB/">MongoDB</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MyBatis/">MyBatis</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MySQL/">MySQL</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Nacos/">Nacos</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/NoSQL/">NoSQL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Redis/">Redis</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Spring/">Spring</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/SpringBoot/">SpringBoot</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/分布式/">分布式</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/杂谈/">杂谈</a><span class="category-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Docker/">Docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Eureka/">Eureka</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/GC/">GC</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java与MongoDB/">Java与MongoDB</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Maven/">Maven</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MongoDB错误记录/">MongoDB错误记录</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MySQL/">MySQL</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Sentinel/">Sentinel</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/SpringCloud/">SpringCloud</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基本指令/">基本指令</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基础应用/">基础应用</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/服务治理/">服务治理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/监控/">监控</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/索引/">索引</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/阿里/">阿里</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/面试/">面试</a><span class="tag-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="../../../../tags/Docker/" style="font-size: 13px;">Docker</a> <a href="../../../../tags/Eureka/" style="font-size: 13.25px;">Eureka</a> <a href="../../../../tags/GC/" style="font-size: 13px;">GC</a> <a href="../../../../tags/Java/" style="font-size: 13.25px;">Java</a> <a href="../../../../tags/Java与MongoDB/" style="font-size: 13px;">Java与MongoDB</a> <a href="../../../../tags/Maven/" style="font-size: 13.25px;">Maven</a> <a href="../../../../tags/MongoDB错误记录/" style="font-size: 13px;">MongoDB错误记录</a> <a href="../../../../tags/MySQL/" style="font-size: 13px;">MySQL</a> <a href="../../../../tags/Sentinel/" style="font-size: 13px;">Sentinel</a> <a href="../../../../tags/SpringCloud/" style="font-size: 13.75px;">SpringCloud</a> <a href="../../../../tags/基本指令/" style="font-size: 13px;">基本指令</a> <a href="../../../../tags/基础应用/" style="font-size: 13.25px;">基础应用</a> <a href="../../../../tags/服务治理/" style="font-size: 13px;">服务治理</a> <a href="../../../../tags/监控/" style="font-size: 13px;">监控</a> <a href="../../../../tags/索引/" style="font-size: 14px;">索引</a> <a href="../../../../tags/阿里/" style="font-size: 13.25px;">阿里</a> <a href="../../../../tags/面试/" style="font-size: 13.5px;">面试</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/04/">四月 2020</a><span class="archive-list-count">28</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/03/">三月 2020</a><span class="archive-list-count">18</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/01/">一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/12/">十二月 2019</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/11/">十一月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/10/">十月 2019</a><span class="archive-list-count">16</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/01/">一月 2019</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled ">
+        
+          <li>
+            
+            <div class="item-thumb">
+              <a href="" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Kafka/">Kafka</a>
+              </p>
+              <p class="item-title">
+                <a href="" class="title">Kafka初探</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-15T18:51:00.000Z" itemprop="datePublished">2020-04-16</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../13/Redis的穿透、击穿和雪崩/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Redis/">Redis</a>
+              </p>
+              <p class="item-title">
+                <a href="../../13/Redis的穿透、击穿和雪崩/" class="title">Redis的穿透、击穿和雪崩</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-13T14:23:00.000Z" itemprop="datePublished">2020-04-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../13/Java内存模型JMM/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../13/Java内存模型JMM/" class="title">Java内存模型JMM</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-12T17:11:00.000Z" itemprop="datePublished">2020-04-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../13/查看字节码javap/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../13/查看字节码javap/" class="title">查看字节码Javap</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-12T16:45:00.000Z" itemprop="datePublished">2020-04-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../13/GC日志分析/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../13/GC日志分析/" class="title">GC日志分析</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-12T16:40:00.000Z" itemprop="datePublished">2020-04-13</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-Kafka初探" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Kafka初探
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="" class="article-date">
+	  <time datetime="2020-04-15T18:51:00.000Z" itemprop="datePublished">2020-04-16</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="../../../../categories/Kafka/">Kafka</a>
+  </span>
+
+        
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 3k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 11(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h3 id="基本名词"><a class="markdownIt-Anchor" href="#基本名词"></a> 基本名词</h3>
+<ul>
+<li>消息：kafka中的数据单元称为消息，也可以叫记录，相当于MySQL表中的一条记录</li>
+<li>批次：为了提高效率，kafka可以一次性写入一批数据(消息)，批次指的就是一组消息</li>
+<li>主题：相当于MySQL的表，一个主题(Topic)代表着一类消息，kafka使用主题对消息分类</li>
+<li>分区：分区(partition)归属于主题，一个主题可以划分为若干个分区，分区可以分布在不同的broker上，也可以在同一个broker上，使用分区来实现kafka的伸缩性。主题的单个分区上的消息是有序的，但是不同分区上的消息无法保证有序。</li>
+<li>生产者：向主题发布消息的客户端称为生产者，生产者用于不断的向主题发送消息</li>
+<li>消费者：订阅主题消息的客户端称为消费者，消费者用于处理生产者生产的消息</li>
+<li>消费者群组：生产者与消费者的关系是一对多，比如一个客服对应多个咨询者，消费者群组就是由一批消费者组成的</li>
+<li>偏移量：偏移量(Consumer Offset)是一种源数据，是一个单向递增的整数标识，用于记录消费者发生重平衡时的位置，以便用来恢复数据</li>
+<li>broker：一个独立的服务器被称为broker，broker接收来自生产者的消息，并为消息设置偏移量，并提交消息持久化到磁盘</li>
+<li>broker集群：多个broker组成一个集群，保证kafka的高可用，每个集群中都有一个broker充当集群Leader的角色</li>
+<li>副本：kafka中消息的备份又称为副本(Replica)，副本的数量是可配置的，类型有Leader和Follower两种，Leader对外提供服务，Follower辅助</li>
+<li>重(chong)平衡(ReBalance)：若消费者组内某个消费者宕了，其他存活的消费者自动重新分配订阅主题分区，kafka高可用的必备能力</li>
+</ul>
+<h3 id="关系介绍"><a class="markdownIt-Anchor" href="#关系介绍"></a> 关系介绍</h3>
+<ul>
+<li>
+<p>Topic&amp;Partition</p>
+<ol>
+<li>
+<p>Topic是kafka中给消息分类的标记，一个消息必定属于一个Topic，一个Topic可以包括一个或多个Partition，Partition又可以有多个副本，副本又可以分配在不同的broker上。</p>
+</li>
+<li>
+<p>Partition内部是有序的，Partition之间是无序的</p>
+<img src="/images/log_anatomy.png" alt="img" style="zoom: 130%;">
+</li>
+<li>
+<p>内部存储是以append-log的方式不断进行log文件尾部追加，文件读写是在磁盘上是顺序的，效率极高，媲美内存操作，每一条log对应一个offset，可以把offset理解为一个数组的下标，通过这个下标就可以读取对应的消息数据，Partition只负责为消息分配offset，消费者具体由哪个offset开始消费消息完全由消费者自己控制，也就是kafka服务端只负责提供数据，消费者自己控制消息消费进度。</p>
+<img src="/images/log_consumer.png" alt="img" style="zoom: 25%;">
+</li>
+<li>
+<p>kafka虽然是可以持久化消息，并且不删除已经被消费过的消息，但消息也不是被永久存储在磁盘上的，为了防止磁盘长期被消息写入数据日积月累，kafka提供两种旧数据淘汰策略：</p>
+</li>
+</ol>
+<ul>
+<li>
+<p>开启数据清理：<code>log.cleaner.enable=true</code>，默认关闭状态</p>
+</li>
+<li>
+<p>基于时间：<code>log.retention.hours=168</code>，单位：小时；<code>log.retention.ms=100</code>，单位：毫秒；<code>log.retention.minutes</code>，单位：分钟</p>
+</li>
+<li>
+<p>基于文件大小：<code>log.retention.bytes=1073741824</code>，单位：字节</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Consumer&amp;Consumer Group</p>
+<ol>
+<li>
+<p>一个消费者组由一个或多个消费者组合而成，每一条消息只会被同一个group中的一个消费者消费，但是不同group中的消费者可以同时消费同一条消息，保证了 消息队列中的消息只被消费一次；kafka是发布订阅模式的消息队列，这里订阅的是消费者组，而不是特定的一个消费者实例。</p>
+<p><img src="/images/consumer-groups.png" alt="img"></p>
+<p>kafka支持离线处理和实时处理，所以我们可以使用Hadoop进行离线处理，也可以使用Storm这种实时流处理系统进行实时处理，还可以将数据实时的同步到其他的数据中心，前提是这些消费者处于不同的消费者组。</p>
+<p>可以测试一下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 1. 创建一个topic</span></span><br><span class="line">kafka-topics --create --zookeeper localhost:2181 --replication-factor 3 --partition 1 --topic cc_topic</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 2. 启动一个Producer</span></span><br><span class="line">kafka-console-producer --broker-list localhost:9092 --topic cc_topic</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 3. 启动五个Consumer，1~3号放cc_group_1，4~5放cc_group_2</span></span><br><span class="line">kafka-console-consumer --bootstrap-server localhost:9092 --group cc_group_1 --from-beginning --topic cc_topic</span><br><span class="line"></span><br><span class="line">kafka-console-consumer --bootstrap-server localhost:9092 --group cc_group_1 --from-beginning --topic cc_topic</span><br><span class="line"></span><br><span class="line">kafka-console-consumer --bootstrap-server localhost:9092 --group cc_group_1 --from-beginning --topic cc_topic</span><br><span class="line"></span><br><span class="line">kafka-console-consumer --bootstrap-server localhost:9092 --group cc_group_2 --from-beginning --topic cc_topic</span><br><span class="line"></span><br><span class="line">kafka-console-consumer --bootstrap-server localhost:9092 --group cc_group_2 --from-beginning --topic cc_topic</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 4. 发送一条消息</span></span><br><span class="line">123</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 5. 查看消费者</span></span><br><span class="line">cc_group_1和cc_group_2各自收到123这条消息一次</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+</li>
+<li>
+<p>Consumer ReBalance</p>
+<p>Consumer ReBalance是通过Zookeeper实现，kafka保证了同一个消费者组中只能有一个消费者消费某条消息，其实kafka保证的是在稳定状态下每一个消费者都只会消费一个或多个Partition的消息，而某一Partition的消息仅会被一个消费者消费，这样设计的优势是每个消费者不用跟所有的broker进行通信，减少了通信开销，劣势是同一个消费组内的消费者不能均匀消费，而且单个Partition内部的数据是有序的，所以对于单个消费者来说，其消费的消息是有序的。</p>
+<ol>
+<li>Consumer &lt; Partition：会出现某些Consumer消费多个Partition的数据</li>
+<li>Consumer &gt; Partition：会出现某些Consumer没有可消费的Partition</li>
+<li>Consumer = Partition：一个Consumer消费一个Partition，均匀</li>
+</ol>
+</li>
+</ul>
+<h3 id="特性"><a class="markdownIt-Anchor" href="#特性"></a> 特性</h3>
+<ul>
+<li>高吞吐、低延迟：kafka处理消息的速度非常快，每秒几乎可以处理几十万条消息，并且最低延迟只有几毫秒</li>
+<li>高伸缩性：每个topic都能有多个partition，每个partition又可以分布在不同的broker上</li>
+<li>高并发：能够同时支持数千个客户端进行读写</li>
+<li>容错性：允许集群中的某些节点失败，某个节点宕机，kafka仍然可用继续提供服务</li>
+<li>持久性、可靠性：kafka的消息存储是基于Zookeeper的，Zookeeper是可以将消息持久化到磁盘上，并且支持数据备份，所以kafka是一个非常可靠的可持久化消息中间件</li>
+<li>速度快：kafka采用零拷贝的模式实现数据的快速移动，避免了内核空间和用户空间的频繁切换，kafka可以批量发送数据，从生产者到文件系统到消费者；数据压缩可以通过有效的数据压缩减少IO次数，并且采用顺序读写的方式避免寻址造成的消耗。总结起来就是零拷贝、顺序读写、数据压缩、分批发送。</li>
+</ul>
+<h3 id="消息队列"><a class="markdownIt-Anchor" href="#消息队列"></a> 消息队列</h3>
+<ul>
+<li>
+<p>点对点（一对一）：一个生产者所生产的消息只会被一个消费者进行消费，不会同时被多个消费者消费</p>
+<img src="/images/image-20200416173858298.png" alt="image-20200416173858298" style="zoom:50%;">
+</li>
+<li>
+<p>发布订阅（一对多、多对多）：一个或多个生产者所生产的消息会被多个消费者同时消费</p>
+<img src="/images/image-20200416173919621.png" alt="image-20200416173919621" style="zoom:50%;">
+</li>
+</ul>
+<h3 id="架构体系"><a class="markdownIt-Anchor" href="#架构体系"></a> 架构体系</h3>
+<img src="/images/image-20200416220029587.png" alt="image-20200416220029587" style="zoom:45%;">
+<p>一个kafka集群包含若干个Producer、若干Consumer group、若干broker和Zookeeper集群组成，kafka通过Zookeeper管理Partition，选举Leader，以及在Consumer发生变化时通过Zookeeper进行ReBalance。Producer将消息push到Partition，Consumer通过pull将消息从Partition拉取到本地。</p>
+<h3 id="api"><a class="markdownIt-Anchor" href="#api"></a> API</h3>
+<p>kafka目前提供五类常用的API，主要有Producer、Consumer、Stream、Connect、Admin API：</p>
+<ul>
+<li>Producer API：允许App作为Producer将消息发送到kafka集群的一个或多个topic上</li>
+<li>Consumer API：允许App作为Consumer从kafka集群上的一个或多个topic拉取消息</li>
+<li>Stream API：允许App作为流处理器，从一个或多个topic中消费输入流并转化为输出流</li>
+<li>Connector API：允许将现有的应用程序或存储系统连接到kafka的topic，充当Producer或Consumer</li>
+<li>Admin API：允许管理和检查topic、broker和kafka的其他内容</li>
+</ul>
+<img src="/images/kafka-apis.png" alt="img" style="zoom:50%;">
+<h3 id="重要配置参数"><a class="markdownIt-Anchor" href="#重要配置参数"></a> 重要配置参数</h3>
+<p>kafka的参数配置文件是server.properties</p>
+<ul>
+<li><a href="http://broker.id" target="_blank" rel="noopener">broker.id</a>：每个broker都有一个唯一标识，就像是MySQL表中的主键ID，默认值是0，这个值在kafka集群中必须是唯一不可重复的，值随意设置。</li>
+<li>port：kafka broker的默认端口是9092，若未指定port参数，则就是9092，修改port参数可以是任意端口，但是最好不要低于1024，不然就需要管理员权限启动了</li>
+<li>zookeeper.connect：设置broker源数据的Zookeeper地址，参数的值可以设置一个或多个，多个zk通过逗号分隔，比如<code>zk1:port,zk2:port,zk3:port</code>，不同的kafka集群可以使用同一个zk集群，可以通过指定zk的具体path来区分每个kafka的使用，比如kafka cluster1使用<code>zk:port/path1</code>，kafka cluster2使用<code>zk:port/path2</code>。</li>
+<li><a href="http://zookeeper.connection.timeout.ms" target="_blank" rel="noopener">zookeeper.connection.timeout.ms</a>：设置broker连接Zookeeper的超时时间，单位是毫秒</li>
+<li>log.dirs：kafka把所有的消息都保存在本地磁盘上，保存的日志地址通过该参数指定，可以指定多个存储目录，通过逗号分隔，例如<code>/home/kafka/1,/home/kafka/2,/home/kafka/3</code></li>
+<li>auto.create.topic.enable：默认为true，允许随意的创建topic，参数为true时，使用Producer往一个不存在的topic发送消息时会自动创建topic、使用Consumer从一个不存在的topic拉取消息时自动创建topic、主动创建topic、当任意一个客户端向topic发送元数据请求时。此值建议在生产上设置为false，topic由人工进行分配，防止生产环境出现各种乱七八糟的topic。</li>
+<li>topic相关参数
+<ul>
+<li>num.partitions：主题拥有的Partition数量，若在创建topic的时候未指定分区数量，则使用该参数的值，默认为1。在运行过程中，分区数量可以增加不能减少，在创建时可以通过<code>--partition</code>指定个数</li>
+<li>default.replication.factor：kafka消息的默认副本数，默认为1，只有在自动创建topic的时候才有效，在创建时可以通过<code>--replication-factor</code>指定</li>
+<li>log.cleaner.enable：是否开启日志清理功能，默认为true，清理方式有时间和日志文件大小两种方式</li>
+<li>log.retention.hours：设置kafka消息保存的时间，默认为168个小时，还可以通过<code>log.retention.ms</code>和<code>log.retention.minutes</code>来设置清理时间的毫秒和分钟时间</li>
+<li>log.retention.bytes：设置topic的每个Partition所能保存的数据量，比如若一个topic有10个Partition，此参数的值为1G，那么该topic的最大存储容量为8G，topic的容量随着Partition的增加而增加。</li>
+<li>log.segment.bytes：设置日志文件的最大的容量大小。当消息到达broker时，会被追加到日志文件中，但是如果日志片段的当前大小加上新接收消息的打小后超过了该参数设置的值，则将新消息和后续的消息写入到一个新的日志文件中。该参数的值越小，分割的文件就越多，磁盘的写入效率就越低。</li>
+<li><a href="http://log.segment.ms" target="_blank" rel="noopener">log.segment.ms</a>：除了待日志文件大小超值后重新分配新文件之外，还可以通过日志创建时间来控制消息日志文件的生命周期，可以和<code>log.segment.bytes</code>同时设置，哪一个先达标使用哪一个策略，比如bytes设置为1G，ms设置为1小时，若30分钟内文件容量已达1G，则后续消息写入到新的日志文件中，若1小时内日志文件尚未达到1G，则也分配新的日志文件记录后续的消息。</li>
+<li><a href="http://log.retention.check.interval.ms" target="_blank" rel="noopener">log.retention.check.interval.ms</a>：检查日志段以查看是否可以根据保留策略删除它们的时间间隔，单位：毫秒</li>
+<li>message.max.bytes：该参数限定broker可接收的单个消息的大小，默认是1MB，如果Producer发送的消息大于此值，则broker会直接拒绝并返回错误。该参数指定的是压缩后的消息大小，消息的实际大小可能大于此值。</li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://luxiaowan.github.io/2020/04/16/Kafka初探/" title="Kafka初探" target="_blank" rel="external">http://luxiaowan.github.io/2020/04/16/Kafka初探/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/luxiaowan" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="../../../../images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/luxiaowan" target="_blank"><span class="text-dark">串一串</span><small class="ml-1x">浪人</small></a></h3>
+        <div>断舍离</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    
+    <li class="next">
+      <a href="../../13/Redis的穿透、击穿和雪崩/" title="Redis的穿透、击穿和雪崩"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2020 cc
+        
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="../../../../js/plugin.min.js"></script>
+<script src="../../../../js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '../../../../content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="../../../../js/insight.js"></script>
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+
+
+
+
+
+
+</body>
+</html>
