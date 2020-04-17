@@ -30,7 +30,7 @@
 <meta property="og:image" content="http://luxiaowan.github.io/images/image-20200417033430230.png">
 <meta property="og:image" content="http://luxiaowan.github.io/images/image-20200417035130292.png">
 <meta property="og:image" content="http://luxiaowan.github.io/images/image-20200417035625713.png">
-<meta property="og:updated_time" content="2020-04-16T20:18:28.216Z">
+<meta property="og:updated_time" content="2020-04-17T05:06:52.429Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kafka生产者">
 <meta name="twitter:description" content="简 在kafka中把产生消息的一方称为生产者（Producer），尽管消息的产生非常简单，但是消息的发送过程比较复杂  发送消息从创建一个ProducerRecord对象开始，此类是kafka中的一个核心类，表示kafka需要发送的K-V键值对，记录了要发送的topic、partition、key、value、timestamp等 12345678public class ProducerRec">
@@ -414,10 +414,10 @@
         <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
         
 	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 2.7k(字)</span>
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 3k(字)</span>
 	
 	
-		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 12(分)</span>
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 13(分)</span>
 	
 
       </div>
@@ -475,6 +475,8 @@
 <p>org.apache.kafka.clients.producer.internals.ProducerBatch</p>
 </blockquote>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">completeFutureAndFireCallbacks</span><span class="params">(<span class="keyword">long</span> baseOffset, <span class="keyword">long</span> logAppendTime, RuntimeException exception)</span> </span>&#123;</span><br><span class="line">  produceFuture.set(baseOffset, logAppendTime, exception);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// execute callbacks</span></span><br><span class="line">  <span class="keyword">for</span> (Thunk thunk : thunks) &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="comment">// 发生异常</span></span><br><span class="line">      <span class="keyword">if</span> (exception == <span class="keyword">null</span>) &#123;</span><br><span class="line">        RecordMetadata metadata = thunk.future.value();</span><br><span class="line">        <span class="keyword">if</span> (thunk.callback != <span class="keyword">null</span>)</span><br><span class="line">          thunk.callback.onCompletion(metadata, <span class="keyword">null</span>);</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 正常</span></span><br><span class="line">        <span class="keyword">if</span> (thunk.callback != <span class="keyword">null</span>)</span><br><span class="line">          thunk.callback.onCompletion(<span class="keyword">null</span>, exception);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">      log.error(<span class="string">"Error executing user-provided callback on message for topic-partition '&#123;&#125;'"</span>, topicPartition, e);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  produceFuture.done();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
 <h3 id="分区机制"><a class="markdownIt-Anchor" href="#分区机制"></a> 分区机制</h3>
 <p>kafka对于数据的读写是以partition为粒度的，partition可以分布在不同的broker上，每个节点都可以独立的实现消息的读写，并且能够通过新增新的broker来提升kafka集群的吞吐量，partition部署在多个broker来实现负载均衡。</p>
 <p>kafka的分区策略其实指的就是Producer将消息发送到哪个分区的算法，kafka提供了默认的分区策略，同时也支持我们自定义分区策略，所有的策略都实现于接口<code>org.apache.kafka.clients.producer.Partitioner</code></p>
@@ -517,7 +519,19 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cc.kevinlu.springboot.kafka.partitioners;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.kafka.clients.producer.Partitioner;</span><br><span class="line"><span class="keyword">import</span> org.apache.kafka.common.Cluster;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Slf</span>4j</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CcPartitioner</span> <span class="keyword">implements</span> <span class="title">Partitioner</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">partition</span><span class="params">(String topic, Object key, <span class="keyword">byte</span>[] keyBytes, Object value, <span class="keyword">byte</span>[] valueBytes, Cluster cluster)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (log.isDebugEnabled()) &#123;</span><br><span class="line">            log.debug(<span class="string">"&#123;&#125;------------&#123;&#125;"</span>, topic, cluster.availablePartitionsForTopic(topic).size());</span><br><span class="line">        &#125;</span><br><span class="line">      	<span class="comment">// 永远都打到partition 0上</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(Map&lt;String, ?&gt; configs)</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
+<h3 id="producer-property"><a class="markdownIt-Anchor" href="#producer-property"></a> Producer Property</h3>
+<ol>
+<li>retries：消息重试次数，若消息发送过程中出现错误，但是可通过重新发送来弥补错误，比如Leader缺失，则生产者会不断的重发消息，直到重发次数达到此参数指定的值后放弃重试并返回错误，默认情况下每次重试间隔100ms，通过参数<code>retry.backoff.ms</code>指定</li>
+<li>acks：指定要有多少个partition副本接收消息，生产者才认为消息是成功写入，acks能够控制消息丢失概率。
+<ul>
+<li>acks=0：表示生产者只管发不管服务器是否接收了，非常容易丢消息</li>
+<li>acks=1：只要集群的Leader收到了消息就立刻反馈给生产者，消息可能会丢失</li>
+<li>acks=all：只有当所有的参与复制的节点都接收到消息时，broker才会反馈给生产者，能够保证消息绝不丢失，但是延迟更高</li>
+</ul>
 </li>
+<li>key.serializer：key的序列化类，需是接口<code>org.apache.kafka.common.serialization.Serializer</code>的实现类</li>
+<li>value.serializer：value的序列化类，需是接口<code>org.apache.kafka.common.serialization.Serializer</code>的实现类</li>
+<li>compression.type：消息压缩类型，默认为none, 可选值有none、gzip、snappy、lz4、zstd</li>
 </ol>
 
       
