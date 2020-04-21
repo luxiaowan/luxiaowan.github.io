@@ -25,7 +25,7 @@
 <meta property="og:site_name" content="串一串">
 <meta property="og:description" content="引文 开始看文章之前不妨先思考几个问题：服务治理是什么，什么样子的服务需要治理，为什么需要治理服务，应该怎样治理服务，治理服务的哪些方面，不治理的话服务会怎样？这些问题基本就是服务治理的关键思想了，搞懂这些问题，就相当于是掌握了服务治理的基本概念。  服务演变过程 我们在解决上述问题之前，先来看一下服务架构的发展过程。  单体服务 对于单体服务来说，应用结构一般比较简单，一般不需要特别的服务治理">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-04-21T07:05:41.067Z">
+<meta property="og:updated_time" content="2020-04-21T07:22:59.739Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="简单的看一下服务治理是什么">
 <meta name="twitter:description" content="引文 开始看文章之前不妨先思考几个问题：服务治理是什么，什么样子的服务需要治理，为什么需要治理服务，应该怎样治理服务，治理服务的哪些方面，不治理的话服务会怎样？这些问题基本就是服务治理的关键思想了，搞懂这些问题，就相当于是掌握了服务治理的基本概念。  服务演变过程 我们在解决上述问题之前，先来看一下服务架构的发展过程。  单体服务 对于单体服务来说，应用结构一般比较简单，一般不需要特别的服务治理">
@@ -408,10 +408,10 @@
         <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
         
 	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1.5k(字)</span>
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 2k(字)</span>
 	
 	
-		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 5(分)</span>
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 6(分)</span>
 	
 
       </div>
@@ -452,12 +452,71 @@
 <p>服务调用：在分布式架构中，服务之间可以通过http、rpc等方式互相调用，比如Feign是一种http方式的声明式调用，在SpringCloud中有广泛的使用。</p>
 </li>
 <li>
-<p>服务安全性：服务自身需要保证接口、数据和服务的安全性，不能出现被随意调用的现象。</p>
+<p>服务安全：服务自身需要保证接口、数据和服务的安全性，不能出现被随意调用的现象。</p>
 </li>
 <li>
 <p>服务版本：服务在升级过程中，需要考虑到对老版本的兼容性，避免造成因升级带来的系统故障。</p>
 </li>
 </ul>
+<h3 id="回看"><a class="markdownIt-Anchor" href="#回看"></a> 回看</h3>
+<p>简单的描述了一下服务架构的演进路线，我们来看看前面说的几个问题：</p>
+<ol>
+<li>
+<p>服务治理是什么</p>
+<blockquote>
+<p>服务治理是通过一系列手段来更好的管理服务，确保系统能够顺利、安全、稳定的运行。</p>
+</blockquote>
+</li>
+<li>
+<p>什么样子的服务需要治理</p>
+<blockquote>
+<p>任何服务都需要治理</p>
+</blockquote>
+</li>
+<li>
+<p>为什么需要治理服务</p>
+<blockquote>
+<ol>
+<li>为了提升系统的稳定性</li>
+<li>保证服务的可用性</li>
+</ol>
+</blockquote>
+</li>
+<li>
+<p>应该怎样治理服务</p>
+<blockquote>
+<ol>
+<li>建立授权的责任链</li>
+<li>评估服务的有效性</li>
+<li>服务监控告警</li>
+<li>故障转移</li>
+</ol>
+</blockquote>
+</li>
+<li>
+<p>治理服务的哪些方面</p>
+<blockquote>
+<ol>
+<li>服务定义</li>
+<li>服务注册与发现</li>
+<li>接口调用链</li>
+<li>应用服务监控</li>
+<li>负载均衡</li>
+<li>服务降级熔断</li>
+<li>服务调用协议</li>
+<li>服务安全</li>
+<li>服务版本</li>
+</ol>
+</blockquote>
+</li>
+<li>
+<p>不治理的话服务会怎样</p>
+<blockquote>
+<p>场景一：周末你正在逛街，然后老板在群里艾特你，说系统服务器宕机了、机房停电了、光缆被施工队挖断了，系统没办法使用了。这个时候你是不是需要立刻赶到公司去搬砖，直到系统恢复正常。</p>
+<p>场景二：正在与周公下棋，然后一阵滴滴声，发现某个服务节点的故障告警邮件快撑爆收件箱了，并且还不断的有流量打到这个服务节点，如果没有治理的话，你要立刻起床打开电脑尽快恢复这个节点。有了服务治理，你打开服务管理器，一键熔断降级，搞定。然后可以起床吃个早饭再来修复了(呸~当然立刻修复，哪还有心思吃早饭)。</p>
+</blockquote>
+</li>
+</ol>
 
       
     </div>
