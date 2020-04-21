@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://luxiaowan.github.io/"/>
-  <updated>2020-04-20T10:58:55.067Z</updated>
+  <updated>2020-04-21T07:05:41.067Z</updated>
   <id>http://luxiaowan.github.io/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>简单的看一下服务治理是什么</title>
+    <link href="http://luxiaowan.github.io/2020/04/20/%E7%AE%80%E5%8D%95%E7%9A%84%E7%9C%8B%E4%B8%80%E4%B8%8B%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86%E6%98%AF%E4%BB%80%E4%B9%88/"/>
+    <id>http://luxiaowan.github.io/2020/04/20/简单的看一下服务治理是什么/</id>
+    <published>2020-04-20T14:35:00.000Z</published>
+    <updated>2020-04-21T07:05:41.067Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="引文"><a class="markdownIt-Anchor" href="#引文"></a> 引文</h3><p>开始看文章之前不妨先思考几个问题：服务治理是什么，什么样子的服务需要治理，为什么需要治理服务，应该怎样治理服务，治理服务的哪些方面，不治理的话服务会怎样？这些问题基本就是服务治理的关键思想了，搞懂这些问题，就相当于是掌握了服务治理的基本概念。</p><h3 id="服务演变过程"><a class="markdownIt-Anchor" href="#服务演变过程"></a> 服务演变过程</h3><p>我们在解决上述问题之前，先来看一下服务架构的发展过程。</p><h4 id="单体服务"><a class="markdownIt-Anchor" href="#单体服务"></a> 单体服务</h4><p>对于单体服务来说，应用结构一般比较简单，一般不需要特别的服务治理手段，但随着服务承载的业务越来越庞大，服务内部逻辑变得复杂起来，扩展性也越来越差，这时最好的治理办法就是将其进行拆分，除此之外的治理手段都是徒劳，反而会让应用变得越来越臃肿。</p><h4 id="集群服务"><a class="markdownIt-Anchor" href="#集群服务"></a> 集群服务</h4><p>单体架构在流量较少时能够满足基本需求，随着业务的发展，产品流量越来越多，一秒钟的服务宕机都可能造成很大的损失，基于此，将由单体架构延伸到集群架构。集群中每台服务器都提供相同的服务，使用负载均衡器来实现每台服务器的负载分配，这其实也能算是一种治理，在分配请求时需要选择出最适合的健康的服务器，将请求发送过去，并且要时刻的检查集群中节点的健康状态，及时将故障节点从健康服务列表中剔除。</p><h4 id="分布式服务"><a class="markdownIt-Anchor" href="#分布式服务"></a> 分布式服务</h4><p>当单体应用变得臃肿之后，整个团队维护同一套代码，所有的业务都集中在一个应用中，服务的健壮性会随着业务的发展变得越来越脆弱，当维护一个服务变得困难的时候，就需要考虑将此服务拆分成若干个小而美的服务了，即微服务化，将单一服务架构向微服务架构演进。</p><p>当服务演进到微服务架构之后，会出现新的问题，比如之前所有的业务逻辑都在一个进程中执行，日志查看、问题排查等都很方便，也不存在进程之间的通信，更不存在依赖服务状态的监控等情况。那么既然拆分成微服务之后会遇到这么多问题，为什么还要拆呢？其实大部分由单体服务拆分成微服务的初衷都是想分而治之，也就是单一职责的服务更方便优化和维护。</p><ul><li><p>服务定义：服务拆分要根据一定的规则进行，定义拆分后每个服务的业务范围和边界，不能为了拆而拆，微服务的提出者Matin Fowler在首提微服务的时候是以业务为拆分基准，后续发展过程中，越来越多的条件都可以作为拆分的理由了，比如业务、流量大小等。</p></li><li><p>服务注册与发现：微服务架构体系中，必定会出现服务之间的调用依赖，这就需要调用方知道目标服务的地址，从而发起请求。如果将服务端的地址预先告知调用方，其实也是可行的，缺陷就是当服务越来越多时，服务URL的配置管理变得非常困难，所以在这个过程中我们需要借助一个中介来提供一个接口让我们可以随时获取健康的服务列表，所以服务注册中心应运而生(Zookeeper、Etcd、Consul、Eureka、Dubbo等)，它的理念是由服务端将可提供的服务注册到服务中心，并由服务中心来维护每个服务节点的健康状态，客户端从服务中心获取健康的服务列表用于发送请求。</p></li><li><p>接口调用链监控：微服务架构体系中以服务多著称，服务都具有单一职责，服务之间需要互相调用才能完成一次请求的处理。在单体应用架构中，调用链都是在同一个进程中，只要通过线程ID或者MDC即可查询到请求的整个调用链，定位很轻松；但是在分布式架构中，想要跟踪一次请求的整个调用链就比较麻烦了，一般需要通过第三方组件来完成，比如Twitter的Zipkin。</p></li><li><p>应用服务监控：SpringBootAdmin提供了一套开箱即用的监控工具箱，可以看到监控的每个微服务实例的运行情况，具体操作稍后再嗷嗷</p></li><li><p>负载均衡：在服务拆分设计过程中，每一个服务都需要保证是高可用的，也就是每一个微服务又都是高可用的。</p></li><li><p>服务降级熔断：单体服务拆分后导致服务变多了，调用链出故障的概率就更大了，我们在保证了服务的高可用的同时，仍然需要保证接口的可用性，如果接口出现故障，要能够将故障快速转移并响应调用端，否则可能会造成大量的请求积压，进而拖垮整个系统。断路器和服务降级为接口的快速故障转移提供了保障。</p></li><li><p>服务调用：在分布式架构中，服务之间可以通过http、rpc等方式互相调用，比如Feign是一种http方式的声明式调用，在SpringCloud中有广泛的使用。</p></li><li><p>服务安全性：服务自身需要保证接口、数据和服务的安全性，不能出现被随意调用的现象。</p></li><li><p>服务版本：服务在升级过程中，需要考虑到对老版本的兼容性，避免造成因升级带来的系统故障。</p></li></ul>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;引文&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#引文&quot;&gt;&lt;/a&gt; 引文&lt;/h3&gt;
+&lt;p&gt;开始看文章之前不妨先思考几个问题：服务治理是什么，什么样子的服务需要治理，为什么需要治理服务，应该怎样治理服务，治理服务的哪些方面，不治理的话服
+      
+    
+    </summary>
+    
+    
+      <category term="分布式" scheme="http://luxiaowan.github.io/categories/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>聊一聊负载均衡</title>
@@ -492,33 +517,6 @@
       
         &lt;h3 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;&lt;/a&gt; 前言&lt;/h3&gt;
 &lt;p&gt;Consul是一个基于CP的轻量级分布式高可用的系统，提供服务发现、健康检查、K-V存储、多数据中心等功能，不需要再依赖其他组件(Zk、Eure
-      
-    
-    </summary>
-    
-    
-      <category term="SpringBoot" scheme="http://luxiaowan.github.io/categories/SpringBoot/"/>
-    
-    
-      <category term="SpringCloud" scheme="http://luxiaowan.github.io/tags/SpringCloud/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Eureka集群搭建</title>
-    <link href="http://luxiaowan.github.io/2020/04/11/Eureka%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/"/>
-    <id>http://luxiaowan.github.io/2020/04/11/Eureka集群搭建/</id>
-    <published>2020-04-11T05:16:00.000Z</published>
-    <updated>2020-04-11T07:17:46.106Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="eureka集群"><a class="markdownIt-Anchor" href="#eureka集群"></a> Eureka集群</h3><p>Eureka是基于AP的分布式服务注册中心，集群中所有的Server节点都互为对方的备份，可以把所有的节点都看作是Master节点，也可以把所有的节点都看作是Slave节点，任一节点接收到新的服务注册请求后，都会在registry完成之后同步给其他的Server节点，续约操作renew和registry的逻辑一样。</p><img src="/images/image-20200411134658642.png" alt="image-20200411134658642" style="zoom:50%;"><p>当集群中一个Server节点宕机之后，Client会把自动切换到存活的节点，由于集群中的所有Server之间是相互同步的，所以各个Server节点之间的信息是相同的，除非是在一个Client刚注册到Server1还未同步给其他节点时宕机了，会造成信息不一致的情况，但当节点将续约请求发送给其他节点时，如果这个节点没有这个Client的信息，则会重新进行registry，并同步给集群中的其他节点。</p><img src="/images/image-20200411134915369.png" alt="image-20200411134915369" style="zoom:50%;"><p>因为Eureka集群是基于AP的，所以只要有一个Server节点可用，那么整个集群就是可用的，每一个Server节点都有一个server_id属性，当节点宕机后，会选择server_id值靠的最近的Server接收宕机节点的请求。</p><h3 id="搭建集群"><a class="markdownIt-Anchor" href="#搭建集群"></a> 搭建集群</h3><p>Eureka Server搭建很简单，最主要的就是节点配置文件的内容</p><ol><li>Eureka Server</li></ol><ul><li>peer1</li></ul><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line"><span class="attr">  port:</span> <span class="number">9001</span> <span class="comment">#服务端口</span></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line"><span class="attr">  instance:</span></span><br><span class="line"><span class="attr">    hostname:</span> <span class="string">peer1</span></span><br><span class="line"><span class="attr">  client:</span></span><br><span class="line"><span class="attr">    register-with-eureka:</span> <span class="literal">false</span> <span class="comment">#是否将eureka自身作为应用注册到eureka注册中心</span></span><br><span class="line"><span class="attr">    fetch-registry:</span> <span class="literal">false</span> <span class="comment">#为true时，可以启动，但报异常：Cannot execute request on any known server</span></span><br><span class="line"><span class="attr">    serviceUrl:</span></span><br><span class="line"><span class="attr">      defaultZone:</span> <span class="attr">http://peer2:9002/eureka/,http://peer3:9003/eureka/</span></span><br><span class="line"><span class="attr">  server:</span></span><br><span class="line"><span class="attr">    enable-self-preservation:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure><ul><li>peer2</li></ul><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line"><span class="attr">  port:</span> <span class="number">9002</span> <span class="comment">#服务端口</span></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line"><span class="attr">  instance:</span></span><br><span class="line"><span class="attr">    hostname:</span> <span class="string">peer2</span></span><br><span class="line"><span class="attr">  client:</span></span><br><span class="line"><span class="attr">    register-with-eureka:</span> <span class="literal">false</span> <span class="comment">#是否将eureka自身作为应用注册到eureka注册中心</span></span><br><span class="line"><span class="attr">    fetch-registry:</span> <span class="literal">false</span> <span class="comment">#为true时，可以启动，但报异常：Cannot execute request on any known server</span></span><br><span class="line"><span class="attr">    serviceUrl:</span></span><br><span class="line"><span class="attr">      defaultZone:</span> <span class="attr">http://peer1:9001/eureka/,http://peer3:9003/eureka/</span></span><br><span class="line"><span class="attr">  server:</span></span><br><span class="line"><span class="attr">    enable-self-preservation:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure><ul><li>peer3</li></ul><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line"><span class="attr">  port:</span> <span class="number">9003</span> <span class="comment">#服务端口</span></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line"><span class="attr">  instance:</span></span><br><span class="line"><span class="attr">    hostname:</span> <span class="string">peer3</span></span><br><span class="line"><span class="attr">  client:</span></span><br><span class="line"><span class="attr">    register-with-eureka:</span> <span class="literal">false</span> <span class="comment">#是否将eureka自身作为应用注册到eureka注册中心</span></span><br><span class="line"><span class="attr">    fetch-registry:</span> <span class="literal">false</span> <span class="comment">#为true时，可以启动，但报异常：Cannot execute request on any known server</span></span><br><span class="line"><span class="attr">    serviceUrl:</span></span><br><span class="line"><span class="attr">      defaultZone:</span> <span class="attr">http://peer1:9001/eureka/,http://peer2:9002/eureka/</span></span><br><span class="line"><span class="attr">  server:</span></span><br><span class="line"><span class="attr">    enable-self-preservation:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure><ol start="2"><li>Eureka Client</li></ol><figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">server.port</span>=<span class="string">7080</span></span><br><span class="line"><span class="meta">spring.application.name</span>=<span class="string">eureka-health</span></span><br><span class="line"><span class="meta">eureka.client.service-url.defaultZone</span>=<span class="string">http://127.0.0.1:9001/eureka/</span></span><br><span class="line"><span class="meta">eureka.instance.health-check-url-path</span>=<span class="string">/cc/health</span></span><br><span class="line"><span class="meta">eureka.instance.lease-renewal-interval-in-seconds</span>=<span class="string">5</span></span><br><span class="line"><span class="meta">eureka.instance.lease-expiration-duration-in-seconds</span>=<span class="string">15</span></span><br></pre></td></tr></table></figure><p>在客户端的defaultZone不论设置集群中的哪一个节点或哪几个节点，整个集群的所有节点都会有这个Client的注册信息，这就是因为Server节点的replicate功能。</p><p><img src="/images/image-20200411143623870.png" alt="image-20200411143623870"></p><p>当我们关闭掉其他Server节点，只留一个可用节点的时候，注册中心仍然可以提供服务。但如果我们在Client的defaultZone只设置一个节点的信息的话，那么在这个节点宕机之后，Client就找不到可以继续renew的节点了，最终整个集群都收不到这个Client的续约，在<code>lease-expiration-duration-in-seconds</code>之后，集群会将这个Client从服务列表移除，这损失可就太大了。</p><p>所以应该把Server和Client节点的defaultZone要设置齐全。Client把所有Server节点都设置进来，Server节点也把所有的Server节点都设置进来。</p><h3 id="集群参数"><a class="markdownIt-Anchor" href="#集群参数"></a> 集群参数</h3><figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Eureka Server启动时，从远程Eureka Server读取不到注册信息时，多长时间不允许Client访问，默认5分钟</span></span><br><span class="line"><span class="attr">eureka.server.wait-time-in-ms-when-sync-empty</span></span><br><span class="line"><span class="comment"># Eureka Server 集群节点更新频率，单位：毫秒，默认10分钟</span></span><br><span class="line"><span class="attr">eureka.server.peer-eureka-nodes-update-interval-ms</span></span><br><span class="line"><span class="comment"># 初始化实例信息到Eureka服务端的间隔时间，单位为秒，默认40秒</span></span><br><span class="line"><span class="attr">eureka.client.initial-instance-info-replication-interval-seconds</span></span><br><span class="line"><span class="comment"># 更新实例信息的变化到Eureka服务端的间隔时间，单位为秒，默认30秒</span></span><br><span class="line"><span class="attr">eureka.client.instance-info-replication-interval-seconds</span></span><br></pre></td></tr></table></figure>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h3 id=&quot;eureka集群&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#eureka集群&quot;&gt;&lt;/a&gt; Eureka集群&lt;/h3&gt;
-&lt;p&gt;Eureka是基于AP的分布式服务注册中心，集群中所有的Server节点都互为对方的备份，可以把所有的节点都
       
     
     </summary>
