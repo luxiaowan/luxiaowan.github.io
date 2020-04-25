@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>使用LockSupport实现线程交替打印1-100 | 串一串</title>
+  <meta name="description" content="简介 LockSupport是JDK底层的基于sun.misc.Unsafe来实现的类，用来创建锁和其他同步工具类的基本线程阻塞原语，在AQS中，就是通过调用LockSupport.park()和LockSupport.unpark()来实现线程的阻塞和唤醒的，不清楚的可以先了解一下AQS基本概况。每一个使用LockSupport的线程都会与一个许可关联，如果许可证在线程中可用，则调用park(">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用LockSupport实现线程交替打印1-100">
+<meta property="og:url" content="http://luxiaowan.github.io/2020/04/25/使用LockSupport实现线程交替打印1-100/index.html">
+<meta property="og:site_name" content="串一串">
+<meta property="og:description" content="简介 LockSupport是JDK底层的基于sun.misc.Unsafe来实现的类，用来创建锁和其他同步工具类的基本线程阻塞原语，在AQS中，就是通过调用LockSupport.park()和LockSupport.unpark()来实现线程的阻塞和唤醒的，不清楚的可以先了解一下AQS基本概况。每一个使用LockSupport的线程都会与一个许可关联，如果许可证在线程中可用，则调用park(">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200425175946604.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200425180113595.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200425194737366.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200425194937392.png">
+<meta property="og:updated_time" content="2020-04-25T12:15:18.820Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用LockSupport实现线程交替打印1-100">
+<meta name="twitter:description" content="简介 LockSupport是JDK底层的基于sun.misc.Unsafe来实现的类，用来创建锁和其他同步工具类的基本线程阻塞原语，在AQS中，就是通过调用LockSupport.park()和LockSupport.unpark()来实现线程的阻塞和唤醒的，不清楚的可以先了解一下AQS基本概况。每一个使用LockSupport的线程都会与一个许可关联，如果许可证在线程中可用，则调用park(">
+<meta name="twitter:image" content="http://luxiaowan.github.io/images/image-20200425175946604.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://luxiaowan.github.io/2020/04/25/使用LockSupport实现线程交替打印1-100/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="../../../../css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/luxiaowan" target="_blank">
+          <img class="img-circle img-rotate" src="../../../../images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">串一串</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">浪人</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Suzhou, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="../../../../.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="../../../../archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="../../../../repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="../../../../books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="../../../../links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="../../../../about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>断舍离!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Docker/">Docker</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Git/">Git</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Java/">Java</a><span class="category-list-count">21</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kafka/">Kafka</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kubernates/">Kubernates</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Linux/">Linux</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MongoDB/">MongoDB</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MyBatis/">MyBatis</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MySQL/">MySQL</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Nacos/">Nacos</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/NoSQL/">NoSQL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Redis/">Redis</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Spring/">Spring</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/SpringBoot/">SpringBoot</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/分布式/">分布式</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/杂谈/">杂谈</a><span class="category-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Docker/">Docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Eureka/">Eureka</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/GC/">GC</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java与MongoDB/">Java与MongoDB</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Maven/">Maven</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MongoDB错误记录/">MongoDB错误记录</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MySQL/">MySQL</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Sentinel/">Sentinel</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/SpringCloud/">SpringCloud</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基本指令/">基本指令</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基础应用/">基础应用</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/服务治理/">服务治理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/监控/">监控</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/索引/">索引</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/阿里/">阿里</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/面试/">面试</a><span class="tag-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="../../../../tags/Docker/" style="font-size: 13px;">Docker</a> <a href="../../../../tags/Eureka/" style="font-size: 13.2px;">Eureka</a> <a href="../../../../tags/GC/" style="font-size: 13px;">GC</a> <a href="../../../../tags/Java/" style="font-size: 13.2px;">Java</a> <a href="../../../../tags/Java与MongoDB/" style="font-size: 13px;">Java与MongoDB</a> <a href="../../../../tags/Maven/" style="font-size: 13.4px;">Maven</a> <a href="../../../../tags/MongoDB错误记录/" style="font-size: 13px;">MongoDB错误记录</a> <a href="../../../../tags/MySQL/" style="font-size: 13.2px;">MySQL</a> <a href="../../../../tags/Sentinel/" style="font-size: 13px;">Sentinel</a> <a href="../../../../tags/SpringCloud/" style="font-size: 13.8px;">SpringCloud</a> <a href="../../../../tags/基本指令/" style="font-size: 13px;">基本指令</a> <a href="../../../../tags/基础应用/" style="font-size: 13.2px;">基础应用</a> <a href="../../../../tags/服务治理/" style="font-size: 13px;">服务治理</a> <a href="../../../../tags/监控/" style="font-size: 13px;">监控</a> <a href="../../../../tags/索引/" style="font-size: 14px;">索引</a> <a href="../../../../tags/阿里/" style="font-size: 13.2px;">阿里</a> <a href="../../../../tags/面试/" style="font-size: 13.6px;">面试</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/04/">四月 2020</a><span class="archive-list-count">45</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/03/">三月 2020</a><span class="archive-list-count">18</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/01/">一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/12/">十二月 2019</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/11/">十一月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/10/">十月 2019</a><span class="archive-list-count">16</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/01/">一月 2019</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled ">
+        
+          <li>
+            
+            <div class="item-thumb">
+              <a href="" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="" class="title">使用LockSupport实现线程交替打印1-100</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-25T08:30:00.000Z" itemprop="datePublished">2020-04-25</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../24/AQS基本概况/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../24/AQS基本概况/" class="title">AQS基本概况</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-24T04:20:00.000Z" itemprop="datePublished">2020-04-24</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../24/使用Canal实现数据库和Redis同步/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Redis/">Redis</a>
+              </p>
+              <p class="item-title">
+                <a href="../../24/使用Canal实现数据库和Redis同步/" class="title">使用Canal实现数据库和Redis同步</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-23T16:35:00.000Z" itemprop="datePublished">2020-04-24</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../23/Maven中optional和exclusion的区别/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../23/Maven中optional和exclusion的区别/" class="title">Maven中optional和exclusion的区别</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-23T03:20:00.000Z" itemprop="datePublished">2020-04-23</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../23/SpringBoot自定义starter/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/SpringBoot/">SpringBoot</a>
+              </p>
+              <p class="item-title">
+                <a href="../../23/SpringBoot自定义starter/" class="title">SpringBoot自定义starter</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-22T17:16:00.000Z" itemprop="datePublished">2020-04-23</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-使用LockSupport实现线程交替打印1-100" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      使用LockSupport实现线程交替打印1-100
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="" class="article-date">
+	  <time datetime="2020-04-25T08:30:00.000Z" itemprop="datePublished">2020-04-25</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="../../../../categories/Java/">Java</a>
+  </span>
+
+        
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1.1k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 4(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h3 id="简介"><a class="markdownIt-Anchor" href="#简介"></a> 简介</h3>
+<p>LockSupport是JDK底层的基于<code>sun.misc.Unsafe</code>来实现的类，用来创建锁和其他同步工具类的基本线程阻塞原语，在AQS中，就是通过调用LockSupport.park()和LockSupport.unpark()来实现线程的阻塞和唤醒的，不清楚的可以先了解一下<a href="https://luxiaowan.github.io/2020/04/24/AQS%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%86%B5/">AQS基本概况</a>。每一个使用LockSupport的线程都会与一个许可关联，如果许可证在线程中可用，则调用park()将会立即返回，否则可能堵塞；若许可证不可用，则调用unpark()将其转为可用状态。调用park()的次数要少于等于调用unpark()的次数，否则将会导致许可不可用引起阻塞。</p>
+<h3 id="locksupport方法介绍"><a class="markdownIt-Anchor" href="#locksupport方法介绍"></a> LockSupport方法介绍</h3>
+<p>LockSupport提供的方法不多，且都是类方法，来看下：</p>
+<ul>
+<li>阻塞线程
+<ol>
+<li>park()：阻塞当前线程，需要在线程内调用，如果调用unpark()或者将线程中断，则从park()方法中返回</li>
+<li>park(Object blocker)：功能与park()相同，入参是一个Object对象，用来记录导致线程阻塞的阻塞对象，方便进行问题排查</li>
+<li>parkNanos(long nanos)：阻塞当前线程，阻塞时长不超过nanos纳秒，超时自动返回</li>
+<li>parkNanos(Object blocker, long nanos)：功能同parkNanos(long nanos)，在其基础上增加了Object对象，等同于是park(Object blocker)+parkNanos(long nanos)的组合</li>
+<li>parkUtil(long deadline)：阻塞当前线程，直到deadline后自动返回</li>
+<li>parkUtil(Object blocker, long deadline)：：等同于park(Object blocker)+parkUtil(long deadline)的组合</li>
+</ol>
+</li>
+<li>唤醒线程
+<ol>
+<li>unpar(Thread thread)：唤醒处于阻塞状态的指定线程</li>
+</ol>
+</li>
+</ul>
+<p>以上就是LockSupport的主要方法，每一种park方法都提供了一个Object对象的入参，目的是为了方便进行问题排查，那我们来看下是怎么方便的</p>
+<ol>
+<li>
+<p>park()的线程栈</p>
+<p><img src="/images/image-20200425175946604.png" alt="image-20200425175946604"></p>
+</li>
+<li>
+<p>park(Object blocker)的线程栈</p>
+<p><img src="/images/image-20200425180113595.png" alt="image-20200425180113595"></p>
+</li>
+</ol>
+<p>使用Object入参的方法之后，线程栈中出现了<code>parking to wait for</code>提示，告诉我们因为哪个对象发生的阻塞，方便我们查找阻塞源头。</p>
+<h3 id="例子1"><a class="markdownIt-Anchor" href="#例子1"></a> 例子1</h3>
+<ol>
+<li>
+<p>使用两个线程交替打印1-100</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.concurrent.atomic.AtomicInteger;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.LockSupport;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PrintNumTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> AtomicInteger num = <span class="keyword">new</span> AtomicInteger(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line"></span><br><span class="line">        Print p1 = <span class="keyword">new</span> Print();</span><br><span class="line">        Print p2 = <span class="keyword">new</span> Print();</span><br><span class="line">        Thread t1 = <span class="keyword">new</span> Thread(p1);</span><br><span class="line">        Thread t2 = <span class="keyword">new</span> Thread(p2);</span><br><span class="line">        t1.setName(<span class="string">"thread-cc-1"</span>);</span><br><span class="line">        t2.setName(<span class="string">"thread-cc-2"</span>);</span><br><span class="line">        p1.setT(t2);</span><br><span class="line">        p2.setT(t1);</span><br><span class="line">        t1.start();</span><br><span class="line">        t2.start();</span><br><span class="line">      	<span class="comment">// 唤醒线程t1打印奇数，线程1打印奇数，线程2打印偶数</span></span><br><span class="line">        LockSupport.unpark(t1);</span><br><span class="line">      	<span class="comment">// 唤醒线程t2打印奇数，线程1打印偶数，线程2打印奇数</span></span><br><span class="line">      	<span class="comment">// LockSupport.unpark(t1);</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Print</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">volatile</span> Thread t;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">              	<span class="comment">// 进入之后立即阻塞</span></span><br><span class="line">                LockSupport.park();</span><br><span class="line">                <span class="keyword">if</span> (num.get() &gt; <span class="number">100</span>) &#123;</span><br><span class="line">                    LockSupport.unpark(t);</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                System.out.println(Thread.currentThread().getName() + <span class="string">" : "</span> + num.getAndIncrement());</span><br><span class="line">              	<span class="comment">// 奇数唤醒偶数线程，偶数唤醒奇数线程</span></span><br><span class="line">                LockSupport.unpark(t);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setT</span><span class="params">(Thread t)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.t = t;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>线程使用死循环来保持运行状态，然后使用return来终止运行，进入循环之后立即调用LockSupport.park()阻塞当前线程，在调用线程的start()方法之后两个线程都堵塞在run()方法开始位置，在线程1中打开线程2的许可证，在线程2中打开线程1的许可证，达到交替执行的目的。此时线程都堵塞了，那么我们就可以在主线程中控制先打开哪一个线程的许可证了，如果想让线程1打印奇数，线程2打印偶数，就先把线程1阻塞的许可证打开，让线程1先执行；如果想让线程1打印偶数，线程2打印奇数，就先把线程2阻塞的许可证打开，让线程2先执行。</p>
+<ul>
+<li>t1打印奇数，t2打印偶数</li>
+</ul>
+<img src="/images/image-20200425194737366.png" alt="image-20200425194737366" style="zoom:50%;">
+<ul>
+<li>
+<p>t1打印偶数，t2打印奇数</p>
+<img src="/images/image-20200425194937392.png" alt="image-20200425194937392" style="zoom:50%;">
+</li>
+</ul>
+</li>
+<li>
+<p>使用三个线程交替打印1-100</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.concurrent.atomic.AtomicInteger;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.LockSupport;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PrintNumTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> AtomicInteger num = <span class="keyword">new</span> AtomicInteger(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line"></span><br><span class="line">        Print p1 = <span class="keyword">new</span> Print();</span><br><span class="line">        Print p2 = <span class="keyword">new</span> Print();</span><br><span class="line">        Print p3 = <span class="keyword">new</span> Print();</span><br><span class="line">        Thread t1 = <span class="keyword">new</span> Thread(p1);</span><br><span class="line">        Thread t2 = <span class="keyword">new</span> Thread(p2);</span><br><span class="line">        Thread t3 = <span class="keyword">new</span> Thread(p3);</span><br><span class="line">        t1.setName(<span class="string">"thread-cc-1"</span>);</span><br><span class="line">        t2.setName(<span class="string">"thread-cc-2"</span>);</span><br><span class="line">        t3.setName(<span class="string">"thread-cc-3"</span>);</span><br><span class="line">        p1.setT(t2);</span><br><span class="line">        p2.setT(t3);</span><br><span class="line">        p3.setT(t1);</span><br><span class="line">        t1.start();</span><br><span class="line">        t2.start();</span><br><span class="line">        t3.start();</span><br><span class="line">        LockSupport.unpark(t1);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Print</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">volatile</span> Thread t;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">                LockSupport.park();</span><br><span class="line">                <span class="keyword">if</span> (num.get() &gt; <span class="number">100</span>) &#123;</span><br><span class="line">                    LockSupport.unpark(t);</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                System.out.println(Thread.currentThread().getName() + <span class="string">" : "</span> + num.getAndIncrement());</span><br><span class="line">                LockSupport.unpark(t);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setT</span><span class="params">(Thread t)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.t = t;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://luxiaowan.github.io/2020/04/25/使用LockSupport实现线程交替打印1-100/" title="使用LockSupport实现线程交替打印1-100" target="_blank" rel="external">http://luxiaowan.github.io/2020/04/25/使用LockSupport实现线程交替打印1-100/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/luxiaowan" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="../../../../images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/luxiaowan" target="_blank"><span class="text-dark">串一串</span><small class="ml-1x">浪人</small></a></h3>
+        <div>断舍离</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    
+    <li class="next">
+      <a href="../../24/AQS基本概况/" title="AQS基本概况"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2020 cc
+        
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="../../../../js/plugin.min.js"></script>
+<script src="../../../../js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '../../../../content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="../../../../js/insight.js"></script>
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+
+
+
+
+
+
+</body>
+</html>
