@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>SpringBoot如何以war包形式运行 | 串一串</title>
+  <meta name="description" content="一、简介 SpringBoot应用默认打包成可执行jar模式方便我们的快速部署，如果是web应用的话，则默认使用内置的tomcat作为servlet容器，但是如果我们需要根据业务特性对容器做一些特殊配置，那么SpringBoot内置的tomcat容器就无法满足我们了，因此我们就需要把SpringBoot应用打包成war包，让其能够在外部tomcat中运行。 那我们直接打成war包然后部署到tom">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot如何以war包形式运行">
+<meta property="og:url" content="http://luxiaowan.github.io/2020/04/26/SpringBoot如何以war包形式运行/index.html">
+<meta property="og:site_name" content="串一串">
+<meta property="og:description" content="一、简介 SpringBoot应用默认打包成可执行jar模式方便我们的快速部署，如果是web应用的话，则默认使用内置的tomcat作为servlet容器，但是如果我们需要根据业务特性对容器做一些特殊配置，那么SpringBoot内置的tomcat容器就无法满足我们了，因此我们就需要把SpringBoot应用打包成war包，让其能够在外部tomcat中运行。 那我们直接打成war包然后部署到tom">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200426212704488.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200426212841507.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200426215949343.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200426220404239.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200426220312800.png">
+<meta property="og:updated_time" content="2020-04-26T14:07:38.075Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringBoot如何以war包形式运行">
+<meta name="twitter:description" content="一、简介 SpringBoot应用默认打包成可执行jar模式方便我们的快速部署，如果是web应用的话，则默认使用内置的tomcat作为servlet容器，但是如果我们需要根据业务特性对容器做一些特殊配置，那么SpringBoot内置的tomcat容器就无法满足我们了，因此我们就需要把SpringBoot应用打包成war包，让其能够在外部tomcat中运行。 那我们直接打成war包然后部署到tom">
+<meta name="twitter:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200426212704488.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://luxiaowan.github.io/2020/04/26/SpringBoot如何以war包形式运行/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="../../../../css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/luxiaowan" target="_blank">
+          <img class="img-circle img-rotate" src="../../../../images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">串一串</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">浪人</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Suzhou, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="../../../../.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="../../../../archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="../../../../repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="../../../../books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="../../../../links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="../../../../about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>断舍离!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Docker/">Docker</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Git/">Git</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Java/">Java</a><span class="category-list-count">21</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kafka/">Kafka</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kubernates/">Kubernates</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Linux/">Linux</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MongoDB/">MongoDB</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MyBatis/">MyBatis</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MySQL/">MySQL</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Nacos/">Nacos</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/NoSQL/">NoSQL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Redis/">Redis</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Spring/">Spring</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/SpringBoot/">SpringBoot</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/分布式/">分布式</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/杂谈/">杂谈</a><span class="category-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Docker/">Docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Eureka/">Eureka</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/GC/">GC</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java与MongoDB/">Java与MongoDB</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Maven/">Maven</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MongoDB错误记录/">MongoDB错误记录</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MySQL/">MySQL</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Sentinel/">Sentinel</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/SpringCloud/">SpringCloud</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基本指令/">基本指令</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基础应用/">基础应用</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/服务治理/">服务治理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/监控/">监控</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/索引/">索引</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/阿里/">阿里</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/面试/">面试</a><span class="tag-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="../../../../tags/Docker/" style="font-size: 13px;">Docker</a> <a href="../../../../tags/Eureka/" style="font-size: 13.2px;">Eureka</a> <a href="../../../../tags/GC/" style="font-size: 13px;">GC</a> <a href="../../../../tags/Java/" style="font-size: 13.2px;">Java</a> <a href="../../../../tags/Java与MongoDB/" style="font-size: 13px;">Java与MongoDB</a> <a href="../../../../tags/Maven/" style="font-size: 13.4px;">Maven</a> <a href="../../../../tags/MongoDB错误记录/" style="font-size: 13px;">MongoDB错误记录</a> <a href="../../../../tags/MySQL/" style="font-size: 13.2px;">MySQL</a> <a href="../../../../tags/Sentinel/" style="font-size: 13px;">Sentinel</a> <a href="../../../../tags/SpringCloud/" style="font-size: 13.8px;">SpringCloud</a> <a href="../../../../tags/基本指令/" style="font-size: 13px;">基本指令</a> <a href="../../../../tags/基础应用/" style="font-size: 13.2px;">基础应用</a> <a href="../../../../tags/服务治理/" style="font-size: 13px;">服务治理</a> <a href="../../../../tags/监控/" style="font-size: 13px;">监控</a> <a href="../../../../tags/索引/" style="font-size: 14px;">索引</a> <a href="../../../../tags/阿里/" style="font-size: 13.2px;">阿里</a> <a href="../../../../tags/面试/" style="font-size: 13.6px;">面试</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/04/">四月 2020</a><span class="archive-list-count">46</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/03/">三月 2020</a><span class="archive-list-count">18</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/01/">一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/12/">十二月 2019</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/11/">十一月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/10/">十月 2019</a><span class="archive-list-count">16</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/01/">一月 2019</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled ">
+        
+          <li>
+            
+            <div class="item-thumb">
+              <a href="" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/SpringBoot/">SpringBoot</a>
+              </p>
+              <p class="item-title">
+                <a href="" class="title">SpringBoot如何以war包形式运行</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-26T09:50:00.000Z" itemprop="datePublished">2020-04-26</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../25/使用LockSupport实现线程交替打印1-100/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../25/使用LockSupport实现线程交替打印1-100/" class="title">使用LockSupport实现线程交替打印1-100</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-25T08:30:00.000Z" itemprop="datePublished">2020-04-25</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../24/AQS基本概况/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../24/AQS基本概况/" class="title">AQS基本概况</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-24T04:20:00.000Z" itemprop="datePublished">2020-04-24</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../24/使用Canal实现数据库和Redis同步/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Redis/">Redis</a>
+              </p>
+              <p class="item-title">
+                <a href="../../24/使用Canal实现数据库和Redis同步/" class="title">使用Canal实现数据库和Redis同步</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-23T16:35:00.000Z" itemprop="datePublished">2020-04-24</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../23/Maven中optional和exclusion的区别/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../23/Maven中optional和exclusion的区别/" class="title">Maven中optional和exclusion的区别</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-23T03:20:00.000Z" itemprop="datePublished">2020-04-23</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-SpringBoot如何以war包形式运行" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      SpringBoot如何以war包形式运行
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="" class="article-date">
+	  <time datetime="2020-04-26T09:50:00.000Z" itemprop="datePublished">2020-04-26</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="../../../../categories/SpringBoot/">SpringBoot</a>
+  </span>
+
+        
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 942(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 4(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h3 id="一-简介"><a class="markdownIt-Anchor" href="#一-简介"></a> 一、简介</h3>
+<p>SpringBoot应用默认打包成可执行jar模式方便我们的快速部署，如果是web应用的话，则默认使用内置的tomcat作为servlet容器，但是如果我们需要根据业务特性对容器做一些特殊配置，那么SpringBoot内置的tomcat容器就无法满足我们了，因此我们就需要把SpringBoot应用打包成war包，让其能够在外部tomcat中运行。</p>
+<p>那我们直接打成war包然后部署到tomcat是否可行？我们来试下，看看会发生什么。</p>
+<h3 id="二-直接将springboot打成war包"><a class="markdownIt-Anchor" href="#二-直接将springboot打成war包"></a> 二、直接将SpringBoot打成war包</h3>
+<ol>
+<li>
+<p>创建一个SpringBoot web项目，并修改打包方式和端口</p>
+<ul>
+<li>
+<p>启动类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CcSpringBootWarApplication</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SpringApplication.run(CcSpringBootWarApplication.class, args);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>pom.xml</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">groupId</span>&gt;</span>cc.lu<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>cc-spring-boot-war<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">version</span>&gt;</span>0.0.1-SNAPSHOT<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- 添加packaging并指明方式为war --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">packaging</span>&gt;</span>war<span class="tag">&lt;/<span class="name">packaging</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>修改端口，不要和tomcat的8080冲突，修改tomcat的也可以</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">server.port</span>=<span class="string">8990</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>以上就是我们创建的一个简单的SpringBoot应用所具有的东西</p>
+</li>
+<li>
+<p>创建一个API</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.GetMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RestController;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping</span>(<span class="string">"/cc"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">test1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"cc"</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>打包</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn clean install -Dmaven.test.skip=true</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>放到tomcat中启动，查看控制台信息</p>
+<p><img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200426212704488.png" alt="image-20200426212704488"></p>
+<p>没有报错，那么我们访问一下接口http://127.0.0.1/boot-war/cc，报了404，说明我们项目未被部署成功。</p>
+<p><img src="/images/image-20200426212841507.png" alt="image-20200426212841507"></p>
+</li>
+</ol>
+<p>未部署成功，是因为我们在打包的时候，将内置的tomcat的jar包一并打到war包中了，这时和外部的tomcat冲突了。</p>
+<h3 id="三-优化后的springboot打war包"><a class="markdownIt-Anchor" href="#三-优化后的springboot打war包"></a> 三、优化后的SpringBoot打war包</h3>
+<ol>
+<li>
+<p>修改依赖的tomcat包的scope</p>
+<ul>
+<li>
+<p>第一种方式</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">exclusions</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">exclusion</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-tomcat<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">exclusion</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">exclusions</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>javax.servlet<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>javax.servlet-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">scope</span>&gt;</span>provided<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>直接屏蔽掉<code>spring-boot-starter-web</code>中向下传递的<code>spring-boot-starter-tomcat</code>包，并引入<code>javax.servlet-api</code>包，并将scope设置为<code>provided</code>，不然打包的时候会报错。</p>
+</li>
+<li>
+<p>第二种方式</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-tomcat<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">scope</span>&gt;</span>provided<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>javax.servlet<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>javax.servlet-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">scope</span>&gt;</span>provided<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>将<code>spring-boot-starter-tomcat</code>和<code>javax.servlet-api</code>的jar包的scope设置为<code>provided</code>便于打包。</p>
+</li>
+</ul>
+</li>
+<li>
+<p>修改启动类，设置启动配置</p>
+<p>发布到独立的Tomcat需要继承SpringBootServletInitializer类并重写configure方法，在war包部署解压后的文件夹中没有普通web项目的web.xml，但是仍然能启动，就是因为SpringConfig继承了SpringBootServletInitializer，所以打包的时候SpringBoot做了初始化工作，这个类就是用于代替传统MVC模式中的web.xml。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.springframework.boot.SpringApplication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.autoconfigure.SpringBootApplication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.builder.SpringApplicationBuilder;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.web.servlet.support.SpringBootServletInitializer;</span><br><span class="line"></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CcSpringBootWarApplication</span> <span class="keyword">extends</span> <span class="title">SpringBootServletInitializer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SpringApplication.run(CcSpringBootWarApplication.class, args);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> SpringApplicationBuilder <span class="title">configure</span><span class="params">(SpringApplicationBuilder builder)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> builder.sources(CcSpringBootWarApplication.class);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>打包</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn clean install -Dmaven.test.skip=true</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>部署</p>
+<p>将war包放到外部tomcat的webapps目录下，然后启动tomcat后访问http://127.0.0.1/boot-war/cc，访问正常。</p>
+<p><img src="/images/image-20200426215949343.png" alt="image-20200426215949343"></p>
+</li>
+</ol>
+<h3 id="四-直接创建war项目"><a class="markdownIt-Anchor" href="#四-直接创建war项目"></a> 四、直接创建war项目</h3>
+<p>在创建应用的时候，packaging选择War（目前只有Jar和War两个选项），就能直接创建出符合条件的应用，不需要再进行任何修改就可以直接打成war包。</p>
+<img src="/images/image-20200426220404239.png" alt="image-20200426220404239" style="zoom: 35%;">
+<p>创建的应用内容如下：</p>
+<img src="/images/image-20200426220312800.png" alt="image-20200426220312800" style="zoom:35%;">
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://luxiaowan.github.io/2020/04/26/SpringBoot如何以war包形式运行/" title="SpringBoot如何以war包形式运行" target="_blank" rel="external">http://luxiaowan.github.io/2020/04/26/SpringBoot如何以war包形式运行/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/luxiaowan" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="../../../../images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/luxiaowan" target="_blank"><span class="text-dark">串一串</span><small class="ml-1x">浪人</small></a></h3>
+        <div>断舍离</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    
+    <li class="next">
+      <a href="../../25/使用LockSupport实现线程交替打印1-100/" title="使用LockSupport实现线程交替打印1-100"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2020 cc
+        
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="../../../../js/plugin.min.js"></script>
+<script src="../../../../js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '../../../../content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="../../../../js/insight.js"></script>
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+
+
+
+
+
+
+</body>
+</html>
