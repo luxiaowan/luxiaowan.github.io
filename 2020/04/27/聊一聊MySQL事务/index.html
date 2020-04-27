@@ -25,29 +25,29 @@
 <meta property="og:site_name" content="串一串">
 <meta property="og:description" content="一、事务为何物 事务（Transaction）是保障程序中一组操作的原子性的约束，它使事务中的所有操作都指向同一个结果，也就是要么所有的操作都执行成功，要么所有的操作都执行失败，不允许出现其他结果。例如银行转账，从A账户扣除金额，向B账户添加金额，这两个数据库操作的总和构成一个完整的逻辑过程，不可拆分，这个过程被称为一个事务。在MySQL中，目前只有InnoDB引擎支持事务。  二、事务的特性">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427173518185.png">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427174522929.png">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427184245389.png">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427185221292.png">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427190836436.png">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427190607659.png">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427185221292.png">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427190836436.png">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427215936571.png">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427193013689.png">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427193112958.png">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427193423746.png">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427193523968.png">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427210838009.png">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427193112958.png">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427193112958.png">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427215912469.png">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427215828454.png">
-<meta property="og:updated_time" content="2020-04-27T15:29:37.175Z">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200427173518185.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200427174522929.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200427184245389.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200427185221292.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200427190836436.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200427190607659.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200427185221292.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200427190836436.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200427215936571.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200427193013689.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200427193112958.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200427193423746.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200427193523968.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200427210838009.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200427193112958.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200427193112958.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200427215912469.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200427215828454.png">
+<meta property="og:updated_time" content="2020-04-27T15:30:46.963Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="聊一聊MySQL事务">
 <meta name="twitter:description" content="一、事务为何物 事务（Transaction）是保障程序中一组操作的原子性的约束，它使事务中的所有操作都指向同一个结果，也就是要么所有的操作都执行成功，要么所有的操作都执行失败，不允许出现其他结果。例如银行转账，从A账户扣除金额，向B账户添加金额，这两个数据库操作的总和构成一个完整的逻辑过程，不可拆分，这个过程被称为一个事务。在MySQL中，目前只有InnoDB引擎支持事务。  二、事务的特性">
-<meta name="twitter:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427173518185.png">
+<meta name="twitter:image" content="http://luxiaowan.github.io/images/image-20200427173518185.png">
   <!-- Canonical links -->
   <link rel="canonical" href="http://luxiaowan.github.io/2020/04/27/聊一聊MySQL事务/index.html">
   
@@ -508,7 +508,7 @@
 <li>
 <p>查看数据库当前的事务隔离级别</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select @@tx_isolation</span><br></pre></td></tr></table></figure>
-<p><img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427173518185.png" alt="image-20200427173518185"></p>
+<p><img src="/images/image-20200427173518185.png" alt="image-20200427173518185"></p>
 </li>
 <li>
 <p>修改数据库的事务隔离级别</p>
@@ -518,7 +518,7 @@
 <p><code>global</code>：应用于之后新创建的session，已经存在的session不受影响</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set session transaction isolation level read committed</span><br></pre></td></tr></table></figure>
 <p>修改成功之后，我们再看一下当前的隔离级别已经被修改为RC了。</p>
-<p><img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427174522929.png" alt="image-20200427174522929"></p>
+<p><img src="/images/image-20200427174522929.png" alt="image-20200427174522929"></p>
 </li>
 </ol>
 <h3 id="五-小"><a class="markdownIt-Anchor" href="#五-小"></a> 五、小🌰</h3>
@@ -534,7 +534,7 @@
 <p>修改session的事务隔离级别为RU</p>
 <p>打开两个session窗口，将事务隔离级别均修改为RU。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 修改隔离级别为RU</span><br><span class="line">set session transaction isolation level read uncommitted ;</span><br><span class="line"># 验证</span><br><span class="line">select @@tx_isolation;</span><br></pre></td></tr></table></figure>
-<p><img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427184245389.png" alt="image-20200427184245389"></p>
+<p><img src="/images/image-20200427184245389.png" alt="image-20200427184245389"></p>
 </li>
 <li>
 <p>脏读验证</p>
@@ -546,18 +546,18 @@
 <p>A事务：进行查询操作</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">start transaction;</span><br><span class="line">select * from cc_isolation_test;</span><br></pre></td></tr></table></figure>
 <p>这时查到的数据为正常数据：</p>
-<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427185221292.png" alt="image-20200427185221292" style="zoom:50%;">
+<img src="/images/image-20200427185221292.png" alt="image-20200427185221292" style="zoom:50%;">
 </li>
 <li>
 <p>B事务：进行更新操作但不提交</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">start transaction;</span><br><span class="line">update cc_isolation_test set name=&apos;cc1&apos; where id=1;</span><br></pre></td></tr></table></figure>
 <p>执行完之后可以看一下我们的表中，数据是未被修改的，因为B事务尚未提交</p>
-<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427190836436.png" alt="image-20200427190836436" style="zoom:50%;">
+<img src="/images/image-20200427190836436.png" alt="image-20200427190836436" style="zoom:50%;">
 </li>
 <li>
 <p>A事务：再次进行查询操作</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from cc_isolation_test;</span><br></pre></td></tr></table></figure>
-<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427190607659.png" alt="image-20200427190607659" style="zoom:50%;">
+<img src="/images/image-20200427190607659.png" alt="image-20200427190607659" style="zoom:50%;">
 <p>查询出来的数据中，name竟然变成了cc1，也就是说A事务中读取到了B事务中尚未提交的数据，如果此时B事务回滚，A事务中name的值仍然是读到的cc1，也就出现了脏数据，所以RU级别下会出现脏读的问题。</p>
 </li>
 <li>
@@ -609,13 +609,13 @@
 <li>
 <p>A事务：进行查询操作</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">start transaction;</span><br><span class="line">select * from cc_isolation_test;</span><br></pre></td></tr></table></figure>
-<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427185221292.png" alt="image-20200427185221292" style="zoom:50%;">
+<img src="/images/image-20200427185221292.png" alt="image-20200427185221292" style="zoom:50%;">
 </li>
 <li>
 <p>B事务：进行插入操作但不提交</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">start transaction;</span><br><span class="line">insert into cc_isolation_test(name) values(&apos;cc1&apos;);</span><br></pre></td></tr></table></figure>
 <p>事务未提交，我们的表中还没出现插入的新数据</p>
-<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427190836436.png" alt="image-20200427190836436" style="zoom:50%;">
+<img src="/images/image-20200427190836436.png" alt="image-20200427190836436" style="zoom:50%;">
 </li>
 <li>
 <p>A事务：再次进行查询操作</p>
@@ -671,7 +671,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 修改隔离级别为RC</span><br><span class="line">set session transaction isolation level read committed ;</span><br><span class="line"># 验证</span><br><span class="line">select @@tx_isolation;</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
-<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427215936571.png" alt="image-20200427215936571" style="zoom:50%;">
+<img src="/images/image-20200427215936571.png" alt="image-20200427215936571" style="zoom:50%;">
 <ul>
 <li>
 <p>脏读验证</p>
@@ -683,7 +683,7 @@
 <li>
 <p>A事务：第一次查询</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">start transaction;</span><br><span class="line">select * from cc_isolation_test where id=1;</span><br></pre></td></tr></table></figure>
-<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427193013689.png" alt="image-20200427193013689" style="zoom:50%;">
+<img src="/images/image-20200427193013689.png" alt="image-20200427193013689" style="zoom:50%;">
 </li>
 <li>
 <p>B事务：修改数据并提交</p>
@@ -692,7 +692,7 @@
 <li>
 <p>A事务：第二次查询</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">start transaction;</span><br><span class="line">select * from cc_isolation_test where id=1;</span><br></pre></td></tr></table></figure>
-<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427193112958.png" alt="image-20200427193112958" style="zoom:50%;">
+<img src="/images/image-20200427193112958.png" alt="image-20200427193112958" style="zoom:50%;">
 <p>在A事务中读取到了B事务提交的数据，与第一次读取到的数据不一致，也就是说每次读取都是从数据库中读取最新的数据，这也证明了再RC级别下会出现不可重复读的问题。</p>
 </li>
 <li>
@@ -740,7 +740,7 @@
 <li>
 <p>A事务：第一次查询</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">start transaction;</span><br><span class="line">select * from cc_isolation_test;</span><br></pre></td></tr></table></figure>
-<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427193423746.png" alt="image-20200427193423746" style="zoom:50%;">
+<img src="/images/image-20200427193423746.png" alt="image-20200427193423746" style="zoom:50%;">
 </li>
 <li>
 <p>B事务：修改数据并提交</p>
@@ -749,7 +749,7 @@
 <li>
 <p>A事务：第二次查询</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from cc_isolation_test;</span><br></pre></td></tr></table></figure>
-<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427193523968.png" alt="image-20200427193523968" style="zoom:50%;">
+<img src="/images/image-20200427193523968.png" alt="image-20200427193523968" style="zoom:50%;">
 <p>两次查询的数据条数不同，在A事务中读取到了B事务新插入的数据，相对于第一次查询结果来说，出现了幻读的问题。</p>
 </li>
 <li>
@@ -799,7 +799,7 @@
 <li>
 <p>修改session的事务隔离级别为RR</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 修改隔离级别为RC</span><br><span class="line">set session transaction isolation level read committed ;</span><br><span class="line"># 验证</span><br><span class="line">select @@tx_isolation;</span><br></pre></td></tr></table></figure>
-<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427210838009.png" alt="image-20200427210838009" style="zoom:50%;">
+<img src="/images/image-20200427210838009.png" alt="image-20200427210838009" style="zoom:50%;">
 </li>
 <li>
 <p>脏读验证</p>
@@ -811,7 +811,7 @@
 <li>
 <p>A事务：第一次查询</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">start transaction;</span><br><span class="line">select * from cc_isolation_test where id=1;</span><br></pre></td></tr></table></figure>
-<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427193112958.png" alt="image-20200427193112958" style="zoom:50%;">
+<img src="/images/image-20200427193112958.png" alt="image-20200427193112958" style="zoom:50%;">
 </li>
 <li>
 <p>B事务：修改数据并提交</p>
@@ -820,7 +820,7 @@
 <li>
 <p>A事务：第二次查询</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from cc_isolation_test where id=1;</span><br></pre></td></tr></table></figure>
-<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427193112958.png" alt="image-20200427193112958" style="zoom:50%;">
+<img src="/images/image-20200427193112958.png" alt="image-20200427193112958" style="zoom:50%;">
 <p>通过两次读取之后发现在B事务提交前后读取到的数据是一致的，这样证明了RR级别是支持重复读的，nice~</p>
 </li>
 <li>
@@ -925,12 +925,12 @@
 <li>
 <p>修改session的事务隔离级别为Serializable</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set session transaction isolation level serializable;</span><br></pre></td></tr></table></figure>
-<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427215912469.png" alt="image-20200427215912469" style="zoom:50%;">
+<img src="/images/image-20200427215912469.png" alt="image-20200427215912469" style="zoom:50%;">
 </li>
 <li>
 <p>操作</p>
 <p>先开启事务A，进行查询，但不提交；再开启事务B，然后进行插入操作，会发现操作被阻塞了，如下图中insert语句最后的时间就是等待的时间，事务B必须在事务A提交或回滚之后才能继续执行，这也就是串行化的意义：同时只能有一个事务处于执行中，其他线程都要等待。并发度最低但安全性最高。</p>
-<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427215828454.png" alt="image-20200427215828454" style="zoom:50%;">
+<img src="/images/image-20200427215828454.png" alt="image-20200427215828454" style="zoom:50%;">
 <p>图解：</p>
 <table>
 <thead>
