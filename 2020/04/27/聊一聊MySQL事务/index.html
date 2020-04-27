@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>聊一聊MySQL事务 | 串一串</title>
+  <meta name="description" content="一、事务为何物 事务（Transaction）是保障程序中一组操作的原子性的约束，它使事务中的所有操作都指向同一个结果，也就是要么所有的操作都执行成功，要么所有的操作都执行失败，不允许出现其他结果。例如银行转账，从A账户扣除金额，向B账户添加金额，这两个数据库操作的总和构成一个完整的逻辑过程，不可拆分，这个过程被称为一个事务。在MySQL中，目前只有InnoDB引擎支持事务。  二、事务的特性">
+<meta property="og:type" content="article">
+<meta property="og:title" content="聊一聊MySQL事务">
+<meta property="og:url" content="http://luxiaowan.github.io/2020/04/27/聊一聊MySQL事务/index.html">
+<meta property="og:site_name" content="串一串">
+<meta property="og:description" content="一、事务为何物 事务（Transaction）是保障程序中一组操作的原子性的约束，它使事务中的所有操作都指向同一个结果，也就是要么所有的操作都执行成功，要么所有的操作都执行失败，不允许出现其他结果。例如银行转账，从A账户扣除金额，向B账户添加金额，这两个数据库操作的总和构成一个完整的逻辑过程，不可拆分，这个过程被称为一个事务。在MySQL中，目前只有InnoDB引擎支持事务。  二、事务的特性">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427173518185.png">
+<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427174522929.png">
+<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427184245389.png">
+<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427185221292.png">
+<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427190836436.png">
+<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427190607659.png">
+<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427185221292.png">
+<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427190836436.png">
+<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427215936571.png">
+<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427193013689.png">
+<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427193112958.png">
+<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427193423746.png">
+<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427193523968.png">
+<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427210838009.png">
+<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427193112958.png">
+<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427193112958.png">
+<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427215912469.png">
+<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427215828454.png">
+<meta property="og:updated_time" content="2020-04-27T15:29:37.175Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="聊一聊MySQL事务">
+<meta name="twitter:description" content="一、事务为何物 事务（Transaction）是保障程序中一组操作的原子性的约束，它使事务中的所有操作都指向同一个结果，也就是要么所有的操作都执行成功，要么所有的操作都执行失败，不允许出现其他结果。例如银行转账，从A账户扣除金额，向B账户添加金额，这两个数据库操作的总和构成一个完整的逻辑过程，不可拆分，这个过程被称为一个事务。在MySQL中，目前只有InnoDB引擎支持事务。  二、事务的特性">
+<meta name="twitter:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427173518185.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://luxiaowan.github.io/2020/04/27/聊一聊MySQL事务/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="../../../../css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/luxiaowan" target="_blank">
+          <img class="img-circle img-rotate" src="../../../../images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">串一串</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">浪人</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Suzhou, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="../../../../.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="../../../../archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="../../../../repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="../../../../books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="../../../../links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="../../../../about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>断舍离!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Docker/">Docker</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Git/">Git</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Java/">Java</a><span class="category-list-count">21</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kafka/">Kafka</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kubernates/">Kubernates</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Linux/">Linux</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MongoDB/">MongoDB</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MyBatis/">MyBatis</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MySQL/">MySQL</a><span class="category-list-count">16</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Nacos/">Nacos</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/NoSQL/">NoSQL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Redis/">Redis</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Spring/">Spring</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/SpringBoot/">SpringBoot</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/分布式/">分布式</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/杂谈/">杂谈</a><span class="category-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Docker/">Docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Eureka/">Eureka</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/GC/">GC</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java与MongoDB/">Java与MongoDB</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Maven/">Maven</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MongoDB错误记录/">MongoDB错误记录</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MySQL/">MySQL</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Sentinel/">Sentinel</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/SpringCloud/">SpringCloud</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基本指令/">基本指令</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基础应用/">基础应用</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/服务治理/">服务治理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/监控/">监控</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/索引/">索引</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/阿里/">阿里</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/面试/">面试</a><span class="tag-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="../../../../tags/Docker/" style="font-size: 13px;">Docker</a> <a href="../../../../tags/Eureka/" style="font-size: 13.2px;">Eureka</a> <a href="../../../../tags/GC/" style="font-size: 13px;">GC</a> <a href="../../../../tags/Java/" style="font-size: 13.2px;">Java</a> <a href="../../../../tags/Java与MongoDB/" style="font-size: 13px;">Java与MongoDB</a> <a href="../../../../tags/Maven/" style="font-size: 13.4px;">Maven</a> <a href="../../../../tags/MongoDB错误记录/" style="font-size: 13px;">MongoDB错误记录</a> <a href="../../../../tags/MySQL/" style="font-size: 13.2px;">MySQL</a> <a href="../../../../tags/Sentinel/" style="font-size: 13px;">Sentinel</a> <a href="../../../../tags/SpringCloud/" style="font-size: 13.8px;">SpringCloud</a> <a href="../../../../tags/基本指令/" style="font-size: 13px;">基本指令</a> <a href="../../../../tags/基础应用/" style="font-size: 13.2px;">基础应用</a> <a href="../../../../tags/服务治理/" style="font-size: 13px;">服务治理</a> <a href="../../../../tags/监控/" style="font-size: 13px;">监控</a> <a href="../../../../tags/索引/" style="font-size: 14px;">索引</a> <a href="../../../../tags/阿里/" style="font-size: 13.2px;">阿里</a> <a href="../../../../tags/面试/" style="font-size: 13.6px;">面试</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/04/">四月 2020</a><span class="archive-list-count">47</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/03/">三月 2020</a><span class="archive-list-count">18</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/01/">一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/12/">十二月 2019</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/11/">十一月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/10/">十月 2019</a><span class="archive-list-count">16</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/01/">一月 2019</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled ">
+        
+          <li>
+            
+            <div class="item-thumb">
+              <a href="" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/MySQL/">MySQL</a>
+              </p>
+              <p class="item-title">
+                <a href="" class="title">聊一聊MySQL事务</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-27T07:30:00.000Z" itemprop="datePublished">2020-04-27</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../26/SpringBoot如何以war包形式运行/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/SpringBoot/">SpringBoot</a>
+              </p>
+              <p class="item-title">
+                <a href="../../26/SpringBoot如何以war包形式运行/" class="title">SpringBoot如何以war包形式运行</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-26T09:50:00.000Z" itemprop="datePublished">2020-04-26</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../25/使用LockSupport实现线程交替打印1-100/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../25/使用LockSupport实现线程交替打印1-100/" class="title">使用LockSupport实现线程交替打印1-100</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-25T08:30:00.000Z" itemprop="datePublished">2020-04-25</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../24/AQS基本概况/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../24/AQS基本概况/" class="title">AQS基本概况</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-24T04:20:00.000Z" itemprop="datePublished">2020-04-24</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../24/使用Canal实现数据库和Redis同步/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Redis/">Redis</a>
+              </p>
+              <p class="item-title">
+                <a href="../../24/使用Canal实现数据库和Redis同步/" class="title">使用Canal实现数据库和Redis同步</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-23T16:35:00.000Z" itemprop="datePublished">2020-04-24</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-聊一聊MySQL事务" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      聊一聊MySQL事务
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="" class="article-date">
+	  <time datetime="2020-04-27T07:30:00.000Z" itemprop="datePublished">2020-04-27</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="../../../../categories/MySQL/">MySQL</a>
+  </span>
+
+        
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 3k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 11(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h3 id="一-事务为何物"><a class="markdownIt-Anchor" href="#一-事务为何物"></a> 一、事务为何物</h3>
+<p>事务（Transaction）是保障程序中一组操作的原子性的约束，它使事务中的所有操作都指向同一个结果，也就是要么所有的操作都执行成功，要么所有的操作都执行失败，不允许出现其他结果。例如银行转账，从A账户扣除金额，向B账户添加金额，这两个数据库操作的总和构成一个完整的逻辑过程，不可拆分，这个过程被称为一个事务。在MySQL中，目前只有InnoDB引擎支持事务。</p>
+<h3 id="二-事务的特性"><a class="markdownIt-Anchor" href="#二-事务的特性"></a> 二、事务的特性</h3>
+<p>数据库管理系统在写入或更新数据的过程中，为保证事务是正确可靠的，需要具备四个特性：原子性（Atomicity）、一致性（Consistency）、隔离性（Isolation）和持久性（Durability）。</p>
+<ul>
+<li>原子性（Atomicity）：一个事物中的所有操作，要么全部完成，要么全部失败，不会在中间某个环节结束。若事务在执行过程中发生异常，所有的操作都会被回滚到事务开始前的状态，就像这个事务从没执行过一样。</li>
+<li>一致性（Consistency）：事务操作的数据从一个状态转换为另一个状态，但是对于整个数据的完整性保持稳定，也就是在事务开始之前和结束之后，数据库的完整性没有被破坏。</li>
+<li>隔离性（Isolation）：数据库允许多个事务并发执行，隔离性是为了防止多个事务并发执行导致数据的不一致，事务之间是相互隔离的。事务隔离有四种级别：未提交读（Read UnCommitted）、已提交读（Read Commited）、可重复读（Repeatable Read）、串行化（Serializable）</li>
+<li>持久性：事务成功提交之后，对数据的修改是永久性的，即便系统故障也不会丢失。</li>
+</ul>
+<h3 id="三-为什么要有四种隔离级别"><a class="markdownIt-Anchor" href="#三-为什么要有四种隔离级别"></a> 三、为什么要有四种隔离级别</h3>
+<p>SQL标准定义了4种隔离级别用来限定不同的事务场景，按照隔离级别从低到高为：读未提交、读已提交、可重复读、串行化，级别越高，所支持的并发度越低。</p>
+<blockquote>
+<p>不同的隔离级别会造成不同的影响，体现在数据上就是脏读、不可重复读和幻读。</p>
+</blockquote>
+<ul>
+<li>脏读：A事务读取了B事务中未提交的数据，在A事务提交之前，B事务进行了回滚，此时A事务中的数据就不正确了，所以被定义为脏数据。</li>
+<li>不可重复读：A事务在第一次读取之后到第二次读取之前，B事务对该数据进行了修改，导致A事务两次读取的数据不一致，这就是不可重复读</li>
+<li>幻读：幻读一般发生在范围查询的情况下，A事务第一次读取一批数据，在第二次读取之前，B事务向数据库中插入了新的符合A事务查询条件的数据，此时A事务第二次读取出来的数据条数不一致，这种情况对于A事务来说就是出现了幻读。</li>
+</ul>
+<blockquote>
+<p>事务隔离级别</p>
+</blockquote>
+<ul>
+<li>读未提交（Read UnCommitted）：该隔离级别下的事务可以看到其他事务未提交的执行结果，会引起脏读、不可重复读和幻读，在实际应用中几乎不会使用该级别的事务。</li>
+<li>读已提交（Read Committed）：这是大多数数据库系统的默认隔离级别（如Oracle、阿里云的MySQL）等，但不是官方MySQL默认的。它不允许事务看到未提交的事务中的数据，使事务只能看见已经提交的事务所做的改变。该隔离级别会引起不可重复读和幻读。</li>
+<li>可重复读（Repeatable Read）：这是官方MySQL的默认事务隔离级别，它确保同一事务多次读取的数据的一致性，解决了不可重复读的问题。该隔离级别解决的主要是对数据库进行UPDATE操作造成的数据改变，但还是会引起幻读的情况发生，在InnoDB存储引擎下默认提供MVCC（多版本并发控制）机制解决了幻读的问题。</li>
+<li>串行化（Serializable）：这是最高的隔离级别，串行的意思也就是每次只允许一个事务对数据进行操作，事务按照先来后到的规则进行排队一次执行，这样在事务之间就不会相互冲突，从而解决了幻读的问题。但是串行化执行事务的方式会严重影响事务的执行效率，高并发操作下会造成事务堆积和超时，一般在实际应用中很少使用，虽然它很安全。</li>
+</ul>
+<p>通过上面我们了解了事务隔离级别，也知道每种隔离级别所解决的事情，做一下汇总：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">事务隔离级别</th>
+<th style="text-align:center">脏读</th>
+<th style="text-align:center">不可重复读</th>
+<th style="text-align:center">幻读</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">读未提交</td>
+<td style="text-align:center">Y</td>
+<td style="text-align:center">Y</td>
+<td style="text-align:center">Y</td>
+</tr>
+<tr>
+<td style="text-align:center">读已提交</td>
+<td style="text-align:center">N</td>
+<td style="text-align:center">Y</td>
+<td style="text-align:center">Y</td>
+</tr>
+<tr>
+<td style="text-align:center">可重复读</td>
+<td style="text-align:center">N</td>
+<td style="text-align:center">N</td>
+<td style="text-align:center">Y</td>
+</tr>
+<tr>
+<td style="text-align:center">串行化</td>
+<td style="text-align:center">N</td>
+<td style="text-align:center">N</td>
+<td style="text-align:center">N</td>
+</tr>
+</tbody>
+</table>
+<h3 id="四-如何查看和设置数据库的隔离级别"><a class="markdownIt-Anchor" href="#四-如何查看和设置数据库的隔离级别"></a> 四、如何查看和设置数据库的隔离级别</h3>
+<ol>
+<li>
+<p>查看数据库当前的事务隔离级别</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select @@tx_isolation</span><br></pre></td></tr></table></figure>
+<p><img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427173518185.png" alt="image-20200427173518185"></p>
+</li>
+<li>
+<p>修改数据库的事务隔离级别</p>
+<p>修改语句格式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set [global | session] transaction isolation level [read uncommitted | read committed | repeatable read | serializable]</span><br></pre></td></tr></table></figure>
+<p><code>session</code>：当前session内的事务</p>
+<p><code>global</code>：应用于之后新创建的session，已经存在的session不受影响</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set session transaction isolation level read committed</span><br></pre></td></tr></table></figure>
+<p>修改成功之后，我们再看一下当前的隔离级别已经被修改为RC了。</p>
+<p><img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427174522929.png" alt="image-20200427174522929"></p>
+</li>
+</ol>
+<h3 id="五-小"><a class="markdownIt-Anchor" href="#五-小"></a> 五、小🌰</h3>
+<ol>
+<li>
+<p>创建一张表备用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">create table cc_isolation_test</span><br><span class="line">(</span><br><span class="line">    id   int auto_increment primary key,</span><br><span class="line">    name varchar(30) null</span><br><span class="line">) engine=innodb default charset=utf8</span><br><span class="line">    comment &apos;事务隔离级别测试表&apos;;</span><br><span class="line"></span><br><span class="line"># 插入一条数据</span><br><span class="line">insert into cc_isolation_test(name) values(&apos;cc&apos;);</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>RU级别</p>
+<ul>
+<li>
+<p>修改session的事务隔离级别为RU</p>
+<p>打开两个session窗口，将事务隔离级别均修改为RU。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 修改隔离级别为RU</span><br><span class="line">set session transaction isolation level read uncommitted ;</span><br><span class="line"># 验证</span><br><span class="line">select @@tx_isolation;</span><br></pre></td></tr></table></figure>
+<p><img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427184245389.png" alt="image-20200427184245389"></p>
+</li>
+<li>
+<p>脏读验证</p>
+<ol>
+<li>
+<p>在两个窗口中均开启一个事务，在A事务中进行查询操作，在B事务中进行更新操作但不提交</p>
+</li>
+<li>
+<p>A事务：进行查询操作</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">start transaction;</span><br><span class="line">select * from cc_isolation_test;</span><br></pre></td></tr></table></figure>
+<p>这时查到的数据为正常数据：</p>
+<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427185221292.png" alt="image-20200427185221292" style="zoom:50%;">
+</li>
+<li>
+<p>B事务：进行更新操作但不提交</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">start transaction;</span><br><span class="line">update cc_isolation_test set name=&apos;cc1&apos; where id=1;</span><br></pre></td></tr></table></figure>
+<p>执行完之后可以看一下我们的表中，数据是未被修改的，因为B事务尚未提交</p>
+<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427190836436.png" alt="image-20200427190836436" style="zoom:50%;">
+</li>
+<li>
+<p>A事务：再次进行查询操作</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from cc_isolation_test;</span><br></pre></td></tr></table></figure>
+<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427190607659.png" alt="image-20200427190607659" style="zoom:50%;">
+<p>查询出来的数据中，name竟然变成了cc1，也就是说A事务中读取到了B事务中尚未提交的数据，如果此时B事务回滚，A事务中name的值仍然是读到的cc1，也就出现了脏数据，所以RU级别下会出现脏读的问题。</p>
+</li>
+<li>
+<p>图解</p>
+<table>
+<thead>
+<tr>
+<th>事务A</th>
+<th>事务B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>start transaction;</td>
+<td>start transaction;</td>
+</tr>
+<tr>
+<td>select * from cc_isolation_test;</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>update cc_isolation_test set name=‘cc1’ where id=1;</td>
+</tr>
+<tr>
+<td>select * from cc_isolation_test;</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>rollback;</td>
+</tr>
+<tr>
+<td>commit;</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</li>
+</ol>
+</li>
+<li>
+<p>不可重复读验证</p>
+<p>上面演示脏读的过程中，在A事务中对数据进行了两次读取，且两次读取到的name的值不一致，所以RU也造成了不可重复读的问题。</p>
+</li>
+<li>
+<p>幻读验证</p>
+<ol>
+<li>
+<p>A事务：进行查询操作</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">start transaction;</span><br><span class="line">select * from cc_isolation_test;</span><br></pre></td></tr></table></figure>
+<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427185221292.png" alt="image-20200427185221292" style="zoom:50%;">
+</li>
+<li>
+<p>B事务：进行插入操作但不提交</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">start transaction;</span><br><span class="line">insert into cc_isolation_test(name) values(&apos;cc1&apos;);</span><br></pre></td></tr></table></figure>
+<p>事务未提交，我们的表中还没出现插入的新数据</p>
+<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427190836436.png" alt="image-20200427190836436" style="zoom:50%;">
+</li>
+<li>
+<p>A事务：再次进行查询操作</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from cc_isolation_test;</span><br></pre></td></tr></table></figure>
+<p>查询出来两条数据，和之前查询的条数不一样，但是我们数据库中仅仅只有一条数据，这就是所谓的幻读，此时若将B事务回滚掉，A事务拿着B事务未提交的数据继续操作，定会出现问题。</p>
+</li>
+<li>
+<p>图解</p>
+<table>
+<thead>
+<tr>
+<th>事务A</th>
+<th>事务B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>start transaction;</td>
+<td>start transaction;</td>
+</tr>
+<tr>
+<td>select * from cc_isolation_test;</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>insert into cc_isolation_test(name) values(‘cc1’);</td>
+</tr>
+<tr>
+<td>select * from cc_isolation_test;</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>rollback;</td>
+</tr>
+<tr>
+<td>commit;</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>
+<p>RC级别</p>
+<ul>
+<li>
+<p>修改session的事务隔离级别为RC</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 修改隔离级别为RC</span><br><span class="line">set session transaction isolation level read committed ;</span><br><span class="line"># 验证</span><br><span class="line">select @@tx_isolation;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427215936571.png" alt="image-20200427215936571" style="zoom:50%;">
+<ul>
+<li>
+<p>脏读验证</p>
+<p>操作步骤和RU的一致，但是结果却不相同，我们在B事务中对<code>id=1</code>的数据进行修改但是不提交事务，在A事务中是读取不到B事务对该条数据的修改，所以RC级别不会出现脏读的问题。</p>
+</li>
+<li>
+<p>不可重复读验证</p>
+<ol>
+<li>
+<p>A事务：第一次查询</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">start transaction;</span><br><span class="line">select * from cc_isolation_test where id=1;</span><br></pre></td></tr></table></figure>
+<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427193013689.png" alt="image-20200427193013689" style="zoom:50%;">
+</li>
+<li>
+<p>B事务：修改数据并提交</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">start transaction ;</span><br><span class="line">update cc_isolation_test set name=&apos;cc1&apos; where id=1;</span><br><span class="line">commit ;</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>A事务：第二次查询</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">start transaction;</span><br><span class="line">select * from cc_isolation_test where id=1;</span><br></pre></td></tr></table></figure>
+<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427193112958.png" alt="image-20200427193112958" style="zoom:50%;">
+<p>在A事务中读取到了B事务提交的数据，与第一次读取到的数据不一致，也就是说每次读取都是从数据库中读取最新的数据，这也证明了再RC级别下会出现不可重复读的问题。</p>
+</li>
+<li>
+<p>图解</p>
+<table>
+<thead>
+<tr>
+<th>事务A</th>
+<th>事务B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>start transaction;</td>
+<td>start transaction;</td>
+</tr>
+<tr>
+<td>select * from cc_isolation_test where id=1;</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>update cc_isolation_test set name=‘cc1’ where id=1;</td>
+</tr>
+<tr>
+<td></td>
+<td>commit;</td>
+</tr>
+<tr>
+<td>select * from cc_isolation_test where id=1;</td>
+<td></td>
+</tr>
+<tr>
+<td>commit;</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</li>
+</ol>
+</li>
+<li>
+<p>幻读验证</p>
+<ol>
+<li>
+<p>A事务：第一次查询</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">start transaction;</span><br><span class="line">select * from cc_isolation_test;</span><br></pre></td></tr></table></figure>
+<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427193423746.png" alt="image-20200427193423746" style="zoom:50%;">
+</li>
+<li>
+<p>B事务：修改数据并提交</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">start transaction ;</span><br><span class="line">insert into cc_isolation_test(name) values(&apos;cc2&apos;);</span><br><span class="line">commit ;</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>A事务：第二次查询</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from cc_isolation_test;</span><br></pre></td></tr></table></figure>
+<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427193523968.png" alt="image-20200427193523968" style="zoom:50%;">
+<p>两次查询的数据条数不同，在A事务中读取到了B事务新插入的数据，相对于第一次查询结果来说，出现了幻读的问题。</p>
+</li>
+<li>
+<p>图解</p>
+<table>
+<thead>
+<tr>
+<th>事务A</th>
+<th>事务B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>start transaction;</td>
+<td>start transaction;</td>
+</tr>
+<tr>
+<td>select * from cc_isolation_test;</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>insert into cc_isolation_test(name) values(‘cc2’);</td>
+</tr>
+<tr>
+<td></td>
+<td>commit;</td>
+</tr>
+<tr>
+<td>select * from cc_isolation_test;</td>
+<td></td>
+</tr>
+<tr>
+<td>commit;</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>
+<p>RR级别</p>
+<ul>
+<li>
+<p>修改session的事务隔离级别为RR</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 修改隔离级别为RC</span><br><span class="line">set session transaction isolation level read committed ;</span><br><span class="line"># 验证</span><br><span class="line">select @@tx_isolation;</span><br></pre></td></tr></table></figure>
+<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427210838009.png" alt="image-20200427210838009" style="zoom:50%;">
+</li>
+<li>
+<p>脏读验证</p>
+<p>操作步骤和RC的一致，但是结果却不相同，我们在B事务中对<code>id=1</code>的数据进行修改但是不提交事务，在A事务中是读取不到B事务对该条数据的修改，所以RR级别不会出现脏读的问题。</p>
+</li>
+<li>
+<p>不可重复读验证</p>
+<ol>
+<li>
+<p>A事务：第一次查询</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">start transaction;</span><br><span class="line">select * from cc_isolation_test where id=1;</span><br></pre></td></tr></table></figure>
+<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427193112958.png" alt="image-20200427193112958" style="zoom:50%;">
+</li>
+<li>
+<p>B事务：修改数据并提交</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">start transaction ;</span><br><span class="line">update cc_isolation_test set name=&apos;cc2&apos; where id=1;</span><br><span class="line">commit ;</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>A事务：第二次查询</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from cc_isolation_test where id=1;</span><br></pre></td></tr></table></figure>
+<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427193112958.png" alt="image-20200427193112958" style="zoom:50%;">
+<p>通过两次读取之后发现在B事务提交前后读取到的数据是一致的，这样证明了RR级别是支持重复读的，nice~</p>
+</li>
+<li>
+<p>图解</p>
+<table>
+<thead>
+<tr>
+<th>事务A</th>
+<th>事务B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>start transaction;</td>
+<td>start transaction;</td>
+</tr>
+<tr>
+<td>select * from cc_isolation_test where id=1;</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>update cc_isolation_test set name=‘cc2’ where id=1;</td>
+</tr>
+<tr>
+<td></td>
+<td>commit;</td>
+</tr>
+<tr>
+<td>select * from cc_isolation_test where id=1;</td>
+<td></td>
+</tr>
+<tr>
+<td>commit;</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</li>
+</ol>
+</li>
+<li>
+<p>幻读验证</p>
+<ol>
+<li>
+<p>A事务：进行查询</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">start transaction;</span><br><span class="line">select * from cc_isolation_test where id=1;</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>B事务：插入数据并提交</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">start transaction ;</span><br><span class="line">insert into cc_isolation_test(id, name) values(1, &apos;cc2&apos;);</span><br><span class="line">commit ;</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>A事务：插入数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">insert into cc_isolation_test(id, name) values(1, &apos;cc2&apos;);</span><br></pre></td></tr></table></figure>
+<p>主键冲突了，但是在A事务中确实没查询到id=1的数据，其实这个时候数据库中已经有了id=1的数据，但在A事务中却没有查询到，这就是幻读。</p>
+</li>
+<li>
+<p>图解</p>
+<table>
+<thead>
+<tr>
+<th>事务A</th>
+<th>事务B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>start transaction;</td>
+<td>start transaction;</td>
+</tr>
+<tr>
+<td>select * from cc_isolation_test where id=1;</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>insert into cc_isolation_test(id, name) values(1, ‘cc2’);</td>
+</tr>
+<tr>
+<td></td>
+<td>commit;</td>
+</tr>
+<tr>
+<td>insert into cc_isolation_test(id, name) values(1, ‘cc2’);</td>
+<td></td>
+</tr>
+<tr>
+<td>commit;</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</li>
+</ol>
+</li>
+</ul>
+</li>
+<li>
+<p>Serializable级别</p>
+<ul>
+<li>
+<p>修改session的事务隔离级别为Serializable</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set session transaction isolation level serializable;</span><br></pre></td></tr></table></figure>
+<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427215912469.png" alt="image-20200427215912469" style="zoom:50%;">
+</li>
+<li>
+<p>操作</p>
+<p>先开启事务A，进行查询，但不提交；再开启事务B，然后进行插入操作，会发现操作被阻塞了，如下图中insert语句最后的时间就是等待的时间，事务B必须在事务A提交或回滚之后才能继续执行，这也就是串行化的意义：同时只能有一个事务处于执行中，其他线程都要等待。并发度最低但安全性最高。</p>
+<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200427215828454.png" alt="image-20200427215828454" style="zoom:50%;">
+<p>图解：</p>
+<table>
+<thead>
+<tr>
+<th>事务A</th>
+<th>事务B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>start transaction;</td>
+<td>start transaction;</td>
+</tr>
+<tr>
+<td>select * from cc_isolation_test;</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>insert into cc_isolation_test(name) values(‘cc2’);</td>
+</tr>
+<tr>
+<td></td>
+<td>commit;</td>
+</tr>
+<tr>
+<td>select * from cc_isolation_test;</td>
+<td></td>
+</tr>
+<tr>
+<td>commit;</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</li>
+</ol>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://luxiaowan.github.io/2020/04/27/聊一聊MySQL事务/" title="聊一聊MySQL事务" target="_blank" rel="external">http://luxiaowan.github.io/2020/04/27/聊一聊MySQL事务/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/luxiaowan" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="../../../../images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/luxiaowan" target="_blank"><span class="text-dark">串一串</span><small class="ml-1x">浪人</small></a></h3>
+        <div>断舍离</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    
+    <li class="next">
+      <a href="../../26/SpringBoot如何以war包形式运行/" title="SpringBoot如何以war包形式运行"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2020 cc
+        
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="../../../../js/plugin.min.js"></script>
+<script src="../../../../js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '../../../../content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="../../../../js/insight.js"></script>
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+
+
+
+
+
+
+</body>
+</html>
