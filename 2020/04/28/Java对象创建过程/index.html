@@ -27,7 +27,8 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://luxiaowan.github.io/images/image-20200428213918172.png">
 <meta property="og:image" content="http://luxiaowan.github.io/images/image-20200429002706141.png">
-<meta property="og:updated_time" content="2020-04-28T16:28:21.542Z">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200429003839422.png">
+<meta property="og:updated_time" content="2020-04-28T16:40:09.702Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java对象创建过程">
 <meta name="twitter:description" content="一、概述 在Java中，一个对象只要被正确的实例化之后才能被使用，在对象实例化的时候，会先检查相关的类信息是否已经被加载并初始化，在类初始化完毕之后才会继续完成对象的实例化，类的一生主要经历加载、连接（验证、准备、解析）、初始化、使用和卸载五个过程，创建类的对象就是在使用这个阶段。   加载（Loading）：通过类的全限定名查找和读取class文件，将读取的字节流所代表的静态存储结构转化为方法">
@@ -411,7 +412,7 @@
         <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
         
 	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 2.7k(字)</span>
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 2.8k(字)</span>
 	
 	
 		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 11(分)</span>
@@ -442,7 +443,7 @@
 <p>使用new关键字</p>
 <p>该方式是我们最常见也是最简单的一种方式，我们可以调用一个类的任意构造器(无参或有参)去创建对象。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Cc c = <span class="keyword">new</span> Cc();</span><br><span class="line">或</span><br><span class="line">Cc c = <span class="keyword">new</span> Cc(<span class="string">"cc"</span>, <span class="number">3</span>);</span><br></pre></td></tr></table></figure>
-<p>当虚拟机执行到new指令时，首先在方法区中查找Cc，若能定位到Cc类的符号引用，说明这个类已经被加载到方法区了，若没有找到则先去加载Cc这个类。</p>
+<p>当虚拟机执行到new指令时，首先在常量池中查找Cc的符号引用，若能定位到Cc类的符号引用，说明这个类已经被加载到方法区了，若没有找到则先去加载Cc这个类。</p>
 </li>
 <li>
 <p>使用反射</p>
@@ -491,9 +492,21 @@
 <p>对于这种情况，Java只允许在构造器Cc(String name)内调用超类的构造器，①处的代码会报错。</p>
 </li>
 </ol>
-<h3 id="四-总结"><a class="markdownIt-Anchor" href="#四-总结"></a> 四、总结</h3>
+<h3 id="四-小结"><a class="markdownIt-Anchor" href="#四-小结"></a> 四、小结</h3>
 <p>类实例化的过程可以总结为：</p>
+<ol>
+<li>首先在常量池中定位类的符号引用</li>
+<li>判定是否需要进行类加载</li>
+<li>虚拟机为新生对象分配内存（对象所需要的内存大小在类加载完就可以确定）</li>
+<li>初始化实例变量</li>
+<li>虚拟机设置对象头信息</li>
+<li>执行代码块进行自定义初始化</li>
+<li>完成</li>
+</ol>
 <img src="/images/image-20200429002706141.png" alt="image-20200429002706141" style="zoom:50%;">
+<h3 id="五-对象创建过程中内存的分配"><a class="markdownIt-Anchor" href="#五-对象创建过程中内存的分配"></a> 五、对象创建过程中内存的分配</h3>
+<p>文字理解起来不如看图，直接看图理解吧：</p>
+<p><img src="/images/image-20200429003839422.png" alt="image-20200429003839422"></p>
 
       
     </div>
