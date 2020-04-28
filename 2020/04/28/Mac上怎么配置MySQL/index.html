@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>Mac上怎么配置MySQL | 串一串</title>
+  <meta name="description" content="在Mac上可以通过官方dmg文件或者Homebrew的方式安装MySQL，具体方式就不介绍了，可以谷歌一下，安装完成之后，在电脑上却找不到MySQL的配置文件my.cnf，可以通过命令find / -iname my.cnf进行全盘查找。难道我们Mac上的MySQL不需要配置文件？ 我们进入到MySQL的安装路径下，查看support-files/mysql.server文件内容，在文件中有一块说">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mac上怎么配置MySQL">
+<meta property="og:url" content="http://luxiaowan.github.io/2020/04/28/Mac上怎么配置MySQL/index.html">
+<meta property="og:site_name" content="串一串">
+<meta property="og:description" content="在Mac上可以通过官方dmg文件或者Homebrew的方式安装MySQL，具体方式就不介绍了，可以谷歌一下，安装完成之后，在电脑上却找不到MySQL的配置文件my.cnf，可以通过命令find / -iname my.cnf进行全盘查找。难道我们Mac上的MySQL不需要配置文件？ 我们进入到MySQL的安装路径下，查看support-files/mysql.server文件内容，在文件中有一块说">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200428162211287.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200428163629688.png">
+<meta property="og:updated_time" content="2020-04-28T08:39:29.530Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Mac上怎么配置MySQL">
+<meta name="twitter:description" content="在Mac上可以通过官方dmg文件或者Homebrew的方式安装MySQL，具体方式就不介绍了，可以谷歌一下，安装完成之后，在电脑上却找不到MySQL的配置文件my.cnf，可以通过命令find / -iname my.cnf进行全盘查找。难道我们Mac上的MySQL不需要配置文件？ 我们进入到MySQL的安装路径下，查看support-files/mysql.server文件内容，在文件中有一块说">
+<meta name="twitter:image" content="http://luxiaowan.github.io/images/image-20200428162211287.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://luxiaowan.github.io/2020/04/28/Mac上怎么配置MySQL/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="../../../../css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/luxiaowan" target="_blank">
+          <img class="img-circle img-rotate" src="../../../../images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">串一串</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">浪人</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Suzhou, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="../../../../.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="../../../../archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="../../../../repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="../../../../books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="../../../../links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="../../../../about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>断舍离!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Docker/">Docker</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Git/">Git</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Java/">Java</a><span class="category-list-count">21</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kafka/">Kafka</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kubernates/">Kubernates</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Linux/">Linux</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MongoDB/">MongoDB</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MyBatis/">MyBatis</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MySQL/">MySQL</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Nacos/">Nacos</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/NoSQL/">NoSQL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Redis/">Redis</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Spring/">Spring</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/SpringBoot/">SpringBoot</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/分布式/">分布式</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/杂谈/">杂谈</a><span class="category-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Docker/">Docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Eureka/">Eureka</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/GC/">GC</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java与MongoDB/">Java与MongoDB</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Maven/">Maven</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MongoDB错误记录/">MongoDB错误记录</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MySQL/">MySQL</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Sentinel/">Sentinel</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/SpringCloud/">SpringCloud</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基本指令/">基本指令</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基础应用/">基础应用</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/服务治理/">服务治理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/监控/">监控</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/索引/">索引</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/阿里/">阿里</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/面试/">面试</a><span class="tag-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="../../../../tags/Docker/" style="font-size: 13px;">Docker</a> <a href="../../../../tags/Eureka/" style="font-size: 13.2px;">Eureka</a> <a href="../../../../tags/GC/" style="font-size: 13px;">GC</a> <a href="../../../../tags/Java/" style="font-size: 13.2px;">Java</a> <a href="../../../../tags/Java与MongoDB/" style="font-size: 13px;">Java与MongoDB</a> <a href="../../../../tags/Maven/" style="font-size: 13.4px;">Maven</a> <a href="../../../../tags/MongoDB错误记录/" style="font-size: 13px;">MongoDB错误记录</a> <a href="../../../../tags/MySQL/" style="font-size: 13.2px;">MySQL</a> <a href="../../../../tags/Sentinel/" style="font-size: 13px;">Sentinel</a> <a href="../../../../tags/SpringCloud/" style="font-size: 13.8px;">SpringCloud</a> <a href="../../../../tags/基本指令/" style="font-size: 13px;">基本指令</a> <a href="../../../../tags/基础应用/" style="font-size: 13.2px;">基础应用</a> <a href="../../../../tags/服务治理/" style="font-size: 13px;">服务治理</a> <a href="../../../../tags/监控/" style="font-size: 13px;">监控</a> <a href="../../../../tags/索引/" style="font-size: 14px;">索引</a> <a href="../../../../tags/阿里/" style="font-size: 13.2px;">阿里</a> <a href="../../../../tags/面试/" style="font-size: 13.6px;">面试</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/04/">四月 2020</a><span class="archive-list-count">48</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/03/">三月 2020</a><span class="archive-list-count">18</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/01/">一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/12/">十二月 2019</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/11/">十一月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/10/">十月 2019</a><span class="archive-list-count">16</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/01/">一月 2019</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled ">
+        
+          <li>
+            
+            <div class="item-thumb">
+              <a href="" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/MySQL/">MySQL</a>
+              </p>
+              <p class="item-title">
+                <a href="" class="title">Mac上怎么配置MySQL</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-28T08:05:00.000Z" itemprop="datePublished">2020-04-28</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../27/聊一聊MySQL事务/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/MySQL/">MySQL</a>
+              </p>
+              <p class="item-title">
+                <a href="../../27/聊一聊MySQL事务/" class="title">聊一聊MySQL事务</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-27T07:30:00.000Z" itemprop="datePublished">2020-04-27</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../26/SpringBoot如何以war包形式运行/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/SpringBoot/">SpringBoot</a>
+              </p>
+              <p class="item-title">
+                <a href="../../26/SpringBoot如何以war包形式运行/" class="title">SpringBoot如何以war包形式运行</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-26T09:50:00.000Z" itemprop="datePublished">2020-04-26</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../25/使用LockSupport实现线程交替打印1-100/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../25/使用LockSupport实现线程交替打印1-100/" class="title">使用LockSupport实现线程交替打印1-100</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-25T08:30:00.000Z" itemprop="datePublished">2020-04-25</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../24/AQS基本概况/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../24/AQS基本概况/" class="title">AQS基本概况</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-24T04:20:00.000Z" itemprop="datePublished">2020-04-24</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-Mac上怎么配置MySQL" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Mac上怎么配置MySQL
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="" class="article-date">
+	  <time datetime="2020-04-28T08:05:00.000Z" itemprop="datePublished">2020-04-28</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="../../../../categories/MySQL/">MySQL</a>
+  </span>
+
+        
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 962(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 5(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <p>在Mac上可以通过官方dmg文件或者Homebrew的方式安装MySQL，具体方式就不介绍了，可以谷歌一下，安装完成之后，在电脑上却找不到MySQL的配置文件my.cnf，可以通过命令<code>find / -iname my.cnf</code>进行全盘查找。难道我们Mac上的MySQL不需要配置文件？</p>
+<p>我们进入到MySQL的安装路径下，查看<code>support-files/mysql.server</code>文件内容，在文件中有一块说明了my.cnf文件的默认位置：</p>
+<img src="/images/image-20200428162211287.png" alt="image-20200428162211287" style="zoom:50%;">
+<p>大致意思就是如果mysql没有安装在<code>/usr/local/mysql</code>目录下的话，需要手动在<code>/etc</code>目录下创建my.cnf文件来配置安装的MySQL，并且在服务启动的时候会默认先去读取<code>/etc/my.cnf</code>，若文件存在则直接使用该文件中的配置，从这条规则来看，我们只需要在<code>/etc</code>目录下创建一个my.cnf文件，并将我们需要自定义的配置写到里面即可</p>
+<img src="/images/image-20200428163629688.png" alt="image-20200428163629688" style="zoom:50%;">
+<p>附赠一份官方的my.cnf配置文件内容：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> Example MySQL config file <span class="keyword">for</span> medium systems.</span></span><br><span class="line"><span class="meta">#</span><span class="bash"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> This is <span class="keyword">for</span> a system with little memory (32M - 64M) <span class="built_in">where</span> MySQL plays</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> an important part, or systems up to 128M <span class="built_in">where</span> MySQL is used together with</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> other programs (such as a web server)</span></span><br><span class="line"><span class="meta">#</span><span class="bash"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> MySQL programs look <span class="keyword">for</span> option files <span class="keyword">in</span> a <span class="built_in">set</span> of</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> locations <span class="built_in">which</span> depend on the deployment platform.</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> You can copy this option file to one of those</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> locations. For information about these locations, see:</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> http://dev.mysql.com/doc/mysql/en/option-files.html</span></span><br><span class="line"><span class="meta">#</span><span class="bash"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> In this file, you can use all long options that a program supports.</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> If you want to know <span class="built_in">which</span> options a program supports, run the program</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> with the <span class="string">"--help"</span> option.</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> The following options will be passed to all MySQL clients</span></span><br><span class="line">[client]</span><br><span class="line">default-character-set=utf8</span><br><span class="line"><span class="meta">#</span><span class="bash">password = your_password</span></span><br><span class="line">port= 3306</span><br><span class="line">socket= /tmp/mysql.sock </span><br><span class="line"><span class="meta">#</span><span class="bash"> Here follows entries <span class="keyword">for</span> some specific programs</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> The MySQL server</span></span><br><span class="line">[mysqld]</span><br><span class="line">character-set-server=utf8</span><br><span class="line">init_connect='SET NAMES utf8</span><br><span class="line">port= 3306</span><br><span class="line">socket= /tmp/mysql.sock</span><br><span class="line">skip-external-locking</span><br><span class="line">key_buffer_size = 16M</span><br><span class="line">max_allowed_packet = 1M</span><br><span class="line">table_open_cache = 64</span><br><span class="line">sort_buffer_size = 512K</span><br><span class="line">net_buffer_length = 8K</span><br><span class="line">read_buffer_size = 256K</span><br><span class="line">read_rnd_buffer_size = 512K</span><br><span class="line">myisam_sort_buffer_size = 8M</span><br><span class="line">character-set-server=utf8</span><br><span class="line">init_connect='SET NAMES utf8' </span><br><span class="line"><span class="meta">#</span><span class="bash"> Don<span class="string">'t listen on a TCP/IP port at all. This can be a security enhancement,</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> <span class="keyword">if</span> all processes that need to connect to mysqld run on the same host.</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> All interaction with mysqld must be made via Unix sockets or named pipes.</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> Note that using this option without enabling named pipes on Windows</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> (via the <span class="string">"enable-named-pipe"</span> option) will render mysqld useless!</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> </span></span><br><span class="line"><span class="meta">#</span><span class="bash">skip-networking</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> Replication Master Server (default)</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> binary logging is required <span class="keyword">for</span> replication</span></span><br><span class="line">log-bin=mysql-bin</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> binary logging format - mixed recommended</span></span><br><span class="line">binlog_format= MIXED</span><br><span class="line"><span class="meta">#</span><span class="bash">mixed</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> required unique id between 1 and 2^32 - 1</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> defaults to 1 <span class="keyword">if</span> master-host is not <span class="built_in">set</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> but will not <span class="keyword">function</span> as a master <span class="keyword">if</span> omitted</span></span><br><span class="line">server-id = 1</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> Replication Slave (comment out master section to use this)</span></span><br><span class="line"><span class="meta">#</span><span class="bash"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> To configure this host as a replication slave, you can choose between</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> two methods :</span></span><br><span class="line"><span class="meta">#</span><span class="bash"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 1) Use the CHANGE MASTER TO <span class="built_in">command</span> (fully described <span class="keyword">in</span> our manual) -</span></span><br><span class="line"><span class="meta">#</span><span class="bash">the syntax is:</span></span><br><span class="line"><span class="meta">#</span><span class="bash"></span></span><br><span class="line"><span class="meta">#</span><span class="bash">CHANGE MASTER TO MASTER_HOST=&lt;host&gt;, MASTER_PORT=&lt;port&gt;,</span></span><br><span class="line"><span class="meta">#</span><span class="bash">MASTER_USER=&lt;user&gt;, MASTER_PASSWORD=&lt;password&gt; ;</span></span><br><span class="line"><span class="meta">#</span><span class="bash"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="built_in">where</span> you replace &lt;host&gt;, &lt;user&gt;, &lt;password&gt; by quoted strings and</span></span><br><span class="line"><span class="meta">#</span><span class="bash">&lt;port&gt; by the master<span class="string">'s port number (3306 by default).</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"></span></span><br><span class="line"><span class="meta">#</span><span class="bash">Example:</span></span><br><span class="line"><span class="meta">#</span><span class="bash"></span></span><br><span class="line"><span class="meta">#</span><span class="bash">CHANGE MASTER TO MASTER_HOST=<span class="string">'125.564.12.1'</span>, MASTER_PORT=3306,</span></span><br><span class="line"><span class="meta">#</span><span class="bash">MASTER_USER=<span class="string">'joe'</span>, MASTER_PASSWORD=<span class="string">'secret'</span>;</span></span><br><span class="line"><span class="meta">#</span><span class="bash"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> OR</span></span><br><span class="line"><span class="meta">#</span><span class="bash"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 2) Set the variables below. However, <span class="keyword">in</span> <span class="keyword">case</span> you choose this method, <span class="keyword">then</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash">start replication <span class="keyword">for</span> the first time (even unsuccessfully, <span class="keyword">for</span> example</span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="keyword">if</span> you mistyped the password <span class="keyword">in</span> master-password and the slave fails to</span></span><br><span class="line"><span class="meta">#</span><span class="bash">connect), the slave will create a master.info file, and any later</span></span><br><span class="line"><span class="meta">#</span><span class="bash">change <span class="keyword">in</span> this file to the variables<span class="string">' values below will be ignored and</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash">overridden by the content of the master.info file, unless you shutdown</span></span><br><span class="line"><span class="meta">#</span><span class="bash">the slave server, delete master.info and restart the slaver server.</span></span><br><span class="line"><span class="meta">#</span><span class="bash">For that reason, you may want to leave the lines below untouched</span></span><br><span class="line"><span class="meta">#</span><span class="bash">(commented) and instead use CHANGE MASTER TO (see above)</span></span><br><span class="line"><span class="meta">#</span><span class="bash"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> required unique id between 2 and 2^32 - 1</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> (and different from the master)</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> defaults to 2 <span class="keyword">if</span> master-host is <span class="built_in">set</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> but will not <span class="keyword">function</span> as a slave <span class="keyword">if</span> omitted</span></span><br><span class="line"><span class="meta">#</span><span class="bash">server-id = 2</span></span><br><span class="line"><span class="meta">#</span><span class="bash"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> The replication master <span class="keyword">for</span> this slave - required</span></span><br><span class="line"><span class="meta">#</span><span class="bash">master-host = &lt;hostname&gt;</span></span><br><span class="line"><span class="meta">#</span><span class="bash"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> The username the slave will use <span class="keyword">for</span> authentication when connecting</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> to the master - required</span></span><br><span class="line"><span class="meta">#</span><span class="bash">master-user = &lt;username&gt;</span></span><br><span class="line"><span class="meta">#</span><span class="bash"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> The password the slave will authenticate with when connecting to</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> the master - required</span></span><br><span class="line"><span class="meta">#</span><span class="bash">master-password = &lt;password&gt;</span></span><br><span class="line"><span class="meta">#</span><span class="bash"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> The port the master is listening on.</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> optional - defaults to 3306</span></span><br><span class="line"><span class="meta">#</span><span class="bash">master-port =&lt;port&gt;</span></span><br><span class="line"><span class="meta">#</span><span class="bash"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> binary logging - not required <span class="keyword">for</span> slaves, but recommended</span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="built_in">log</span>-bin=mysql-bin</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> Uncomment the following <span class="keyword">if</span> you are using InnoDB tables</span></span><br><span class="line"><span class="meta">#</span><span class="bash">innodb_data_home_dir = /usr/<span class="built_in">local</span>/mysql/data</span></span><br><span class="line"><span class="meta">#</span><span class="bash">innodb_data_file_path = ibdata1:10M:autoextend</span></span><br><span class="line"><span class="meta">#</span><span class="bash">innodb_log_group_home_dir = /usr/<span class="built_in">local</span>/mysql/data</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> You can <span class="built_in">set</span> .._buffer_pool_size up to 50 - 80 %</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> of RAM but beware of setting memory usage too high</span></span><br><span class="line"><span class="meta">#</span><span class="bash">innodb_buffer_pool_size = 16M</span></span><br><span class="line"><span class="meta">#</span><span class="bash">innodb_additional_mem_pool_size = 2M</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> Set .._log_file_size to 25 % of buffer pool size</span></span><br><span class="line"><span class="meta">#</span><span class="bash">innodb_log_file_size = 5M</span></span><br><span class="line"><span class="meta">#</span><span class="bash">innodb_log_buffer_size = 8M</span></span><br><span class="line"><span class="meta">#</span><span class="bash">innodb_flush_log_at_trx_commit = 1</span></span><br><span class="line"><span class="meta">#</span><span class="bash">innodb_lock_wait_timeout = 50</span></span><br><span class="line"></span><br><span class="line">[mysqldump]</span><br><span class="line">quick</span><br><span class="line">max_allowed_packet = 16M</span><br><span class="line"></span><br><span class="line">[mysql]</span><br><span class="line">no-auto-rehash</span><br><span class="line"><span class="meta">#</span><span class="bash"> Remove the next comment character <span class="keyword">if</span> you are not familiar with SQL</span></span><br><span class="line"><span class="meta">#</span><span class="bash">safe-updates</span></span><br><span class="line">default-character-set=utf8 </span><br><span class="line"></span><br><span class="line">[myisamchk]</span><br><span class="line">key_buffer_size = 20M</span><br><span class="line">sort_buffer_size = 20M</span><br><span class="line">read_buffer = 2M</span><br><span class="line">write_buffer = 2M</span><br><span class="line"></span><br><span class="line">[mysqlhotcopy]</span><br><span class="line">interactive-timeout</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://luxiaowan.github.io/2020/04/28/Mac上怎么配置MySQL/" title="Mac上怎么配置MySQL" target="_blank" rel="external">http://luxiaowan.github.io/2020/04/28/Mac上怎么配置MySQL/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/luxiaowan" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="../../../../images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/luxiaowan" target="_blank"><span class="text-dark">串一串</span><small class="ml-1x">浪人</small></a></h3>
+        <div>断舍离</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    
+    <li class="next">
+      <a href="../../27/聊一聊MySQL事务/" title="聊一聊MySQL事务"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2020 cc
+        
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="../../../../js/plugin.min.js"></script>
+<script src="../../../../js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '../../../../content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="../../../../js/insight.js"></script>
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+
+
+
+
+
+
+</body>
+</html>
