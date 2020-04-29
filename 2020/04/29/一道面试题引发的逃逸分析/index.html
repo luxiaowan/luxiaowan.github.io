@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>一道面试题引发的逃逸分析 | 串一串</title>
+  <meta name="description" content="面试题 在Java中，通过new创建的对象一定分配在堆上吗？  解析 是不是很想回答：是的！然后看到题中的“一定”二字犹豫了？这是一个开放性的面试题，你可以回答一定是的，但是要有个前提，这个前提先不揭秘，下面我们先来看几个概念性的东西：逃逸分析、栈上分配和TLAB(Thread Local Allocation Buffer)。  1. 逃逸分析是什么 逃逸分析（Escape Analysis）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一道面试题引发的逃逸分析">
+<meta property="og:url" content="http://luxiaowan.github.io/2020/04/29/一道面试题引发的逃逸分析/index.html">
+<meta property="og:site_name" content="串一串">
+<meta property="og:description" content="面试题 在Java中，通过new创建的对象一定分配在堆上吗？  解析 是不是很想回答：是的！然后看到题中的“一定”二字犹豫了？这是一个开放性的面试题，你可以回答一定是的，但是要有个前提，这个前提先不揭秘，下面我们先来看几个概念性的东西：逃逸分析、栈上分配和TLAB(Thread Local Allocation Buffer)。  1. 逃逸分析是什么 逃逸分析（Escape Analysis）">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200429131241750.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200429131322123.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200429132238656.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200429131833250.png">
+<meta property="og:updated_time" content="2020-04-29T05:53:51.338Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一道面试题引发的逃逸分析">
+<meta name="twitter:description" content="面试题 在Java中，通过new创建的对象一定分配在堆上吗？  解析 是不是很想回答：是的！然后看到题中的“一定”二字犹豫了？这是一个开放性的面试题，你可以回答一定是的，但是要有个前提，这个前提先不揭秘，下面我们先来看几个概念性的东西：逃逸分析、栈上分配和TLAB(Thread Local Allocation Buffer)。  1. 逃逸分析是什么 逃逸分析（Escape Analysis）">
+<meta name="twitter:image" content="http://luxiaowan.github.io/images/image-20200429131241750.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://luxiaowan.github.io/2020/04/29/一道面试题引发的逃逸分析/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="../../../../css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/luxiaowan" target="_blank">
+          <img class="img-circle img-rotate" src="../../../../images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">串一串</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">浪人</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Suzhou, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="../../../../.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="../../../../archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="../../../../repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="../../../../books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="../../../../links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="../../../../about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>断舍离!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Docker/">Docker</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Git/">Git</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Java/">Java</a><span class="category-list-count">23</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kafka/">Kafka</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kubernates/">Kubernates</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Linux/">Linux</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MongoDB/">MongoDB</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MyBatis/">MyBatis</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MySQL/">MySQL</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Nacos/">Nacos</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/NoSQL/">NoSQL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Redis/">Redis</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Spring/">Spring</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/SpringBoot/">SpringBoot</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/分布式/">分布式</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/杂谈/">杂谈</a><span class="category-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Docker/">Docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Eureka/">Eureka</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/GC/">GC</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java与MongoDB/">Java与MongoDB</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Maven/">Maven</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MongoDB错误记录/">MongoDB错误记录</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MySQL/">MySQL</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Sentinel/">Sentinel</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/SpringCloud/">SpringCloud</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基本指令/">基本指令</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基础应用/">基础应用</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/服务治理/">服务治理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/监控/">监控</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/索引/">索引</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/阿里/">阿里</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/面试/">面试</a><span class="tag-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="../../../../tags/Docker/" style="font-size: 13px;">Docker</a> <a href="../../../../tags/Eureka/" style="font-size: 13.2px;">Eureka</a> <a href="../../../../tags/GC/" style="font-size: 13px;">GC</a> <a href="../../../../tags/Java/" style="font-size: 13.2px;">Java</a> <a href="../../../../tags/Java与MongoDB/" style="font-size: 13px;">Java与MongoDB</a> <a href="../../../../tags/Maven/" style="font-size: 13.4px;">Maven</a> <a href="../../../../tags/MongoDB错误记录/" style="font-size: 13px;">MongoDB错误记录</a> <a href="../../../../tags/MySQL/" style="font-size: 13.2px;">MySQL</a> <a href="../../../../tags/Sentinel/" style="font-size: 13px;">Sentinel</a> <a href="../../../../tags/SpringCloud/" style="font-size: 13.8px;">SpringCloud</a> <a href="../../../../tags/基本指令/" style="font-size: 13px;">基本指令</a> <a href="../../../../tags/基础应用/" style="font-size: 13.2px;">基础应用</a> <a href="../../../../tags/服务治理/" style="font-size: 13px;">服务治理</a> <a href="../../../../tags/监控/" style="font-size: 13px;">监控</a> <a href="../../../../tags/索引/" style="font-size: 14px;">索引</a> <a href="../../../../tags/阿里/" style="font-size: 13.2px;">阿里</a> <a href="../../../../tags/面试/" style="font-size: 13.6px;">面试</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/04/">四月 2020</a><span class="archive-list-count">50</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/03/">三月 2020</a><span class="archive-list-count">18</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/01/">一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/12/">十二月 2019</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/11/">十一月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/10/">十月 2019</a><span class="archive-list-count">16</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/01/">一月 2019</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled ">
+        
+          <li>
+            
+            <div class="item-thumb">
+              <a href="" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="" class="title">一道面试题引发的逃逸分析</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-29T02:27:00.000Z" itemprop="datePublished">2020-04-29</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../28/Java对象创建过程/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../28/Java对象创建过程/" class="title">Java对象创建过程</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-28T09:10:00.000Z" itemprop="datePublished">2020-04-28</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../28/Mac上怎么配置MySQL/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/MySQL/">MySQL</a>
+              </p>
+              <p class="item-title">
+                <a href="../../28/Mac上怎么配置MySQL/" class="title">Mac上怎么配置MySQL</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-28T08:05:00.000Z" itemprop="datePublished">2020-04-28</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../27/聊一聊MySQL事务/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/MySQL/">MySQL</a>
+              </p>
+              <p class="item-title">
+                <a href="../../27/聊一聊MySQL事务/" class="title">聊一聊MySQL事务</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-27T07:30:00.000Z" itemprop="datePublished">2020-04-27</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../26/SpringBoot如何以war包形式运行/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/SpringBoot/">SpringBoot</a>
+              </p>
+              <p class="item-title">
+                <a href="../../26/SpringBoot如何以war包形式运行/" class="title">SpringBoot如何以war包形式运行</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-26T09:50:00.000Z" itemprop="datePublished">2020-04-26</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-一道面试题引发的逃逸分析" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      一道面试题引发的逃逸分析
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="" class="article-date">
+	  <time datetime="2020-04-29T02:27:00.000Z" itemprop="datePublished">2020-04-29</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="../../../../categories/Java/">Java</a>
+  </span>
+
+        
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1.8k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 6(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h3 id="面试题"><a class="markdownIt-Anchor" href="#面试题"></a> 面试题</h3>
+<p>在Java中，通过new创建的对象一定分配在堆上吗？</p>
+<h3 id="解析"><a class="markdownIt-Anchor" href="#解析"></a> 解析</h3>
+<p>是不是很想回答：是的！然后看到题中的“一定”二字犹豫了？这是一个开放性的面试题，你可以回答一定是的，但是要有个前提，这个前提先不揭秘，下面我们先来看几个概念性的东西：逃逸分析、栈上分配和TLAB(Thread Local Allocation Buffer)。</p>
+<h4 id="1-逃逸分析是什么"><a class="markdownIt-Anchor" href="#1-逃逸分析是什么"></a> 1. 逃逸分析是什么</h4>
+<p>逃逸分析（Escape Analysis）是一种可以通过分析对象的作用域来决定将其分配到何处的性能优化技术，为什么说是性能优化技术，因为通过开启逃逸分析，可以节省堆的使用，看到这里的小朋友是不是有很多问号？？？？别急，先来看看逃逸分析是怎么工作的。</p>
+<p>在Java中，我们很少提到指针这个概念，那是因为所有的指针相关的东西都被JVM帮我们做了，而分析指针动态范围的方法就称之为逃逸分析，简单来说就是当一个对象的指针被多个方法或线程引用时，我们就称这个指针发生了逃逸。逃逸是指逃出了当前代码块的作用域，被其他的代码块引用了。</p>
+<h4 id="2-对象如何逃逸"><a class="markdownIt-Anchor" href="#2-对象如何逃逸"></a> 2. 对象如何逃逸</h4>
+<p>在实际开发中，一个对象的作用域主要包括：全局变量、方法返回值、引用参数、方法体内等，这三个不同作用域的对象在经过逃逸分析之后，会得出三种不同的分析结果。</p>
+<ul>
+<li>全局逃逸（Global Escape）：当一个对象的作用范围跳出了当前方法或者当前线程，则可以判定该对象发生了全局逃逸，比如全局变量、方法返回值等。</li>
+<li>参数逃逸（Arg Escape）：当一个对象被作为方法参数进行传递或被参数引用时。</li>
+<li>没有逃逸（NoEscape）：对象的作用范围在一个方法体内。</li>
+</ul>
+<h4 id="3-编译器如何优化逃逸的对象"><a class="markdownIt-Anchor" href="#3-编译器如何优化逃逸的对象"></a> 3. 编译器如何优化逃逸的对象</h4>
+<p>对象发生了逃逸，也就是被多个线程或方法共享了，那么这个对象必定要分配到能够被线程共享的内存区域，否则这个对象无法被其他线程读取使用。纵观JVM内存模型，官方规定的被线程共享的内存模块有堆和元空间（低版本中有方法区），而被用来存储对象的内存区域就是堆了，所以要是想让对象被线程共享，那么将其放在堆中就可以实现。反而之就是这个对象是线程私有的，那么将其放在虚拟机栈中即可，而对象是一个聚合量（由基础类型和对象的引用等标量聚合而成），它又可以被再次分解成标量，这又叫作标量替换，如果没有发生逃逸的对象在分析之后发现可以不用连续的为其分配空间，对象内的变量可以单独的分析和优化，那么就会使用标量替换将一个对象拆分成若干个部分分别在栈或寄存器上分配空间；并且线程私有的对象不存在资源竞争的情况，所以给这个对象加锁就完全没必要了，这种情况下，虚拟机会自动消除这个对象上的锁。</p>
+<p>综上我们可以整理为：</p>
+<ul>
+<li>没有发生逃逸的对象可以直接分配在虚拟机栈上，随着线程的结束一并回收；</li>
+<li>若开启了标量替换规则，且逃逸分析后判定不需要为某个对象分配连续的存储空间，则会将对象进行标量拆分，然后分别存储在栈或寄存器上；</li>
+<li>未发生逃逸的对象是线程私有的，不会出现并发竞争资源的情况，所以不需要为对象加锁，对象上的锁会被虚拟机忽略。</li>
+</ul>
+<h4 id="4-栈上分配"><a class="markdownIt-Anchor" href="#4-栈上分配"></a> 4. 栈上分配</h4>
+<p>上面说到没有发生逃逸的对象可以直接被分配在线程私有的虚拟机栈上，那么方法栈上的对象在方法执行结束之后，栈帧弹出，对象就被自动回收了，这样做的好处是JVM内存回收效率提高，也减少了GC的的频率。</p>
+<h4 id="5-如何开启逃逸分析和标量替换"><a class="markdownIt-Anchor" href="#5-如何开启逃逸分析和标量替换"></a> 5. 如何开启逃逸分析和标量替换</h4>
+<p>在jdk1.8 Server模式下，逃逸分析是默认开启的（其他版本待测试），我们可以通过JVM参数手动的开启和关闭。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-XX:+DoEscapeAnalysis：开启逃逸分析，默认</span><br><span class="line">-XX:-DoEscapeAnalysis：关闭逃逸分析</span><br><span class="line">-XX:+EliminateAllocations：开启标量替换，允许将对象打散分配到栈或寄存器上，默认</span><br><span class="line">-XX:-EliminateAllocations：关闭标量替换</span><br></pre></td></tr></table></figure>
+<h4 id="6-小"><a class="markdownIt-Anchor" href="#6-小"></a> 6. 小🌰</h4>
+<ul>
+<li>
+<p>非栈上分配</p>
+<p>JVM参数：<code>-server -Xmx50m -Xms50m -XX:+PrintGC -XX:-DoEscapeAnalysis -XX:-EliminateAllocations</code></p>
+<p>代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AllocOnHeap</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">long</span> start = System.currentTimeMillis();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1000000</span>; i++) &#123;</span><br><span class="line">            method1();</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(System.currentTimeMillis() - start);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">method1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">byte</span>[] b = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">2</span>];</span><br><span class="line">        b[<span class="number">0</span>] = <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>执行结果：</p>
+<img src="/images/image-20200429131241750.png" alt="image-20200429131241750" style="zoom:50%;">
+<p>发生了多次GC，且最终执行时间为15毫秒，从GC的情况来看，对象b是被分配到了堆上，且因为堆空间不足而引起的GC。</p>
+</li>
+<li>
+<p>栈上分配</p>
+<p>JVM参数：<code>-server -Xmx50m -Xms50m -XX:+PrintGC -XX:+DoEscapeAnalysis -XX:+EliminateAllocations</code></p>
+<p>代码和上面一致，我们来看下执行结果：</p>
+<img src="/images/image-20200429131322123.png" alt="image-20200429131322123" style="zoom: 67%;">
+<p>整个代码执行完只用了5毫秒，且未发生GC，同样的配置，同样的代码，执行的结果却不相同，说明栈上分配确实可以提升代码的执行效率。</p>
+</li>
+<li>
+<p>同步锁消除</p>
+<p>在上文中我们提到栈上分配会将对象上的同步锁消除掉，在jdk1.8中，同步锁消除是默认开启的，我们可以使用命令关闭，同步锁消除必须在开启逃逸分析的前提下才有效。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-XX:+EliminateLocks：开启同步锁消除，默认</span><br><span class="line">-XX:-EliminateLocks：关闭同步锁消除</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AllocOnHeap</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">long</span> start = System.currentTimeMillis();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1000000</span>; i++) &#123;</span><br><span class="line">            method1();</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(System.currentTimeMillis() - start);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">method1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">byte</span>[] b = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">2</span>];</span><br><span class="line">        <span class="keyword">synchronized</span> (b) &#123;</span><br><span class="line">            b[<span class="number">0</span>] = <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在开启逃逸分析且关闭锁消除的情况下执行结果：</p>
+<p>JVM参数：<code>-server -Xmx50m -Xms50m -XX:+PrintGC -XX:+DoEscapeAnalysis -XX:+EliminateAllocations -XX:-EliminateLocks</code></p>
+<p><img src="/images/image-20200429132238656.png" alt="image-20200429132238656"></p>
+<p>在开启逃逸分析且开启锁消除的情况下执行结果：</p>
+<p>JVM参数：<code>-server -Xmx50m -Xms50m -XX:+PrintGC -XX:+DoEscapeAnalysis -XX:+EliminateAllocations -XX:+EliminateLocks</code></p>
+<p><img src="/images/image-20200429131833250.png" alt="image-20200429131833250"></p>
+<p>两种情况下对比发现，在开启同步锁消除之后，synchronized好像没有生效，验证成功。</p>
+</li>
+</ul>
+<h3 id="总结"><a class="markdownIt-Anchor" href="#总结"></a> 总结</h3>
+<p>通过我们对这个面试题的解析，发现并不是所有的对象都被分配到堆上，虚拟机为了加快程序运行效率，减少GC带来的额外开销，推出了栈上分配，而栈上分配又是基于逃逸分析的分析结果来决定是否执行的，被分配到栈上的对象如果带有同步锁，可以通过JVM参数配置让同步锁失效。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://luxiaowan.github.io/2020/04/29/一道面试题引发的逃逸分析/" title="一道面试题引发的逃逸分析" target="_blank" rel="external">http://luxiaowan.github.io/2020/04/29/一道面试题引发的逃逸分析/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/luxiaowan" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="../../../../images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/luxiaowan" target="_blank"><span class="text-dark">串一串</span><small class="ml-1x">浪人</small></a></h3>
+        <div>断舍离</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    
+    <li class="next">
+      <a href="../../28/Java对象创建过程/" title="Java对象创建过程"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2020 cc
+        
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="../../../../js/plugin.min.js"></script>
+<script src="../../../../js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '../../../../content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="../../../../js/insight.js"></script>
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+
+
+
+
+
+
+</body>
+</html>
