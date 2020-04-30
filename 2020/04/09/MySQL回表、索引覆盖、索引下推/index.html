@@ -33,7 +33,7 @@
 <meta property="og:image" content="http://luxiaowan.github.io/images/image-20200410002324446.png">
 <meta property="og:image" content="http://luxiaowan.github.io/images/image-20200410001946545.png">
 <meta property="og:image" content="http://luxiaowan.github.io/images/image-20200410002808326.png">
-<meta property="og:updated_time" content="2020-04-09T16:37:44.165Z">
+<meta property="og:updated_time" content="2020-04-30T03:52:53.604Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL回表、索引覆盖、索引下推">
 <meta name="twitter:description" content="准备 创建一张表，并创建一个自增主键索引和一个组合索引 12345678910CREATE TABLE index_opt_test (  id int(11) NOT NULL AUTO_INCREMENT,  name varchar(11) DEFAULT NULL,  title varchar(11) DEFAULT NULL,  age int(11) DEFAULT NULL,">
@@ -477,11 +477,15 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select id, name, sex from index_opt_test where name=&apos;cc&apos; and title like &apos;%7&apos; and sex=&apos;male&apos;;</span><br></pre></td></tr></table></figure>
 <p>执行过程：</p>
 <ol>
-<li>Server层把name推到引擎层</li>
+<li>
+<p>Server层把name推到引擎层</p>
+<ol start="2">
 <li>引擎层根据name去idx_cb的索引树中匹配主键</li>
 <li>回表去捞数据返回给Server层</li>
 <li>Server层再根据title、sex筛选出最终的数据</li>
 <li>最后返回给客户端</li>
+</ol>
+</li>
 </ol>
 <p><img src="/images/image-20200410003327016.png" alt="image-20200410003327016"></p>
 </li>
@@ -490,12 +494,16 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select id, name, sex from index_opt_test where name=&apos;cc&apos; and title like &apos;%7&apos; and sex=&apos;male&apos;;</span><br></pre></td></tr></table></figure>
 <p>执行过程：</p>
 <ol>
-<li>Server把name和title都推到引擎层</li>
+<li>
+<p>Server把name和title都推到引擎层</p>
+<ol start="2">
 <li>引擎层根据name去idx_cb中查询出主键关键字和title、age</li>
 <li>再由title筛选出匹配的主键关键字</li>
 <li>回表去捞数据返回给Server层</li>
 <li>Server层再根据sex筛选出最终的数据</li>
 <li>再返回给客户端</li>
+</ol>
+</li>
 </ol>
 <p><img src="/images/image-20200410003348304.png" alt="image-20200410003348304"></p>
 </li>

@@ -31,7 +31,7 @@
 <meta property="og:image" content="http://luxiaowan.github.io/images/image-20200409111450620.png">
 <meta property="og:image" content="http://luxiaowan.github.io/images/image-20200409120652368.png">
 <meta property="og:image" content="http://luxiaowan.github.io/images/image-20200409121451757.png">
-<meta property="og:updated_time" content="2020-04-09T06:39:18.806Z">
+<meta property="og:updated_time" content="2020-04-29T16:52:55.058Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL存储引擎下的索引">
 <meta name="twitter:description" content="MySQL存储引擎 MySQL支持多种存储引擎，我们可以通过show engines命令查看当前数据库所支持的存储引擎列表，那么不同存储引擎下的索引实现方式是否会有所不同？那是当然的，但只不过都大同小异而已，我们目前常用的存储引擎大多是InnoDB，主要是因为InnoDB支持事务、行锁、外键等功能，第二常用的就是MyIsam，但是在MySQL5.5版本之后，InnoDB就变成了默认的存储引擎，也">
@@ -443,7 +443,7 @@
 <li>*.MYI：索引信息文件，记录所有的索引，My Index</li>
 <li>*.MYD：数据信息文件，存储数据信息， My Data</li>
 </ul>
-<h4 id="总结"><a class="markdownIt-Anchor" href="#总结"></a> 总结</h4>
+<h4 id="小结"><a class="markdownIt-Anchor" href="#小结"></a> 小结</h4>
 <p>MyIsam的索引是B+树的数据结构，叶子节点中存储的是数据的地址，实现了索引和数据分离，查询的过程中通过值找到数据地址，然后再根据数据地址将地址内存储的数据捞出返回。</p>
 <p>其实我们可以单独的根据文件的存储方式反推出索引的存储策略了，自己反推试试</p>
 <h3 id="innodb下的索引"><a class="markdownIt-Anchor" href="#innodb下的索引"></a> InnoDB下的索引</h3>

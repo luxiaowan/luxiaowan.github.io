@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://luxiaowan.github.io/2020/04/09/MySQL%E5%9B%9E%E8%A1%A8%E3%80%81%E7%B4%A2%E5%BC%95%E8%A6%86%E7%9B%96%E3%80%81%E7%B4%A2%E5%BC%95%E4%B8%8B%E6%8E%A8/</loc>
+    
+    <lastmod>2020-04-30T03:52:53.604Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://luxiaowan.github.io/2020/04/09/MySQL%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E4%B8%8B%E7%9A%84%E7%B4%A2%E5%BC%95/</loc>
+    
+    <lastmod>2020-04-29T16:52:55.058Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://luxiaowan.github.io/2020/04/29/%E8%81%8A%E8%81%8AJava%E4%B8%AD%E7%9A%84TLAB/</loc>
     
     <lastmod>2020-04-29T16:28:17.857Z</lastmod>
@@ -310,13 +324,6 @@
   </url>
   
   <url>
-    <loc>http://luxiaowan.github.io/2020/04/09/MySQL%E5%9B%9E%E8%A1%A8%E3%80%81%E7%B4%A2%E5%BC%95%E8%A6%86%E7%9B%96%E3%80%81%E7%B4%A2%E5%BC%95%E4%B8%8B%E6%8E%A8/</loc>
-    
-    <lastmod>2020-04-09T16:37:44.165Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://luxiaowan.github.io/2020/04/09/MySQL%E8%81%9A%E7%B0%87%E7%B4%A2%E5%BC%95%E5%92%8C%E9%9D%9E%E8%81%9A%E7%B0%87%E7%B4%A2%E5%BC%95/</loc>
     
     <lastmod>2020-04-09T12:20:19.744Z</lastmod>
@@ -334,13 +341,6 @@
     <loc>http://luxiaowan.github.io/2020/04/09/MySQL%E8%87%AA%E9%80%82%E5%BA%94Hash%E7%B4%A2%E5%BC%95/</loc>
     
     <lastmod>2020-04-09T07:45:31.343Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://luxiaowan.github.io/2020/04/09/MySQL%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E4%B8%8B%E7%9A%84%E7%B4%A2%E5%BC%95/</loc>
-    
-    <lastmod>2020-04-09T06:39:18.806Z</lastmod>
     
   </url>
   
