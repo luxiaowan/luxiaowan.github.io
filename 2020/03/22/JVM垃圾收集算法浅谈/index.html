@@ -26,17 +26,17 @@
 <meta property="og:site_name" content="串一串">
 <meta property="og:description" content="前言 JVM是做Java的同学都必须要了解的东西，为什么这么说，因为我们只有知道了Java程序运行环境的配置和工作逻辑，才能对运行环境进行相关的优化和配置修改，让JVM在不同的服务器环境使用不同的配置，从而达到JVM环境最优化。 说到JVM就不得不说一下GC（garbage collection），垃圾收集的意思是找到垃圾对象并回收掉它们，然后释放这些对象占用的内存。但是常规的垃圾收集器基本是找">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200506220501980.png">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200506223517154.png">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200506225506971.png">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200506225749565.png">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200506232601238.png">
-<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200507003626531.png">
-<meta property="og:updated_time" content="2020-05-06T17:00:32.427Z">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200506220501980.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200506223517154.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200506225506971.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200506225749565.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200506232601238.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200507003626531.png">
+<meta property="og:updated_time" content="2020-05-06T17:01:38.644Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JVM垃圾收集算法浅谈">
 <meta name="twitter:description" content="前言 JVM是做Java的同学都必须要了解的东西，为什么这么说，因为我们只有知道了Java程序运行环境的配置和工作逻辑，才能对运行环境进行相关的优化和配置修改，让JVM在不同的服务器环境使用不同的配置，从而达到JVM环境最优化。 说到JVM就不得不说一下GC（garbage collection），垃圾收集的意思是找到垃圾对象并回收掉它们，然后释放这些对象占用的内存。但是常规的垃圾收集器基本是找">
-<meta name="twitter:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200506220501980.png">
+<meta name="twitter:image" content="http://luxiaowan.github.io/images/image-20200506220501980.png">
   <!-- Canonical links -->
   <link rel="canonical" href="http://luxiaowan.github.io/2020/03/22/JVM垃圾收集算法浅谈/index.html">
   
@@ -441,32 +441,32 @@
 <p>引用计数法</p>
 <p>为每个对象添加一个引用计数器，在对象被引用时，计数器+1，引用结束后，计数器-1，最终清除掉引用计数器为0的对象，并级联删除该对象引用的所有的对象，只保留引用计数不为0的对象。</p>
 <p>这种算法看起来是不是很屌，是的，非常简单，只需要在对象被引用的时候串行修改引用计数器的值即可，但也容易出现一种问题：循环引用！循环引用就是几个废对象之间循环引用，尽管他们的引用计数器都不为0，但是在整个程序中却没有被使用，但是他们永远不会被回收，这样的对象多了之后很容易造成内存泄漏。</p>
-<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200506220501980.png" alt="image-20200506220501980" style="zoom:50%;">
+<img src="/images/image-20200506220501980.png" alt="image-20200506220501980" style="zoom:50%;">
 <p>正式因为循环引用的存在，JVM放弃了使用引用计数法。</p>
 </li>
 <li>
 <p>标记-清除</p>
 <p>标记-清理算法的基本思想是先STW，然后将存活的对象标记出来，接着清理掉未被标记的对象，整个过程都需要STW，效率很低，并且如果未被标记的对象比较分散，那么垃圾对象在被清理之后会造成大量的堆内存碎片，最终会导致无法给大对象分配内存。</p>
-<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200506223517154.png" alt="image-20200506223517154" style="zoom:50%;">
+<img src="/images/image-20200506223517154.png" alt="image-20200506223517154" style="zoom:50%;">
 </li>
 <li>
 <p>标记-整理</p>
 <p>标记-整理算法和标记-清除算法类似，只不过比标清多了一个步骤：在将所有存活的对象标记并清除完成之后，会将尚存活的对象全部都移动到堆内存的一端，并更新引用存活对象的指针。</p>
-<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200506225506971.png" alt="image-20200506225506971" style="zoom:50%;">
+<img src="/images/image-20200506225506971.png" alt="image-20200506225506971" style="zoom:50%;">
 <p>引用指针更新：</p>
-<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200506225749565.png" alt="image-20200506225749565" style="zoom:50%;">
+<img src="/images/image-20200506225749565.png" alt="image-20200506225749565" style="zoom:50%;">
 <p>标记-整理算法解决了标记-清除会造成内存碎片的缺点，</p>
 </li>
 <li>
 <p>复制</p>
 <p>复制算法使用频率较高，算法思想也比较前倾，主要思想是将内存划分为相等大小的两块，每次只使用其中一块，当这一块内存不足时，就将其中存活的对象复制到另外一块内存中，且从其一端排列，并更新对象的引用指针，当存活对象全部都复制完成之后，将这块内存清空，然后激活被复制的这块内存空间，此后新创建的对象均分配到这块内存中，直到这块内存不足，重复使然。</p>
 <p>复制算法将内存分为两块，每次只能使用其中一块，所以在使用过程中会一直浪费一半的内存无法使用，当虚拟机内存较小时，会频繁的发生GC，目前仅被使用在回收新生代内存。</p>
-<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200506232601238.png" alt="image-20200506232601238" style="zoom:50%;">
+<img src="/images/image-20200506232601238.png" alt="image-20200506232601238" style="zoom:50%;">
 </li>
 <li>
 <p>可达性分析法</p>
 <p>可达性的思想是通过一批“GC Roots”的对象作为起点，然后依次向下遍历，遍历到的对象均视为是存活的，遍历所走过的路径称为是引用链，最终将未遍历到的对象全部回收。</p>
-<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200507003626531.png" alt="image-20200507003626531" style="zoom:50%;">
+<img src="/images/image-20200507003626531.png" alt="image-20200507003626531" style="zoom:50%;">
 <p>算法的本质是通过“GC Roots”找出所有存活的对象，然后把其他的对象全部认定为“垃圾对象”（这里有很多人认为是找到垃圾对象并回收，这是错误的）。此算法最重要的一步就是必须能够枚举出所有的“GC Roots”，否则就可能会将还存活的对象回收掉。</p>
 <p>虚拟机内存中可以作为“GC Roots”的对象有以下几种：</p>
 <ul>
