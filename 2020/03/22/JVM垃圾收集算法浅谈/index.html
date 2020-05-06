@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>JVM垃圾收集算法浅谈 | 串一串</title>
+  <meta name="description" content="前言 JVM是做Java的同学都必须要了解的东西，为什么这么说，因为我们只有知道了Java程序运行环境的配置和工作逻辑，才能对运行环境进行相关的优化和配置修改，让JVM在不同的服务器环境使用不同的配置，从而达到JVM环境最优化。 说到JVM就不得不说一下GC（garbage collection），垃圾收集的意思是找到垃圾对象并回收掉它们，然后释放这些对象占用的内存。但是常规的垃圾收集器基本是找">
+<meta name="keywords" content="GC">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVM垃圾收集算法浅谈">
+<meta property="og:url" content="http://luxiaowan.github.io/2020/03/22/JVM垃圾收集算法浅谈/index.html">
+<meta property="og:site_name" content="串一串">
+<meta property="og:description" content="前言 JVM是做Java的同学都必须要了解的东西，为什么这么说，因为我们只有知道了Java程序运行环境的配置和工作逻辑，才能对运行环境进行相关的优化和配置修改，让JVM在不同的服务器环境使用不同的配置，从而达到JVM环境最优化。 说到JVM就不得不说一下GC（garbage collection），垃圾收集的意思是找到垃圾对象并回收掉它们，然后释放这些对象占用的内存。但是常规的垃圾收集器基本是找">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200506220501980.png">
+<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200506223517154.png">
+<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200506225506971.png">
+<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200506225749565.png">
+<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200506232601238.png">
+<meta property="og:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200507003626531.png">
+<meta property="og:updated_time" content="2020-05-06T17:00:32.427Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JVM垃圾收集算法浅谈">
+<meta name="twitter:description" content="前言 JVM是做Java的同学都必须要了解的东西，为什么这么说，因为我们只有知道了Java程序运行环境的配置和工作逻辑，才能对运行环境进行相关的优化和配置修改，让JVM在不同的服务器环境使用不同的配置，从而达到JVM环境最优化。 说到JVM就不得不说一下GC（garbage collection），垃圾收集的意思是找到垃圾对象并回收掉它们，然后释放这些对象占用的内存。但是常规的垃圾收集器基本是找">
+<meta name="twitter:image" content="http://luxiaowan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200506220501980.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://luxiaowan.github.io/2020/03/22/JVM垃圾收集算法浅谈/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="../../../../css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/luxiaowan" target="_blank">
+          <img class="img-circle img-rotate" src="../../../../images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">串一串</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">浪人</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Suzhou, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="../../../../.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="../../../../archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="../../../../repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="../../../../books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="../../../../links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="../../../../about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>断舍离!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Docker/">Docker</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Git/">Git</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Java/">Java</a><span class="category-list-count">27</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kafka/">Kafka</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kubernates/">Kubernates</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Linux/">Linux</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MongoDB/">MongoDB</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MyBatis/">MyBatis</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MySQL/">MySQL</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Nacos/">Nacos</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/NoSQL/">NoSQL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Redis/">Redis</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Spring/">Spring</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/SpringBoot/">SpringBoot</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/分布式/">分布式</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/杂谈/">杂谈</a><span class="category-list-count">5</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Docker/">Docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Eureka/">Eureka</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/GC/">GC</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/JVM/">JVM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java与MongoDB/">Java与MongoDB</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Maven/">Maven</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MongoDB错误记录/">MongoDB错误记录</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MySQL/">MySQL</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Sentinel/">Sentinel</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/SpringCloud/">SpringCloud</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基本指令/">基本指令</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基础应用/">基础应用</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/服务治理/">服务治理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/监控/">监控</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/索引/">索引</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/阿里/">阿里</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/面试/">面试</a><span class="tag-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="../../../../tags/Docker/" style="font-size: 13px;">Docker</a> <a href="../../../../tags/Eureka/" style="font-size: 13.2px;">Eureka</a> <a href="../../../../tags/GC/" style="font-size: 13px;">GC</a> <a href="../../../../tags/JVM/" style="font-size: 13px;">JVM</a> <a href="../../../../tags/Java/" style="font-size: 13.2px;">Java</a> <a href="../../../../tags/Java与MongoDB/" style="font-size: 13px;">Java与MongoDB</a> <a href="../../../../tags/Maven/" style="font-size: 13.4px;">Maven</a> <a href="../../../../tags/MongoDB错误记录/" style="font-size: 13px;">MongoDB错误记录</a> <a href="../../../../tags/MySQL/" style="font-size: 13.2px;">MySQL</a> <a href="../../../../tags/Sentinel/" style="font-size: 13px;">Sentinel</a> <a href="../../../../tags/SpringCloud/" style="font-size: 13.8px;">SpringCloud</a> <a href="../../../../tags/基本指令/" style="font-size: 13px;">基本指令</a> <a href="../../../../tags/基础应用/" style="font-size: 13.2px;">基础应用</a> <a href="../../../../tags/服务治理/" style="font-size: 13px;">服务治理</a> <a href="../../../../tags/监控/" style="font-size: 13px;">监控</a> <a href="../../../../tags/索引/" style="font-size: 14px;">索引</a> <a href="../../../../tags/阿里/" style="font-size: 13.2px;">阿里</a> <a href="../../../../tags/面试/" style="font-size: 13.6px;">面试</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/05/">五月 2020</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/04/">四月 2020</a><span class="archive-list-count">51</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/03/">三月 2020</a><span class="archive-list-count">18</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/01/">一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/12/">十二月 2019</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/11/">十一月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/10/">十月 2019</a><span class="archive-list-count">16</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/01/">一月 2019</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled ">
+        
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../05/05/统计Java代码行数/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../05/05/统计Java代码行数/" class="title">统计Java代码行数</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-05T06:13:00.000Z" itemprop="datePublished">2020-05-05</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../05/02/JVM垃圾收集器介绍/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../05/02/JVM垃圾收集器介绍/" class="title">JVM垃圾收集器介绍</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-02T08:30:00.000Z" itemprop="datePublished">2020-05-02</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../05/02/MacBook突然没了声音/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/杂谈/">杂谈</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../05/02/MacBook突然没了声音/" class="title">MacBook突然没了声音</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-01T18:10:00.000Z" itemprop="datePublished">2020-05-02</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../05/02/Java中什么样的对象有资格进入老年代/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../05/02/Java中什么样的对象有资格进入老年代/" class="title">Java中什么样的对象有资格进入老年代</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-01T17:33:00.000Z" itemprop="datePublished">2020-05-02</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../04/29/聊聊Java中的TLAB/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../04/29/聊聊Java中的TLAB/" class="title">聊聊Java中的TLAB</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-04-29T11:15:00.000Z" itemprop="datePublished">2020-04-29</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-JVM垃圾收集算法浅谈" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      JVM垃圾收集算法浅谈
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="" class="article-date">
+	  <time datetime="2020-03-22T03:15:00.000Z" itemprop="datePublished">2020-03-22</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="../../../../categories/Java/">Java</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="../../../../tags/GC/">GC</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1.6k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 5(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p>JVM是做Java的同学都必须要了解的东西，为什么这么说，因为我们只有知道了Java程序运行环境的配置和工作逻辑，才能对运行环境进行相关的优化和配置修改，让JVM在不同的服务器环境使用不同的配置，从而达到JVM环境最优化。</p>
+<p>说到JVM就不得不说一下GC（garbage collection），垃圾收集的意思是找到垃圾对象并回收掉它们，然后释放这些对象占用的内存。但是常规的垃圾收集器基本是找到正在被使用的对象，然后把其他的对象全部当作是垃圾对象清理掉。</p>
+<p>写过C语言的同学都知道，在C语言中，我们需要手动的去管理内存，在使用内存之前我们需要先申请（malloc）一定大小的内存，使用完成之后需要手动的把使用的内存释放掉（free），如果忘记释放内存则很快会导致内存溢出。而Java将这份操作内存的工作交给了JVM，减少开发者的编码复杂度，降低发生内存溢出的概率。</p>
+<h2 id="gc算法"><a class="markdownIt-Anchor" href="#gc算法"></a> GC算法</h2>
+<ol>
+<li>
+<p>引用计数法</p>
+<p>为每个对象添加一个引用计数器，在对象被引用时，计数器+1，引用结束后，计数器-1，最终清除掉引用计数器为0的对象，并级联删除该对象引用的所有的对象，只保留引用计数不为0的对象。</p>
+<p>这种算法看起来是不是很屌，是的，非常简单，只需要在对象被引用的时候串行修改引用计数器的值即可，但也容易出现一种问题：循环引用！循环引用就是几个废对象之间循环引用，尽管他们的引用计数器都不为0，但是在整个程序中却没有被使用，但是他们永远不会被回收，这样的对象多了之后很容易造成内存泄漏。</p>
+<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200506220501980.png" alt="image-20200506220501980" style="zoom:50%;">
+<p>正式因为循环引用的存在，JVM放弃了使用引用计数法。</p>
+</li>
+<li>
+<p>标记-清除</p>
+<p>标记-清理算法的基本思想是先STW，然后将存活的对象标记出来，接着清理掉未被标记的对象，整个过程都需要STW，效率很低，并且如果未被标记的对象比较分散，那么垃圾对象在被清理之后会造成大量的堆内存碎片，最终会导致无法给大对象分配内存。</p>
+<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200506223517154.png" alt="image-20200506223517154" style="zoom:50%;">
+</li>
+<li>
+<p>标记-整理</p>
+<p>标记-整理算法和标记-清除算法类似，只不过比标清多了一个步骤：在将所有存活的对象标记并清除完成之后，会将尚存活的对象全部都移动到堆内存的一端，并更新引用存活对象的指针。</p>
+<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200506225506971.png" alt="image-20200506225506971" style="zoom:50%;">
+<p>引用指针更新：</p>
+<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200506225749565.png" alt="image-20200506225749565" style="zoom:50%;">
+<p>标记-整理算法解决了标记-清除会造成内存碎片的缺点，</p>
+</li>
+<li>
+<p>复制</p>
+<p>复制算法使用频率较高，算法思想也比较前倾，主要思想是将内存划分为相等大小的两块，每次只使用其中一块，当这一块内存不足时，就将其中存活的对象复制到另外一块内存中，且从其一端排列，并更新对象的引用指针，当存活对象全部都复制完成之后，将这块内存清空，然后激活被复制的这块内存空间，此后新创建的对象均分配到这块内存中，直到这块内存不足，重复使然。</p>
+<p>复制算法将内存分为两块，每次只能使用其中一块，所以在使用过程中会一直浪费一半的内存无法使用，当虚拟机内存较小时，会频繁的发生GC，目前仅被使用在回收新生代内存。</p>
+<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200506232601238.png" alt="image-20200506232601238" style="zoom:50%;">
+</li>
+<li>
+<p>可达性分析法</p>
+<p>可达性的思想是通过一批“GC Roots”的对象作为起点，然后依次向下遍历，遍历到的对象均视为是存活的，遍历所走过的路径称为是引用链，最终将未遍历到的对象全部回收。</p>
+<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20200507003626531.png" alt="image-20200507003626531" style="zoom:50%;">
+<p>算法的本质是通过“GC Roots”找出所有存活的对象，然后把其他的对象全部认定为“垃圾对象”（这里有很多人认为是找到垃圾对象并回收，这是错误的）。此算法最重要的一步就是必须能够枚举出所有的“GC Roots”，否则就可能会将还存活的对象回收掉。</p>
+<p>虚拟机内存中可以作为“GC Roots”的对象有以下几种：</p>
+<ul>
+<li>虚拟机栈中局部变量表中引用的对象</li>
+<li>本地方法栈中引用的对象</li>
+<li>方法区中的静态变量引用的对象</li>
+<li>方法区中常量引用的对象</li>
+</ul>
+<p>在实际的开发中要特别注意这些对象，不要让无关紧要的大对象浪费了资源。</p>
+</li>
+<li>
+<p>分代收集</p>
+<p>根据对象的生存周期将内存划分为不同的区域，目前较流行的是分为新生代和老年代，然后根据各个年代的特点采用最适合的收集算法</p>
+<ul>
+<li>新生代：大部分对象都是朝生夕死，每次进行GC时都会被回收掉大量的对象，只有少量的对象会存活下来，这种适合复制算法，将新生代内存再划分为Eden区和两个Survivor区，Eden到Survivor和Survivor之间均采用复制算法，Eden区比较大，适合存储大量生命周期较短的对象，YGC后存活下来的少量对象被复制到Survivor区，Survivor区很小，每次复制仅需要付出少量存活对象的复制成本就可以完成收集</li>
+<li>老年代中存储的对象大多是经历了多次GC之后存活下来的，并且还会存储部分大对象，这类对象被回收的概率较小，频次也较低，并且没有额外的内存空间为这块内存中的对象做分配担保，所以这个空间不应该出现内存碎片，否则很快就会没有内存可分配给新进入的对象，所以此块内存适用于“标记-整理”算法进行回收。</li>
+</ul>
+</li>
+</ol>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://luxiaowan.github.io/2020/03/22/JVM垃圾收集算法浅谈/" title="JVM垃圾收集算法浅谈" target="_blank" rel="external">http://luxiaowan.github.io/2020/03/22/JVM垃圾收集算法浅谈/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/luxiaowan" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="../../../../images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/luxiaowan" target="_blank"><span class="text-dark">串一串</span><small class="ml-1x">浪人</small></a></h3>
+        <div>断舍离</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="../../23/MySQL简单优化技巧/" title="MySQL简单优化技巧"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="../../20/rmi远程服务调用简述/" title="Rmi远程服务调用简述"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2020 cc
+        
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="../../../../js/plugin.min.js"></script>
+<script src="../../../../js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '../../../../content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="../../../../js/insight.js"></script>
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+
+
+
+
+
+
+</body>
+</html>

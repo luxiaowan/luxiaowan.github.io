@@ -25,7 +25,7 @@
 <meta property="og:site_name" content="串一串">
 <meta property="og:description" content="jstat是用于监控虚拟机运行状态信息的命令，可以显示虚拟机进程中的类装载、内存使用、GC情况、JIT编译等运行状态数据，能够在Linux上快速定位虚拟机性能问题。 jstat命令在jdk的bin目录下，目录中还有很多实用的命令  *以下分析是基于jdk1.8+ jstat命令格式： 123456789jstat -&amp;lt;option&amp;gt; &amp;lt;pid&amp;gt; [&amp;lt;interval">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-10T15:57:22.417Z">
+<meta property="og:updated_time" content="2020-05-04T16:27:03.952Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java命令::jstat">
 <meta name="twitter:description" content="jstat是用于监控虚拟机运行状态信息的命令，可以显示虚拟机进程中的类装载、内存使用、GC情况、JIT编译等运行状态数据，能够在Linux上快速定位虚拟机性能问题。 jstat命令在jdk的bin目录下，目录中还有很多实用的命令  *以下分析是基于jdk1.8+ jstat命令格式： 123456789jstat -&amp;lt;option&amp;gt; &amp;lt;pid&amp;gt; [&amp;lt;interval">
@@ -190,7 +190,7 @@
   <div class="widget">
     <h3 class="widget-title">分类</h3>
     <div class="widget-body">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Docker/">Docker</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Git/">Git</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Java/">Java</a><span class="category-list-count">25</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kafka/">Kafka</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kubernates/">Kubernates</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Linux/">Linux</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MongoDB/">MongoDB</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MyBatis/">MyBatis</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MySQL/">MySQL</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Nacos/">Nacos</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/NoSQL/">NoSQL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Redis/">Redis</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Spring/">Spring</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/SpringBoot/">SpringBoot</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/分布式/">分布式</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/杂谈/">杂谈</a><span class="category-list-count">5</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Docker/">Docker</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Git/">Git</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Java/">Java</a><span class="category-list-count">27</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kafka/">Kafka</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kubernates/">Kubernates</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Linux/">Linux</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MongoDB/">MongoDB</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MyBatis/">MyBatis</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MySQL/">MySQL</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Nacos/">Nacos</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/NoSQL/">NoSQL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Redis/">Redis</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Spring/">Spring</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/SpringBoot/">SpringBoot</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/分布式/">分布式</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/杂谈/">杂谈</a><span class="category-list-count">5</span></li></ul>
     </div>
   </div>
 
@@ -200,7 +200,7 @@
   <div class="widget">
     <h3 class="widget-title">标签</h3>
     <div class="widget-body">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Docker/">Docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Eureka/">Eureka</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/GC/">GC</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java与MongoDB/">Java与MongoDB</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Maven/">Maven</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MongoDB错误记录/">MongoDB错误记录</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MySQL/">MySQL</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Sentinel/">Sentinel</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/SpringCloud/">SpringCloud</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基本指令/">基本指令</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基础应用/">基础应用</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/服务治理/">服务治理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/监控/">监控</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/索引/">索引</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/阿里/">阿里</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/面试/">面试</a><span class="tag-list-count">4</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Docker/">Docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Eureka/">Eureka</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/GC/">GC</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/JVM/">JVM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java与MongoDB/">Java与MongoDB</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Maven/">Maven</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MongoDB错误记录/">MongoDB错误记录</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MySQL/">MySQL</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Sentinel/">Sentinel</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/SpringCloud/">SpringCloud</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基本指令/">基本指令</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基础应用/">基础应用</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/服务治理/">服务治理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/监控/">监控</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/索引/">索引</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/阿里/">阿里</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/面试/">面试</a><span class="tag-list-count">4</span></li></ul>
     </div>
   </div>
 
@@ -210,7 +210,7 @@
   <div class="widget">
     <h3 class="widget-title">标签云</h3>
     <div class="widget-body tagcloud">
-      <a href="../../../../tags/Docker/" style="font-size: 13px;">Docker</a> <a href="../../../../tags/Eureka/" style="font-size: 13.2px;">Eureka</a> <a href="../../../../tags/GC/" style="font-size: 13px;">GC</a> <a href="../../../../tags/Java/" style="font-size: 13.2px;">Java</a> <a href="../../../../tags/Java与MongoDB/" style="font-size: 13px;">Java与MongoDB</a> <a href="../../../../tags/Maven/" style="font-size: 13.4px;">Maven</a> <a href="../../../../tags/MongoDB错误记录/" style="font-size: 13px;">MongoDB错误记录</a> <a href="../../../../tags/MySQL/" style="font-size: 13.2px;">MySQL</a> <a href="../../../../tags/Sentinel/" style="font-size: 13px;">Sentinel</a> <a href="../../../../tags/SpringCloud/" style="font-size: 13.8px;">SpringCloud</a> <a href="../../../../tags/基本指令/" style="font-size: 13px;">基本指令</a> <a href="../../../../tags/基础应用/" style="font-size: 13.2px;">基础应用</a> <a href="../../../../tags/服务治理/" style="font-size: 13px;">服务治理</a> <a href="../../../../tags/监控/" style="font-size: 13px;">监控</a> <a href="../../../../tags/索引/" style="font-size: 14px;">索引</a> <a href="../../../../tags/阿里/" style="font-size: 13.2px;">阿里</a> <a href="../../../../tags/面试/" style="font-size: 13.6px;">面试</a>
+      <a href="../../../../tags/Docker/" style="font-size: 13px;">Docker</a> <a href="../../../../tags/Eureka/" style="font-size: 13.2px;">Eureka</a> <a href="../../../../tags/GC/" style="font-size: 13px;">GC</a> <a href="../../../../tags/JVM/" style="font-size: 13px;">JVM</a> <a href="../../../../tags/Java/" style="font-size: 13.2px;">Java</a> <a href="../../../../tags/Java与MongoDB/" style="font-size: 13px;">Java与MongoDB</a> <a href="../../../../tags/Maven/" style="font-size: 13.4px;">Maven</a> <a href="../../../../tags/MongoDB错误记录/" style="font-size: 13px;">MongoDB错误记录</a> <a href="../../../../tags/MySQL/" style="font-size: 13.2px;">MySQL</a> <a href="../../../../tags/Sentinel/" style="font-size: 13px;">Sentinel</a> <a href="../../../../tags/SpringCloud/" style="font-size: 13.8px;">SpringCloud</a> <a href="../../../../tags/基本指令/" style="font-size: 13px;">基本指令</a> <a href="../../../../tags/基础应用/" style="font-size: 13.2px;">基础应用</a> <a href="../../../../tags/服务治理/" style="font-size: 13px;">服务治理</a> <a href="../../../../tags/监控/" style="font-size: 13px;">监控</a> <a href="../../../../tags/索引/" style="font-size: 14px;">索引</a> <a href="../../../../tags/阿里/" style="font-size: 13.2px;">阿里</a> <a href="../../../../tags/面试/" style="font-size: 13.6px;">面试</a>
     </div>
   </div>
 
@@ -219,7 +219,7 @@
   <div class="widget">
     <h3 class="widget-title">归档</h3>
     <div class="widget-body">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/05/">五月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/04/">四月 2020</a><span class="archive-list-count">51</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/03/">三月 2020</a><span class="archive-list-count">18</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/01/">一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/12/">十二月 2019</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/11/">十一月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/10/">十月 2019</a><span class="archive-list-count">16</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/01/">一月 2019</a><span class="archive-list-count">2</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/05/">五月 2020</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/04/">四月 2020</a><span class="archive-list-count">51</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/03/">三月 2020</a><span class="archive-list-count">18</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/01/">一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/12/">十二月 2019</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/11/">十一月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/10/">十月 2019</a><span class="archive-list-count">16</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/01/">一月 2019</a><span class="archive-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -231,6 +231,56 @@
     <div class="widget-body">
       <ul class="recent-post-list list-unstyled ">
         
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../../2020/05/05/统计Java代码行数/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../../2020/05/05/统计Java代码行数/" class="title">统计Java代码行数</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-05T06:13:00.000Z" itemprop="datePublished">2020-05-05</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../../2020/05/02/JVM垃圾收集器介绍/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../../2020/05/02/JVM垃圾收集器介绍/" class="title">JVM垃圾收集器介绍</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-02T08:30:00.000Z" itemprop="datePublished">2020-05-02</time>
+              </p>
+            </div>
+          </li>
+          
           <li>
             
             <div class="item-thumb">
@@ -302,56 +352,6 @@
               </p>
               <p class="item-date">
                 <time datetime="2020-04-29T11:15:00.000Z" itemprop="datePublished">2020-04-29</time>
-              </p>
-            </div>
-          </li>
-          
-          <li>
-            
-            <div class="item-thumb">
-              <a href="../../../../2020/04/29/一道面试题引发的逃逸分析/" class="thumb">
-    
-    
-        <span class="thumb-image thumb-none"></span>
-    
-</a>
-
-            </div>
-            
-            <div class="item-inner">
-              <p class="item-category">
-                <a class="category-link" href="../../../../categories/Java/">Java</a>
-              </p>
-              <p class="item-title">
-                <a href="../../../../2020/04/29/一道面试题引发的逃逸分析/" class="title">一道面试题引发的逃逸分析</a>
-              </p>
-              <p class="item-date">
-                <time datetime="2020-04-29T02:27:00.000Z" itemprop="datePublished">2020-04-29</time>
-              </p>
-            </div>
-          </li>
-          
-          <li>
-            
-            <div class="item-thumb">
-              <a href="../../../../2020/04/28/Java对象创建过程/" class="thumb">
-    
-    
-        <span class="thumb-image thumb-none"></span>
-    
-</a>
-
-            </div>
-            
-            <div class="item-inner">
-              <p class="item-category">
-                <a class="category-link" href="../../../../categories/Java/">Java</a>
-              </p>
-              <p class="item-title">
-                <a href="../../../../2020/04/28/Java对象创建过程/" class="title">Java对象创建过程</a>
-              </p>
-              <p class="item-date">
-                <time datetime="2020-04-28T09:10:00.000Z" itemprop="datePublished">2020-04-28</time>
               </p>
             </div>
           </li>
@@ -487,51 +487,51 @@
 <p>🌰</p>
 </blockquote>
 <ol>
-<li>jstat -class <pid> : 显示加载class的数量及所占空间等信息</pid></li>
+<li>jstat -class &lt;pid&gt; : 显示加载class的数量及所占空间等信息</li>
 </ol>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@master0 ~]# jstat -class 19080</span><br><span class="line">Loaded  Bytes  Unloaded  Bytes     Time   </span><br><span class="line"> 11512 22276.9      268   421.6      18.41</span><br><span class="line"> </span><br><span class="line">---</span><br><span class="line">Loaded: 装载类的数量</span><br><span class="line">Bytes: 装载类所占用的字节数</span><br><span class="line">Unloaded: 卸载类的数量</span><br><span class="line">Bytes: 卸载类所占用的字节数</span><br><span class="line">Time: 装载和卸载类所花费的时间</span><br></pre></td></tr></table></figure>
 <ol start="2">
-<li>jstat -gc <pid> : 显示gc的信息，查看gc的次数和时间</pid></li>
+<li>jstat -gc &lt;pid&gt; : 显示gc的信息，查看gc的次数和时间</li>
 </ol>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">，等于YGCT + FGCT[root@master0 ~]# jstat -gc 19080 1000 1</span><br><span class="line"> S0C    S1C    S0U    S1U      EC       EU        OC         OU       MC     MU    CCSC   CCSU   YGC     YGCT    FGC    FGCT     GCT   </span><br><span class="line">6656.0 6656.0  0.0   3761.4 94208.0  51469.2   73728.0    50832.0     -      -      -      -     20207   92.896  37      7.833  100.729</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">[容量为字节]</span><br><span class="line">S0C: 年轻代第一个survivor区的总容量（survivor 0 capacity）</span><br><span class="line">S1C: 年轻代第二个survivor区的总容量（survivor 1 capacity）</span><br><span class="line">S0U: 年轻代第一个survivor区的已使用容量（survivor 0 using）</span><br><span class="line">S1U: 年轻代第二个survivor区的已使用容量（survivor 1 using）</span><br><span class="line">EC: 年轻代Eden区的总容量（Eden capacity）</span><br><span class="line">EU: 年轻代Eden区的已使用容量（Eden using）</span><br><span class="line">OC: 老年代的总容量（Old capacity）</span><br><span class="line">OU: 老年代已使用的容量（Old using）</span><br><span class="line">MC: Metaspace的总容量, jdk1.8+</span><br><span class="line">MU: Metaspace已使用的容量, jdk1.8+</span><br><span class="line">CCSC:压缩类空间容量, jdk1.8+</span><br><span class="line">CCSU:压缩类空间已使用的容量, jdk1.8+</span><br><span class="line">YGC: 服务启动至今年轻代gc的次数（young gc）</span><br><span class="line">YGCT: 服务启动至今年轻代gc使用的时间，秒（young gc time）</span><br><span class="line">FGC: 服务启动至今fullgc的次数</span><br><span class="line">FGCT: 服务启动至今fullgc使用的时间，秒</span><br><span class="line">GCT: 服务启动至今gc用的总时间，秒，等于YGCT + FGCT</span><br></pre></td></tr></table></figure>
 <ol start="3">
-<li>jstat -gcutil <pid> : 统计gc信息</pid></li>
+<li>jstat -gcutil &lt;pid&gt; : 统计gc信息</li>
 </ol>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[root@master0 ~]# jstat -gcutil 19080 1000 3</span><br><span class="line">  S0     S1     E      O      M     CCS    YGC     YGCT    FGC    FGCT     GCT   </span><br><span class="line">  0.00  48.90  20.83  69.35      -      -  20221   93.006    37    7.833  100.838</span><br><span class="line">  0.00  48.90  20.83  69.35      -      -  20221   93.006    37    7.833  100.838</span><br><span class="line">  0.00  48.90  20.83  69.35      -      -  20221   93.006    37    7.833  100.838</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">S0: 年轻代第一个survivor已使用容量比例</span><br><span class="line">S1: 年轻代第二个survivor已使用容量比例</span><br><span class="line">E: 年轻代Eden区已使用容量比例</span><br><span class="line">O: 老年代已使用容量比例</span><br><span class="line">M: 元空间已使用容量比例</span><br><span class="line">CCS: 压缩类空间已使用容量比例</span><br><span class="line">YGC: 服务启动至今年轻代gc次数</span><br><span class="line">YGCT: 服务启动至今年轻代gc所占用时间，秒</span><br><span class="line">FGC: 服务启动至今fullgc次数</span><br><span class="line">FGCT: 服务启动至今fullgc所占用时间，秒</span><br><span class="line">GCT: 服务启动至今gc总占用时间，秒，等于YGCT + FGCT</span><br></pre></td></tr></table></figure>
 <ol start="4">
-<li>jstat -gccause <pid> : 查看gc原因</pid></li>
+<li>jstat -gccause &lt;pid&gt; : 查看gc原因</li>
 </ol>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@master0 ~]# jstat -gccause 19080</span><br><span class="line">  S0     S1     E      O      M     CCS    YGC     YGCT    FGC    FGCT     GCT    LGCC                 GCC                 </span><br><span class="line"> 57.32   0.00  13.35  69.36      -      -  20222   93.015    37    7.833  100.848 Allocation Failure   No GC</span><br><span class="line"> </span><br><span class="line">---</span><br><span class="line">上述可以看到比-gcutil多处了一个LGCC和GCC</span><br><span class="line">LGCC: 最近一次gc发生的原因（last gc cause）</span><br><span class="line">GCC: 当前gc发生的原因</span><br></pre></td></tr></table></figure>
 <ol start="5">
-<li>jstat -gccapacity <pid> : 查看虚拟机中对象的使用和容量大小</pid></li>
+<li>jstat -gccapacity &lt;pid&gt; : 查看虚拟机中对象的使用和容量大小</li>
 </ol>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@master0 ~]# jstat -gccapacity 19080</span><br><span class="line"> NGCMN    NGCMX     NGC     S0C   S1C       EC      OGCMN      OGCMX       OGC         OC       MCMN     MCMX      MC     CCSMN    CCSMX     CCSC    YGC    FGC </span><br><span class="line"> 20480.0 323584.0 112640.0 7680.0 6656.0  96768.0    40448.0   647168.0    73728.0    73728.0        -        -        -        -        -        -  20223    37</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">[容量单位为字节]</span><br><span class="line">NGC开头的表示：新生代空间容量</span><br><span class="line">OGC开头的表示：老年代空间容量</span><br><span class="line">MC开头的表示：元空间容量（Metaspace capacity）</span><br><span class="line">CCS开头的表示：类压缩空间</span><br></pre></td></tr></table></figure>
 <ol start="6">
-<li>jstat -gcnew <pid> : 查看新生代gc情况</pid></li>
+<li>jstat -gcnew &lt;pid&gt; : 查看新生代gc情况</li>
 </ol>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root@master0 ~]# jstat -gcnew 19080</span><br><span class="line"> S0C    S1C    S0U    S1U   TT MTT  DSS      EC       EU     YGC     YGCT  </span><br><span class="line">7680.0 6656.0    0.0 6354.4 15  15 7680.0  96768.0  95634.9  20223   93.023</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">[容量单位为字节]</span><br><span class="line">TT: 老年化阈值，也可以理解为对象持有次数，就是在被移动到老年代之前，在新生代中存活的次数</span><br><span class="line">MTT: 最大老年化阈值</span><br><span class="line">DSS: Survivor区所需空间大小</span><br></pre></td></tr></table></figure>
 <ol start="7">
-<li>jstat -gcnewcapacity <pid> : 查看新生代空间容量</pid></li>
+<li>jstat -gcnewcapacity &lt;pid&gt; : 查看新生代空间容量</li>
 </ol>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[root@master0 ~]# jstat -gcnewcapacity 19080</span><br><span class="line">  NGCMN      NGCMX       NGC      S0CMX     S0C     S1CMX     S1C       ECMX        EC      YGC   FGC </span><br><span class="line">   20480.0   323584.0   112128.0 107520.0   7168.0 107520.0   7168.0   322560.0    97280.0 20225    37</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">[容量单位为字节]</span><br><span class="line">MN表示：最小</span><br><span class="line">MX表示：最大</span><br><span class="line">NGC开头表示：新生代空间总容量</span><br><span class="line">S0C开头：新生代第一个survivor区容量</span><br><span class="line">S1C开头：新生代第二个survivor区容量</span><br><span class="line">EC开头：新生代Eden区容量</span><br></pre></td></tr></table></figure>
 <ol start="8">
-<li>jstat -gcold <pid> : 查看老年代gc情况</pid></li>
+<li>jstat -gcold &lt;pid&gt; : 查看老年代gc情况</li>
 </ol>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@master0 ~]# jstat -gcold 19080 1000</span><br><span class="line">   MC       MU      CCSC     CCSU       OC          OU       YGC    FGC    FGCT     GCT   </span><br><span class="line">       -        -        -        -     73728.0     51144.0  20234    37    7.833  100.943</span><br><span class="line">       -        -        -        -     73728.0     51144.0  20234    37    7.833  100.943</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">[容量单位为字节]</span><br></pre></td></tr></table></figure>
 <ol start="9">
-<li>jstat -gcoldcapacity <pid> : 查看老年代容量</pid></li>
+<li>jstat -gcoldcapacity &lt;pid&gt; : 查看老年代容量</li>
 </ol>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@master0 ~]# jstat -gcoldcapacity 19080 100 2</span><br><span class="line">   OGCMN       OGCMX        OGC         OC       YGC   FGC    FGCT     GCT   </span><br><span class="line">    40448.0    647168.0     73728.0     73728.0 20235    37    7.833  100.949</span><br><span class="line">    40448.0    647168.0     73728.0     73728.0 20235    37    7.833  100.949</span><br></pre></td></tr></table></figure>
 <ol start="10">
-<li>jstat -gcpermcapacity <pid> : 查看perm中对象的信息和容量</pid></li>
+<li>jstat -gcpermcapacity &lt;pid&gt; : 查看perm中对象的信息和容量</li>
 </ol>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jdk1.8+以上去除了该命令，如果你当前使用的是jdk1.7-，那么自行谷歌吧</span><br></pre></td></tr></table></figure>
 <ol start="11">
-<li>jstat -compiler <pid> : 查看虚拟机实时编译的信息</pid></li>
+<li>jstat -compiler &lt;pid&gt; : 查看虚拟机实时编译的信息</li>
 </ol>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@master0 ~]# jstat -compiler 19080</span><br><span class="line">Compiled Failed Invalid   Time   FailedType FailedMethod</span><br><span class="line">    2737      0       0    41.90          0             </span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">Compiled: 编译任务执行数量</span><br><span class="line">Failed: 编译任务执行失败数量</span><br><span class="line">Invalid: 编译任务执行失效数量</span><br><span class="line">Time: 编译任务消耗的时间</span><br><span class="line">FailedType: 最后一个编译失败任务的类型</span><br><span class="line">FailedMethod: 最后一个编译失败的任务所在类及方法</span><br></pre></td></tr></table></figure>
 <ol start="12">
-<li>jstat -printcompilation <pid> : 查看虚拟机已经编译过的方法</pid></li>
+<li>jstat -printcompilation &lt;pid&gt; : 查看虚拟机已经编译过的方法</li>
 </ol>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root@master0 ~]# jstat -printcompilation 19080</span><br><span class="line">Compiled  Size  Type Method</span><br><span class="line">    2737   1562    1 sun/misc/FloatingDecimal dtoa</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">Compiled: 编译任务的数量</span><br><span class="line">Size: 方法生成字节码的大小（单位：字节）</span><br><span class="line">Type: 编译类型</span><br><span class="line">Method: 类名和方法名用来标识编译的方法</span><br></pre></td></tr></table></figure>
 
