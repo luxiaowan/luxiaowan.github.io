@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>JVM命令之jstack | 串一串</title>
+  <meta name="description" content="简述 jstack是jdk自带的线程堆栈分析工具，使用该命令可以查看或导出Java应用中线程堆栈信息，主要用法：   -F：强制打印线程堆栈信息，当jstack [-l] &amp;lt;pid&amp;gt;无响应时使用 -m：打印Java和native框架的所有堆栈信息 -l：长列表，打印关于锁的附加信息 -h or -help：打印帮助信息  pid是需要被打印堆栈信息的Java进程id，可以使用jps查">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVM命令之jstack">
+<meta property="og:url" content="http://luxiaowan.github.io/2020/05/11/JVM命令之jstack/index.html">
+<meta property="og:site_name" content="串一串">
+<meta property="og:description" content="简述 jstack是jdk自带的线程堆栈分析工具，使用该命令可以查看或导出Java应用中线程堆栈信息，主要用法：   -F：强制打印线程堆栈信息，当jstack [-l] &amp;lt;pid&amp;gt;无响应时使用 -m：打印Java和native框架的所有堆栈信息 -l：长列表，打印关于锁的附加信息 -h or -help：打印帮助信息  pid是需要被打印堆栈信息的Java进程id，可以使用jps查">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200511001238117.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200511011015785.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200511004249590.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200511004456408.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200511005029659.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200511005806128.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200511005950037.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200511013557261.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200511021314252.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200511021510357.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200511021836792.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200511022609016.png">
+<meta property="og:updated_time" content="2020-05-10T18:34:10.384Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JVM命令之jstack">
+<meta name="twitter:description" content="简述 jstack是jdk自带的线程堆栈分析工具，使用该命令可以查看或导出Java应用中线程堆栈信息，主要用法：   -F：强制打印线程堆栈信息，当jstack [-l] &amp;lt;pid&amp;gt;无响应时使用 -m：打印Java和native框架的所有堆栈信息 -l：长列表，打印关于锁的附加信息 -h or -help：打印帮助信息  pid是需要被打印堆栈信息的Java进程id，可以使用jps查">
+<meta name="twitter:image" content="http://luxiaowan.github.io/images/image-20200511001238117.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://luxiaowan.github.io/2020/05/11/JVM命令之jstack/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="../../../../css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/luxiaowan" target="_blank">
+          <img class="img-circle img-rotate" src="../../../../images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">串一串</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">浪人</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Suzhou, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="../../../../.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="../../../../archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="../../../../repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="../../../../books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="../../../../links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="../../../../about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>断舍离!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Docker/">Docker</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Git/">Git</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Java/">Java</a><span class="category-list-count">32</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kafka/">Kafka</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kubernates/">Kubernates</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Linux/">Linux</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MongoDB/">MongoDB</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MyBatis/">MyBatis</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MySQL/">MySQL</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Nacos/">Nacos</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/NoSQL/">NoSQL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Redis/">Redis</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Spring/">Spring</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/SpringBoot/">SpringBoot</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/分布式/">分布式</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/杂谈/">杂谈</a><span class="category-list-count">5</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Docker/">Docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Eureka/">Eureka</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/GC/">GC</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/JVM/">JVM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java与MongoDB/">Java与MongoDB</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Maven/">Maven</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MongoDB错误记录/">MongoDB错误记录</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MySQL/">MySQL</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Sentinel/">Sentinel</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/SpringCloud/">SpringCloud</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基本指令/">基本指令</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基础应用/">基础应用</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/服务治理/">服务治理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/监控/">监控</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/索引/">索引</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/阿里/">阿里</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/面试/">面试</a><span class="tag-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="../../../../tags/Docker/" style="font-size: 13px;">Docker</a> <a href="../../../../tags/Eureka/" style="font-size: 13.2px;">Eureka</a> <a href="../../../../tags/GC/" style="font-size: 13px;">GC</a> <a href="../../../../tags/JVM/" style="font-size: 13px;">JVM</a> <a href="../../../../tags/Java/" style="font-size: 13.2px;">Java</a> <a href="../../../../tags/Java与MongoDB/" style="font-size: 13px;">Java与MongoDB</a> <a href="../../../../tags/Maven/" style="font-size: 13.4px;">Maven</a> <a href="../../../../tags/MongoDB错误记录/" style="font-size: 13px;">MongoDB错误记录</a> <a href="../../../../tags/MySQL/" style="font-size: 13.2px;">MySQL</a> <a href="../../../../tags/Sentinel/" style="font-size: 13px;">Sentinel</a> <a href="../../../../tags/SpringCloud/" style="font-size: 13.8px;">SpringCloud</a> <a href="../../../../tags/基本指令/" style="font-size: 13px;">基本指令</a> <a href="../../../../tags/基础应用/" style="font-size: 13.2px;">基础应用</a> <a href="../../../../tags/服务治理/" style="font-size: 13px;">服务治理</a> <a href="../../../../tags/监控/" style="font-size: 13px;">监控</a> <a href="../../../../tags/索引/" style="font-size: 14px;">索引</a> <a href="../../../../tags/阿里/" style="font-size: 13.2px;">阿里</a> <a href="../../../../tags/面试/" style="font-size: 13.6px;">面试</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/05/">五月 2020</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/04/">四月 2020</a><span class="archive-list-count">51</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/03/">三月 2020</a><span class="archive-list-count">17</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/01/">一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/12/">十二月 2019</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/11/">十一月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/10/">十月 2019</a><span class="archive-list-count">16</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/01/">一月 2019</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled ">
+        
+          <li>
+            
+            <div class="item-thumb">
+              <a href="" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="" class="title">JVM命令之jstack</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-10T16:11:00.000Z" itemprop="datePublished">2020-05-11</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../10/Java垃圾回收名词/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../10/Java垃圾回收名词/" class="title">Java垃圾回收名词</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-10T14:50:00.000Z" itemprop="datePublished">2020-05-10</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../09/Synchronized作用在静态和非静态方法上的区别/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../09/Synchronized作用在静态和非静态方法上的区别/" class="title">Synchronized作用在静态和非静态方法上的区别</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-09T15:21:00.000Z" itemprop="datePublished">2020-05-09</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../09/JVM参数介绍/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../09/JVM参数介绍/" class="title">JVM参数介绍</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-09T01:30:00.000Z" itemprop="datePublished">2020-05-09</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../08/J.U.C之Condition详解/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../08/J.U.C之Condition详解/" class="title">J.U.C之Condition详解</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-07T16:44:00.000Z" itemprop="datePublished">2020-05-08</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-JVM命令之jstack" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      JVM命令之jstack
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="" class="article-date">
+	  <time datetime="2020-05-10T16:11:00.000Z" itemprop="datePublished">2020-05-11</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="../../../../categories/Java/">Java</a>
+  </span>
+
+        
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1.4k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 5(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h3 id="简述"><a class="markdownIt-Anchor" href="#简述"></a> 简述</h3>
+<p>jstack是jdk自带的线程堆栈分析工具，使用该命令可以查看或导出Java应用中线程堆栈信息，主要用法：</p>
+<img src="/images/image-20200511001238117.png" alt="image-20200511001238117" style="zoom:50%;">
+<ul>
+<li>-F：强制打印线程堆栈信息，当<code>jstack [-l] &lt;pid&gt;</code>无响应时使用</li>
+<li>-m：打印Java和native框架的所有堆栈信息</li>
+<li>-l：长列表，打印关于锁的附加信息</li>
+<li>-h or -help：打印帮助信息</li>
+</ul>
+<p><code>pid</code>是需要被打印堆栈信息的Java进程id，可以使用jps查看，通过jstack命令可以获取当前进程的所有线程信息，每个线程堆信息中可以看到线程ID、线程状态、是否持有锁等信息。</p>
+<h3 id="死锁排查"><a class="markdownIt-Anchor" href="#死锁排查"></a> 死锁排查</h3>
+<p>线程死锁的情况很简单，我们通过一张图即可理解：</p>
+<img src="/images/image-20200511011015785.png" alt="image-20200511011015785" style="zoom:50%;">
+<p>首先我们写一段死锁代码，代码逻辑很简单，写两个线程，提供两个ReentrantLock对象，在线程1中先对lock1加锁，然后再对lock2加锁，而在线程2中先对lock2加锁，再对lock1加锁，使这两个线程互相竞争锁lock1和lock2。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.Lock;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.ReentrantLock;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DeadLockTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Lock lock1 = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">        Lock lock2 = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">        </span><br><span class="line">        Thread t1 = <span class="keyword">new</span> Thread(() -&gt; &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                lock1.lock();</span><br><span class="line">                System.out.println(<span class="string">"cc1获取到lock1"</span>);</span><br><span class="line">                Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">                lock2.lock();</span><br><span class="line">                System.out.println(<span class="string">"cc1获取到lock2"</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                lock1.unlock();</span><br><span class="line">                lock2.unlock();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, <span class="string">"cc1"</span>);</span><br><span class="line">        Thread t2 = <span class="keyword">new</span> Thread(() -&gt; &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                lock2.lock();</span><br><span class="line">                System.out.println(<span class="string">"cc2获取到lock2"</span>);</span><br><span class="line">                Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">                lock1.lock();</span><br><span class="line">                System.out.println(<span class="string">"cc2获取到lock1"</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                lock1.unlock();</span><br><span class="line">                lock2.unlock();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, <span class="string">"cc2"</span>);</span><br><span class="line">        </span><br><span class="line">        t1.start();</span><br><span class="line">        t2.start();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行程序之后，控制台输出内容：</p>
+<img src="/images/image-20200511004249590.png" alt="image-20200511004249590" style="zoom:50%;">
+<p>然后就一直停顿在这里，下面我们使用jstack排查一下：</p>
+<ol>
+<li>
+<p>使用jps查看进程pid</p>
+<img src="/images/image-20200511004456408.png" alt="image-20200511004456408" style="zoom:50%;">
+<p>我们看到进程的pid为75169，接下来就可以根据该pid打印出堆栈信息</p>
+</li>
+<li>
+<p>通过jstack查看进程的堆栈信息</p>
+<p>执行命令<code>jstack -l 75169</code>，查看控制台输出的信息</p>
+<img src="/images/image-20200511005029659.png" alt="image-20200511005029659" style="zoom:50%;">
+</li>
+<li>
+<p>排查死锁</p>
+<ul>
+<li>直接方法</li>
+</ul>
+<p>查看红框内的信息，发现在堆栈信息中已经告诉了我们死锁的信息，及发生死锁的线程名称和正在等待的锁，以及等待的锁的当前拥有者的线程名称。</p>
+<p>查看黄框内的信息，这是我们排查代码问题的关键所在，也就是在堆栈信息中，会告诉我们发生死锁的代码位置，便于我们定位发生死锁的代码。</p>
+<ul>
+<li>间接方法</li>
+</ul>
+<p>如果堆栈中未告诉我们死锁的关联线程，那么我们可以通过线程正在等待的锁的信息在堆栈信息中进行搜索，本示例中，线程cc2的堆栈信息中<code>- parking to wait for &lt;0x000000076b2839a8&gt;</code>告诉我们当前线程cc2正在等待锁0x000000076b2839a8，并且当前已经霸占了锁0x000000076b2839d8；</p>
+<img src="/images/image-20200511005806128.png" alt="image-20200511005806128" style="zoom:50%;">
+<p>而线程cc1的堆栈信息中<code>- parking to wait for &lt;0x000000076b2839d8&gt;</code>告诉我们它正在等待锁0x000000076b2839d8，且当前已经持有了锁0x000000076b2839a8。</p>
+<img src="/images/image-20200511005950037.png" alt="image-20200511005950037" style="zoom:50%;">
+<p>通过线程cc1和cc2的堆栈信息我们能够直观的分析出它们相互霸占了对方想要获取的锁，并且在未获得所需要的锁之前，相互之间都不会释放已经持有的锁，因此导致了程序出现了死锁。</p>
+</li>
+</ol>
+<h5 id="小结"><a class="markdownIt-Anchor" href="#小结"></a> 小结</h5>
+<p>以上就是我们通常情况下排查线程死锁的基本操作，主要操作顺序为：</p>
+<ol>
+<li>使用jps查看进程pid</li>
+<li>使用<code>jstack -l pid</code>查看线程堆栈信息</li>
+<li>通过堆栈信息分析死锁情况</li>
+</ol>
+<h3 id="排查cpu过高"><a class="markdownIt-Anchor" href="#排查cpu过高"></a> 排查CPU过高</h3>
+<p>当运行中的线程过多时，CPU负载会极速飙升，如果我们不及时解决就会导致因CPU过高而唤醒的系统的自我保护，将进程杀死。在实际工作当中，我们经常会遇到此种情况，当然我们不能看到CPU达到100%或者300%了就认为是CPU负载过高，这要根据我们服务器的CPU个数和每个CPU的负载来判断CPU是否过高。</p>
+<blockquote>
+<p>查看服务器负载：使用top命令查看机器负载</p>
+<p><img src="/images/image-20200511013557261.png" alt="image-20200511013557261"></p>
+<ul>
+<li>load average后面分表代表1分钟、5分钟、15分钟的系统平均负载情况，一般不超过CPU个数*0.7即可认为是正常，使用uptime命令也可以查看该属性</li>
+<li>按键1可以查看每个CPU的负载情况，若有一个CPU使用量超过75%，那么就需要排查了</li>
+</ul>
+</blockquote>
+<p>我们写一个死循环来将CPU吃满：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FullCpuTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">long</span> sum = <span class="number">0L</span>;</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            sum += <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>
+<p>运行程序之后，通过top命令查看CPU负载</p>
+<img src="/images/image-20200511021314252.png" alt="image-20200511021314252" style="zoom:50%;">
+<p>我们看到load average并不是很高，因为刚启动，待会就飙起来了，但是CPU0的usage已经达到了94.7%，我们的Java进程的pid为23731。</p>
+</li>
+<li>
+<p>通过<code>top -Hp 23731</code>查看进程内的线程负载情况</p>
+<p><img src="/images/image-20200511021510357.png" alt="image-20200511021510357"></p>
+<p>发现pid为23732的线程占用的CPU最高，那么我们就找到了问题所在</p>
+</li>
+<li>
+<p>查看线程的堆栈信息</p>
+<ul>
+<li>
+<p>通过<code>jstack hpid</code>查看线程中处于RUNNABLE状态的线程</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 23732是线程的pid</span></span><br><span class="line">jstack 23732</span><br></pre></td></tr></table></figure>
+<p><img src="/images/image-20200511021836792.png" alt="image-20200511021836792"></p>
+</li>
+<li>
+<p>通过<code>jstack pid</code>定位具体的线程</p>
+<ol>
+<li>
+<p>打印线程23732的16进制数</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">printf '%x\n' 23732</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>通过jstack排查具体的线程信息</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 23731是进程的pid</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 5cb4是线程pid的十六进制数</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> -C2是输出命中行的上下行数，-C2表示上下各打印两行</span></span><br><span class="line">jstack 23731 | grep '0x5cb4' -C2 --color</span><br></pre></td></tr></table></figure>
+<p><img src="/images/image-20200511022609016.png" alt="image-20200511022609016"></p>
+</li>
+</ol>
+</li>
+<li>
+<p>通过<code>kill -3 pid</code>查看线程堆栈信息</p>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="其他"><a class="markdownIt-Anchor" href="#其他"></a> 其他</h3>
+<p>一般生产环境不会让直接在服务器上操作，所以可以将堆栈信息输出到文件中，然后再详细分析</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://luxiaowan.github.io/2020/05/11/JVM命令之jstack/" title="JVM命令之jstack" target="_blank" rel="external">http://luxiaowan.github.io/2020/05/11/JVM命令之jstack/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/luxiaowan" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="../../../../images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/luxiaowan" target="_blank"><span class="text-dark">串一串</span><small class="ml-1x">浪人</small></a></h3>
+        <div>断舍离</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    
+    <li class="next">
+      <a href="../../10/Java垃圾回收名词/" title="Java垃圾回收名词"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2020 cc
+        
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="../../../../js/plugin.min.js"></script>
+<script src="../../../../js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '../../../../content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="../../../../js/insight.js"></script>
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+
+
+
+
+
+
+</body>
+</html>
