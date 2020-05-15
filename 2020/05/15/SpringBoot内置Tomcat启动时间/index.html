@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>SpringBoot内置Tomcat启动时间 | 串一串</title>
+  <meta name="description" content="疑惑 SpringBoot中内置了Tomcat容器，那么Tomcat是在什么时间点启动的？是先扫描包加载类再启动Tomcat？，还是先启动Tomcat再扫描包加载类？ 我们做一下假设：  先启动Tomcat，再扫描包加载类 先扫描包加载类，再启动Tomcat  接下来我们做一下验证。  验证 首先创建一个空的SpringBoot工程，然后启动它，查看一下控制台的输出日志：  从输出的日志中可以看">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot内置Tomcat启动时间">
+<meta property="og:url" content="http://luxiaowan.github.io/2020/05/15/SpringBoot内置Tomcat启动时间/index.html">
+<meta property="og:site_name" content="串一串">
+<meta property="og:description" content="疑惑 SpringBoot中内置了Tomcat容器，那么Tomcat是在什么时间点启动的？是先扫描包加载类再启动Tomcat？，还是先启动Tomcat再扫描包加载类？ 我们做一下假设：  先启动Tomcat，再扫描包加载类 先扫描包加载类，再启动Tomcat  接下来我们做一下验证。  验证 首先创建一个空的SpringBoot工程，然后启动它，查看一下控制台的输出日志：  从输出的日志中可以看">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200515183550832.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/AnnotationConfigServletWebServerApplicationContext.png">
+<meta property="og:updated_time" content="2020-05-15T17:44:56.241Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringBoot内置Tomcat启动时间">
+<meta name="twitter:description" content="疑惑 SpringBoot中内置了Tomcat容器，那么Tomcat是在什么时间点启动的？是先扫描包加载类再启动Tomcat？，还是先启动Tomcat再扫描包加载类？ 我们做一下假设：  先启动Tomcat，再扫描包加载类 先扫描包加载类，再启动Tomcat  接下来我们做一下验证。  验证 首先创建一个空的SpringBoot工程，然后启动它，查看一下控制台的输出日志：  从输出的日志中可以看">
+<meta name="twitter:image" content="http://luxiaowan.github.io/images/image-20200515183550832.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://luxiaowan.github.io/2020/05/15/SpringBoot内置Tomcat启动时间/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="../../../../css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/luxiaowan" target="_blank">
+          <img class="img-circle img-rotate" src="../../../../images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">串一串</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">浪人</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Suzhou, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="../../../../.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="../../../../archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="../../../../repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="../../../../books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="../../../../links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="../../../../about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>断舍离!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Docker/">Docker</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Git/">Git</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Java/">Java</a><span class="category-list-count">36</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kafka/">Kafka</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kubernates/">Kubernates</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Linux/">Linux</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MongoDB/">MongoDB</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MyBatis/">MyBatis</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MySQL/">MySQL</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Nacos/">Nacos</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/NoSQL/">NoSQL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Redis/">Redis</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Spring/">Spring</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/SpringBoot/">SpringBoot</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/分布式/">分布式</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/杂谈/">杂谈</a><span class="category-list-count">5</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Docker/">Docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Eureka/">Eureka</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/GC/">GC</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/JVM/">JVM</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java与MongoDB/">Java与MongoDB</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Maven/">Maven</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MongoDB错误记录/">MongoDB错误记录</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MySQL/">MySQL</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Sentinel/">Sentinel</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/SpringCloud/">SpringCloud</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基本指令/">基本指令</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基础应用/">基础应用</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/服务治理/">服务治理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/监控/">监控</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/索引/">索引</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/阿里/">阿里</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/面试/">面试</a><span class="tag-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="../../../../tags/Docker/" style="font-size: 13px;">Docker</a> <a href="../../../../tags/Eureka/" style="font-size: 13.2px;">Eureka</a> <a href="../../../../tags/GC/" style="font-size: 13px;">GC</a> <a href="../../../../tags/JVM/" style="font-size: 13px;">JVM</a> <a href="../../../../tags/Java/" style="font-size: 13.2px;">Java</a> <a href="../../../../tags/Java与MongoDB/" style="font-size: 13px;">Java与MongoDB</a> <a href="../../../../tags/Maven/" style="font-size: 13.4px;">Maven</a> <a href="../../../../tags/MongoDB错误记录/" style="font-size: 13px;">MongoDB错误记录</a> <a href="../../../../tags/MySQL/" style="font-size: 13.2px;">MySQL</a> <a href="../../../../tags/Sentinel/" style="font-size: 13px;">Sentinel</a> <a href="../../../../tags/SpringCloud/" style="font-size: 13.8px;">SpringCloud</a> <a href="../../../../tags/基本指令/" style="font-size: 13px;">基本指令</a> <a href="../../../../tags/基础应用/" style="font-size: 13.2px;">基础应用</a> <a href="../../../../tags/服务治理/" style="font-size: 13px;">服务治理</a> <a href="../../../../tags/监控/" style="font-size: 13px;">监控</a> <a href="../../../../tags/索引/" style="font-size: 14px;">索引</a> <a href="../../../../tags/阿里/" style="font-size: 13.2px;">阿里</a> <a href="../../../../tags/面试/" style="font-size: 13.6px;">面试</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/05/">五月 2020</a><span class="archive-list-count">15</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/04/">四月 2020</a><span class="archive-list-count">51</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/03/">三月 2020</a><span class="archive-list-count">17</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/01/">一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/12/">十二月 2019</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/11/">十一月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/10/">十月 2019</a><span class="archive-list-count">16</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/01/">一月 2019</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled ">
+        
+          <li>
+            
+            <div class="item-thumb">
+              <a href="" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="" class="title">SpringBoot内置Tomcat启动时间</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-15T10:22:00.000Z" itemprop="datePublished">2020-05-15</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../12/JVM指针碰撞和空闲列表/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../12/JVM指针碰撞和空闲列表/" class="title">JVM指针碰撞和空闲列表</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-12T02:40:00.000Z" itemprop="datePublished">2020-05-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../11/监听Redis中key过期事件/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Redis/">Redis</a>
+              </p>
+              <p class="item-title">
+                <a href="../../11/监听Redis中key过期事件/" class="title">监听Redis中key过期事件</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-11T15:20:00.000Z" itemprop="datePublished">2020-05-11</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../11/JVM命令之jcmd/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../11/JVM命令之jcmd/" class="title">JVM命令之jcmd</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-11T10:21:00.000Z" itemprop="datePublished">2020-05-11</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../11/JVM命令之jmap/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../11/JVM命令之jmap/" class="title">JVM命令之jmap</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-11T07:40:00.000Z" itemprop="datePublished">2020-05-11</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-SpringBoot内置Tomcat启动时间" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      SpringBoot内置Tomcat启动时间
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="" class="article-date">
+	  <time datetime="2020-05-15T10:22:00.000Z" itemprop="datePublished">2020-05-15</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="../../../../categories/Java/">Java</a>
+  </span>
+
+        
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 2.3k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 10(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h4 id="疑惑"><a class="markdownIt-Anchor" href="#疑惑"></a> 疑惑</h4>
+<p>SpringBoot中内置了Tomcat容器，那么Tomcat是在什么时间点启动的？是先扫描包加载类再启动Tomcat？，还是先启动Tomcat再扫描包加载类？</p>
+<p>我们做一下假设：</p>
+<ol>
+<li>先启动Tomcat，再扫描包加载类</li>
+<li>先扫描包加载类，再启动Tomcat</li>
+</ol>
+<p>接下来我们做一下验证。</p>
+<h4 id="验证"><a class="markdownIt-Anchor" href="#验证"></a> 验证</h4>
+<p>首先创建一个空的SpringBoot工程，然后启动它，查看一下控制台的输出日志：</p>
+<img src="/images/image-20200515183550832.png" alt="image-20200515183550832" style="zoom:50%;">
+<p>从输出的日志中可以看到②中显示Tomcat进行初始化，并且正在启动中，然后③中进行初始化<code>WebApplicationContext</code>，紧接着就是初始化<code>WebApplicationContext</code>完成，然后是在④中报告我们Tomcat启动完成。</p>
+<p>从日志上看，好像是先启动Tomcat再去扫描包的，具体是怎么回事，我们看一下源码，暂时先不揭晓。</p>
+<ul>
+<li>
+<p>从启动类中进入到<code>SpringApplication.run()</code>方法中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> ConfigurableApplicationContext <span class="title">run</span><span class="params">(String... args)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 创建启动监控类，监控启动过程用了多久，但是ms</span></span><br><span class="line">  StopWatch stopWatch = <span class="keyword">new</span> StopWatch();</span><br><span class="line">  <span class="comment">// 开始计时，设置开始时间</span></span><br><span class="line">  stopWatch.start();</span><br><span class="line">  <span class="comment">// 上下文实例</span></span><br><span class="line">  ConfigurableApplicationContext context = <span class="keyword">null</span>;</span><br><span class="line">  <span class="comment">// 启动异常错误报告</span></span><br><span class="line">  Collection&lt;SpringBootExceptionReporter&gt; exceptionReporters = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">  <span class="comment">// 启用headless模式（headless模式是在系统缺少部分硬件支持的时候让服务自力更生）</span></span><br><span class="line">  configureHeadlessProperty();</span><br><span class="line">  <span class="comment">// 获取spring.factories文件中配置的org.springframework.boot.SpringApplicationRunListener列表，原理是Spring的事件机制，所有的类都实现自ApplicationEvent，可以监听启动过程中的任意阶段</span></span><br><span class="line">  SpringApplicationRunListeners listeners = getRunListeners(args);</span><br><span class="line">  <span class="comment">// 进入监听启动阶段</span></span><br><span class="line">  listeners.starting();</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// 获取JVM运行参数，也就是在使用java -jar xxx.jar命令启动时指定的其他参数</span></span><br><span class="line">    ApplicationArguments applicationArguments = <span class="keyword">new</span> DefaultApplicationArguments(args);</span><br><span class="line">    <span class="comment">// 准备运行环境，传入监听器和运行参数，获取环境变量，绑定到环境中</span></span><br><span class="line">    ConfigurableEnvironment environment = prepareEnvironment(listeners, applicationArguments);</span><br><span class="line">    <span class="comment">// 配置spring.beaninfo.ignore属性，SpringBoot中默认为true</span></span><br><span class="line">    configureIgnoreBeanInfo(environment);</span><br><span class="line">    <span class="comment">// 输出Banner信息，banner的输出方式有三种：none/console/log，默认为console，通过配置参数spring.main.banner-mode指定</span></span><br><span class="line">    Banner printedBanner = printBanner(environment);</span><br><span class="line">    <span class="comment">// ☆创建一个上下文实例，比较重点的地方☆</span></span><br><span class="line">    context = createApplicationContext();</span><br><span class="line">    <span class="comment">// 获取spring.factories文件中声明的SpringBootExceptionReporter</span></span><br><span class="line">    exceptionReporters = getSpringFactoriesInstances(SpringBootExceptionReporter.class,</span><br><span class="line">                                                     <span class="keyword">new</span> Class[] &#123; ConfigurableApplicationContext.class &#125;, context);</span><br><span class="line">    <span class="comment">// 创建上下文，设置环境变量和资源加载器，创建bean，加载到所有的listener中</span></span><br><span class="line">    prepareContext(context, environment, listeners, applicationArguments, printedBanner);</span><br><span class="line">    <span class="comment">// 调用spring的refresh方法，并注册一个ShutdownHook（应用关闭时的动作，可以通过继承AbstractApplicationContext实现自定义）</span></span><br><span class="line">    refreshContext(context);</span><br><span class="line">    <span class="comment">// 空方法</span></span><br><span class="line">    afterRefresh(context, applicationArguments);</span><br><span class="line">    <span class="comment">// 启动完成，停止计时</span></span><br><span class="line">    stopWatch.stop();</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.logStartupInfo) &#123;</span><br><span class="line">      <span class="comment">// 输出启动信息，包括计时</span></span><br><span class="line">      <span class="keyword">new</span> StartupInfoLogger(<span class="keyword">this</span>.mainApplicationClass).logStarted(getApplicationLog(), stopWatch);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 进入监听器的启动完成事件</span></span><br><span class="line">    listeners.started(context);</span><br><span class="line">    callRunners(context, applicationArguments);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">catch</span> (Throwable ex) &#123;</span><br><span class="line">    handleRunFailure(context, ex, exceptionReporters, listeners);</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(ex);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// 进入监听器的运行中事件</span></span><br><span class="line">    listeners.running(context);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">catch</span> (Throwable ex) &#123;</span><br><span class="line">    handleRunFailure(context, ex, exceptionReporters, <span class="keyword">null</span>);</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(ex);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> context;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从源码中并未看到是在哪里启动了Tomcat容器，那么我们就看一下创建Spring上下文的方法中是否有关键字</p>
+</li>
+<li>
+<p>createApplicationContext()方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> ConfigurableApplicationContext <span class="title">createApplicationContext</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  Class&lt;?&gt; contextClass = <span class="keyword">this</span>.applicationContextClass;</span><br><span class="line">  <span class="keyword">if</span> (contextClass == <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="keyword">switch</span> (<span class="keyword">this</span>.webApplicationType) &#123;</span><br><span class="line">        <span class="keyword">case</span> SERVLET:</span><br><span class="line">          <span class="comment">// org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext</span></span><br><span class="line">          contextClass = Class.forName(DEFAULT_SERVLET_WEB_CONTEXT_CLASS);</span><br><span class="line">          <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> REACTIVE:</span><br><span class="line">          <span class="comment">// org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext</span></span><br><span class="line">          contextClass = Class.forName(DEFAULT_REACTIVE_WEB_CONTEXT_CLASS);</span><br><span class="line">          <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">          <span class="comment">// org.springframework.context.annotation.AnnotationConfigApplicationContext</span></span><br><span class="line">          contextClass = Class.forName(DEFAULT_CONTEXT_CLASS);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">catch</span> (ClassNotFoundException ex) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(</span><br><span class="line">        <span class="string">"Unable create a default ApplicationContext, please specify an ApplicationContextClass"</span>, ex);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> (ConfigurableApplicationContext) BeanUtils.instantiateClass(contextClass);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这是一个创建<code>ApplicationContext</code>实例的方法，我们只看Tomcat的<code>AnnotationConfigServletWebServerApplicationContext</code>，他的继承关系如下</p>
+<p><img src="/images/AnnotationConfigServletWebServerApplicationContext.png" alt="AnnotationConfigServletWebServerApplicationContext"></p>
+<p>以上类中并没有在静态代码块中启动Tomcat，则说明不是在这里启动的，这里只是创建一个<code>ApplicationContext</code>上下文实例</p>
+</li>
+<li>
+<p>prepareContext()方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">prepareContext</span><span class="params">(ConfigurableApplicationContext context, ConfigurableEnvironment environment,</span></span></span><br><span class="line"><span class="function"><span class="params">                            SpringApplicationRunListeners listeners, ApplicationArguments applicationArguments, Banner printedBanner)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 设置环境变量</span></span><br><span class="line">  context.setEnvironment(environment);</span><br><span class="line">  <span class="comment">// 处理上下文</span></span><br><span class="line">  postProcessApplicationContext(context);</span><br><span class="line">  <span class="comment">// 做refresh前的初始化准备</span></span><br><span class="line">  applyInitializers(context);</span><br><span class="line">  <span class="comment">// 进入到监听器的上下文准备阶段</span></span><br><span class="line">  listeners.contextPrepared(context);</span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">this</span>.logStartupInfo) &#123;</span><br><span class="line">    logStartupInfo(context.getParent() == <span class="keyword">null</span>);</span><br><span class="line">    logStartupProfileInfo(context);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 创建特殊的引导类实例，单例的</span></span><br><span class="line">  ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();</span><br><span class="line">  beanFactory.registerSingleton(<span class="string">"springApplicationArguments"</span>, applicationArguments);</span><br><span class="line">  <span class="keyword">if</span> (printedBanner != <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="comment">// 创建Banner类实例，单例的</span></span><br><span class="line">    beanFactory.registerSingleton(<span class="string">"springBootBanner"</span>, printedBanner);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (beanFactory <span class="keyword">instanceof</span> DefaultListableBeanFactory) &#123;</span><br><span class="line">    ((DefaultListableBeanFactory) beanFactory)</span><br><span class="line">    .setAllowBeanDefinitionOverriding(<span class="keyword">this</span>.allowBeanDefinitionOverriding);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">this</span>.lazyInitialization) &#123;</span><br><span class="line">    context.addBeanFactoryPostProcessor(<span class="keyword">new</span> LazyInitializationBeanFactoryPostProcessor());</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// Load the sources</span></span><br><span class="line">  Set&lt;Object&gt; sources = getAllSources();</span><br><span class="line">  Assert.notEmpty(sources, <span class="string">"Sources must not be empty"</span>);</span><br><span class="line">  load(context, sources.toArray(<span class="keyword">new</span> Object[<span class="number">0</span>]));</span><br><span class="line">  listeners.contextLoaded(context);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>方法里整个过程都在创建各种类的实例，并未出现对Tomcat的启动操作，看来也不在这个方法中，那么就继续往下看</p>
+</li>
+<li>
+<p>refreshContext()方法</p>
+<p>这个方法最终是调用到<code>AbstractApplicationContext#refresh()</code>中，这就到了Spring基础框架中。我们在分析createApplicationContext()方法的时候，知道Tomcat使用的是<code>org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext</code>类，这个类继承自<code>org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext</code>，在这个类中，重写了父类<code>AbstractApplicationContext</code>中的refresh()、onRefresh()和finishRefresh()方法，而在<code>AbstractApplicationContext#refresh()</code>方法中，调用了onRefresh()和finishRefresh()这两个方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">refresh</span><span class="params">()</span> <span class="keyword">throws</span> BeansException, IllegalStateException </span>&#123;</span><br><span class="line">  <span class="keyword">synchronized</span> (<span class="keyword">this</span>.startupShutdownMonitor) &#123;</span><br><span class="line">    <span class="comment">// Prepare this context for refreshing.</span></span><br><span class="line">    <span class="comment">// Tell the subclass to refresh the internal bean factory.</span></span><br><span class="line">    <span class="comment">// Prepare the bean factory for use in this context.</span></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="comment">// Allows post-processing of the bean factory in context subclasses.</span></span><br><span class="line">      <span class="comment">// Invoke factory processors registered as beans in the context.</span></span><br><span class="line">      <span class="comment">// Register bean processors that intercept bean creation.</span></span><br><span class="line">      <span class="comment">// Initialize message source for this context.</span></span><br><span class="line">      <span class="comment">// Initialize event multicaster for this context.</span></span><br><span class="line"></span><br><span class="line">      <span class="comment">// Initialize other special beans in specific context subclasses.</span></span><br><span class="line">      onRefresh();</span><br><span class="line"></span><br><span class="line">      <span class="comment">// Check for listener beans and register them.</span></span><br><span class="line">      <span class="comment">// Instantiate all remaining (non-lazy-init) singletons.</span></span><br><span class="line"></span><br><span class="line">      <span class="comment">// Last step: publish corresponding event.</span></span><br><span class="line">      finishRefresh();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (BeansException ex) &#123;</span><br><span class="line">      <span class="keyword">throw</span> ex;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>此时调用的onRefresh()和finishRefresh()实际上是调用了<code>ServletWebServerApplicationContext</code>中的方法，那么我们就来看下这个类中的这两个方法分别做了什么</p>
+<ul>
+<li>onRefresh()方法</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onRefresh</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 调用父类的onRefresh()方法</span></span><br><span class="line">  <span class="keyword">super</span>.onRefresh();</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// 创建WebServer</span></span><br><span class="line">    createWebServer();</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">catch</span> (Throwable ex) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> ApplicationContextException(<span class="string">"Unable to start web server"</span>, ex);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">createWebServer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  WebServer webServer = <span class="keyword">this</span>.webServer;</span><br><span class="line">  ServletContext servletContext = getServletContext();</span><br><span class="line">  <span class="keyword">if</span> (webServer == <span class="keyword">null</span> &amp;&amp; servletContext == <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="comment">// 获取ServletWebServerFactory的实例，使用Tomcat的话会获取到tomcatServletWebServerFactory</span></span><br><span class="line">    ServletWebServerFactory factory = getWebServerFactory();</span><br><span class="line">    <span class="comment">// 获取WebServer实例，方法内创建Tomcat并准备Tomcat启动所需环境变量</span></span><br><span class="line">    <span class="keyword">this</span>.webServer = factory.getWebServer(getSelfInitializer());</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (servletContext != <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      getSelfInitializer().onStartup(servletContext);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (ServletException ex) &#123;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 初始化自定义的环境变量，涉及到servletContextInitParams和servletConfigInitParams</span></span><br><span class="line">  initPropertySources();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">protected</span> ServletWebServerFactory <span class="title">getWebServerFactory</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 使用bean名称，这样我们就不会考虑层次结构</span></span><br><span class="line">  String[] beanNames = getBeanFactory().getBeanNamesForType(ServletWebServerFactory.class);</span><br><span class="line">  <span class="keyword">if</span> (beanNames.length == <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> ApplicationContextException(<span class="string">""</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (beanNames.length &gt; <span class="number">1</span>) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> ApplicationContextException(<span class="string">""</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 获取Bean实例，这里获取到的就是TomcatServletWebServerFactory类的实例</span></span><br><span class="line">  <span class="keyword">return</span> getBeanFactory().getBean(beanNames[<span class="number">0</span>], ServletWebServerFactory.class);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过代码我们知道在onRefresh()方法中主要是创建Tomcat实例，准备Tomcat启动所需参数和配置信息，并未启动Tomcat</p>
+<ul>
+<li>finishRefresh()方法</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">finishRefresh</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">super</span>.finishRefresh();</span><br><span class="line">  <span class="comment">// 启动WebServer，难道是这里启动的Tomcat？</span></span><br><span class="line">  WebServer webServer = startWebServer();</span><br><span class="line">  <span class="keyword">if</span> (webServer != <span class="keyword">null</span>) &#123;</span><br><span class="line">    publishEvent(<span class="keyword">new</span> ServletWebServerInitializedEvent(webServer, <span class="keyword">this</span>));</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> WebServer <span class="title">startWebServer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  WebServer webServer = <span class="keyword">this</span>.webServer;</span><br><span class="line">  <span class="keyword">if</span> (webServer != <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="comment">// 启动WebServer，这里调用的是TomcatWebServer#start()方法</span></span><br><span class="line">    webServer.start();</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> webServer;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// TomcatWebServer#start()方法</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> <span class="keyword">throws</span> WebServerException </span>&#123;</span><br><span class="line">  <span class="comment">// 加锁防并发</span></span><br><span class="line">  <span class="keyword">synchronized</span> (<span class="keyword">this</span>.monitor) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.started) &#123;</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      addPreviouslyRemovedConnectors();</span><br><span class="line">      <span class="comment">// 获取Tomcat的Connector</span></span><br><span class="line">      Connector connector = <span class="keyword">this</span>.tomcat.getConnector();</span><br><span class="line">      <span class="keyword">if</span> (connector != <span class="keyword">null</span> &amp;&amp; <span class="keyword">this</span>.autoStart) &#123;</span><br><span class="line">        <span class="comment">// 如果connector不为null，并且自动启动，则启动时执行延迟加载</span></span><br><span class="line">        <span class="comment">// 当端口大于0的时候，autoStart就为true</span></span><br><span class="line">        performDeferredLoadOnStartup();</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">// 检查Connector是否已启动，若有未启动的Connector则抛异常</span></span><br><span class="line">      checkThatConnectorsHaveStarted();</span><br><span class="line">      <span class="comment">// 修改运行标识属性</span></span><br><span class="line">      <span class="keyword">this</span>.started = <span class="keyword">true</span>;</span><br><span class="line">      <span class="comment">// 输出Tomcat启动成功日志</span></span><br><span class="line">      logger.info(<span class="string">"Tomcat started on port(s): "</span> + getPortsDescription(<span class="keyword">true</span>) + <span class="string">" with context path '"</span></span><br><span class="line">                  + getContextPath() + <span class="string">"'"</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (ConnectorStartFailedException ex) &#123;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception ex) &#123;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里好像也仅仅就是检测Tomcat服务是否启动成功了，并没有执行启动这个操作，看来也不在这里。</p>
+<p>这就奇怪了，我们几乎翻遍了整个启动类的代码，都没有Tomcat启动的代码，那么Tomcat是怎么启动的呢？是不是我们遗漏了什么？我们来回顾一下上面的分析，TomcatWebServer实例的获取的地方<code>ServletWebServerFactory#getWebServer()</code>方法内我们好像没有看，是不是在创建TomcatWebServer实例的时候直接就启动了，然后在<code>TomcatWebServer#start()</code>方法中只是去检测启动的状态？我们来看下<code>ServletWebServerFactory#getWebServer()</code>的源码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> WebServer <span class="title">getWebServer</span><span class="params">(ServletContextInitializer... initializers)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">this</span>.disableMBeanRegistry) &#123;</span><br><span class="line">    Registry.disableRegistry();</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 简单略过</span></span><br><span class="line">  Tomcat tomcat = <span class="keyword">new</span> Tomcat();</span><br><span class="line">  File baseDir = (<span class="keyword">this</span>.baseDirectory != <span class="keyword">null</span>) ? <span class="keyword">this</span>.baseDirectory : createTempDir(<span class="string">"tomcat"</span>);</span><br><span class="line">  tomcat.setBaseDir(baseDir.getAbsolutePath());</span><br><span class="line">  Connector connector = <span class="keyword">new</span> Connector(<span class="keyword">this</span>.protocol);</span><br><span class="line">  connector.setThrowOnFailure(<span class="keyword">true</span>);</span><br><span class="line">  tomcat.getService().addConnector(connector);</span><br><span class="line">  customizeConnector(connector);</span><br><span class="line">  tomcat.setConnector(connector);</span><br><span class="line">  tomcat.getHost().setAutoDeploy(<span class="keyword">false</span>);</span><br><span class="line">  configureEngine(tomcat.getEngine());</span><br><span class="line">  <span class="keyword">for</span> (Connector additionalConnector : <span class="keyword">this</span>.additionalTomcatConnectors) &#123;</span><br><span class="line">    tomcat.getService().addConnector(additionalConnector);</span><br><span class="line">  &#125;</span><br><span class="line">  prepareContext(tomcat.getHost(), initializers);</span><br><span class="line">  <span class="comment">// 获取TomcatWebServer实例</span></span><br><span class="line">  <span class="keyword">return</span> getTomcatWebServer(tomcat);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 不重要</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> TomcatWebServer <span class="title">getTomcatWebServer</span><span class="params">(Tomcat tomcat)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// autoStart = getPort() &gt;= 0</span></span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> TomcatWebServer(tomcat, getPort() &gt;= <span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">TomcatWebServer</span><span class="params">(Tomcat tomcat, <span class="keyword">boolean</span> autoStart)</span> </span>&#123;</span><br><span class="line">  Assert.notNull(tomcat, <span class="string">"Tomcat Server must not be null"</span>);</span><br><span class="line">  <span class="keyword">this</span>.tomcat = tomcat;</span><br><span class="line">  <span class="keyword">this</span>.autoStart = autoStart;</span><br><span class="line">  <span class="comment">// 最重要的方法</span></span><br><span class="line">  initialize();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>initialize()方法源码</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">initialize</span><span class="params">()</span> <span class="keyword">throws</span> WebServerException </span>&#123;</span><br><span class="line">  <span class="keyword">synchronized</span> (<span class="keyword">this</span>.monitor) &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line"></span><br><span class="line">      <span class="comment">// 启动服务器以触发初始化侦听器</span></span><br><span class="line">      <span class="keyword">this</span>.tomcat.start();</span><br><span class="line"></span><br><span class="line">      <span class="comment">// 所有Tomcat线程都是守护进程线程。我们创建一个阻塞非守护进程来停止立即关闭</span></span><br><span class="line">      startDaemonAwaitThread();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">catch</span> (Exception ex) &#123;</span><br><span class="line">      stopSilently();</span><br><span class="line">      destroySilently();</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> WebServerException(<span class="string">"Unable to start embedded Tomcat"</span>, ex);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>终于找到了，语句<code>this.tomcat.start()</code>就是启动Tomcat容器的关监语句。</p>
+</li>
+</ul>
+<h4 id="总结"><a class="markdownIt-Anchor" href="#总结"></a> 总结</h4>
+<p>通过对SpringApplication.run()方法执行顺序的分析来看，先构建Spring上下文加载Bean，也就是扫描包，然后再在refreshContext()方法中创建Tomcat容器并启动容器。</p>
+<p>由此我们可以验证出假设2是正确的</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://luxiaowan.github.io/2020/05/15/SpringBoot内置Tomcat启动时间/" title="SpringBoot内置Tomcat启动时间" target="_blank" rel="external">http://luxiaowan.github.io/2020/05/15/SpringBoot内置Tomcat启动时间/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/luxiaowan" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="../../../../images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/luxiaowan" target="_blank"><span class="text-dark">串一串</span><small class="ml-1x">浪人</small></a></h3>
+        <div>断舍离</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    
+    <li class="next">
+      <a href="../../12/JVM指针碰撞和空闲列表/" title="JVM指针碰撞和空闲列表"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2020 cc
+        
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="../../../../js/plugin.min.js"></script>
+<script src="../../../../js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '../../../../content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="../../../../js/insight.js"></script>
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+
+
+
+
+
+
+</body>
+</html>
