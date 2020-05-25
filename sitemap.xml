@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://luxiaowan.github.io/2020/05/26/docker%E5%AE%B9%E5%99%A8%E4%B8%AD%E5%AE%89%E8%A3%85vim/</loc>
+    
+    <lastmod>2020-05-25T17:35:56.177Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://luxiaowan.github.io/2020/05/25/Jekins%E5%BF%98%E8%AE%B0admin%E5%AF%86%E7%A0%81/</loc>
     
     <lastmod>2020-05-25T16:08:15.021Z</lastmod>
@@ -744,14 +751,14 @@
   </url>
   
   <url>
-    <loc>http://luxiaowan.github.io/2019/12/20/Docker%E5%AE%89%E8%A3%85phpmyadmin/</loc>
+    <loc>http://luxiaowan.github.io/2019/12/20/Nacos%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/</loc>
     
     <lastmod>2019-12-20T15:07:26.882Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://luxiaowan.github.io/2019/12/20/Nacos%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/</loc>
+    <loc>http://luxiaowan.github.io/2019/12/20/Docker%E5%AE%89%E8%A3%85phpmyadmin/</loc>
     
     <lastmod>2019-12-20T15:07:26.882Z</lastmod>
     
