@@ -18,17 +18,17 @@
   
   
   <title>线程池中运行的线程，当等待队列未满的情况下，一定不大于核心线程数吗 | 串一串</title>
-  <meta name="description" content="通过 我们既然知道了任务出现异常时会终止掉执行它的线程，那么抛出的异常我们要怎么捕获呢？难道每次都要在我们的任务中把所有的代码都放在try…catch中？ 我们知道线程池提供了一个ThreadFactory接口，这个接口的目的是让我们自定义线程池中的线程，那么我们是不是可以在这里面捕获一下异常进行处理呢？如果我们把异常捕获了，那么还会将线程从线程池中移除吗？">
+  <meta name="description" content="通过《线程池内运行的线程抛异常，线程池会怎么办》了解到当线程出现异常时，">
 <meta property="og:type" content="article">
 <meta property="og:title" content="线程池中运行的线程，当等待队列未满的情况下，一定不大于核心线程数吗">
 <meta property="og:url" content="http://luxiaowan.github.io/2020/05/27/线程池中运行的线程，当等待队列未满的情况下，一定不大于核心线程数吗/index.html">
 <meta property="og:site_name" content="串一串">
-<meta property="og:description" content="通过 我们既然知道了任务出现异常时会终止掉执行它的线程，那么抛出的异常我们要怎么捕获呢？难道每次都要在我们的任务中把所有的代码都放在try…catch中？ 我们知道线程池提供了一个ThreadFactory接口，这个接口的目的是让我们自定义线程池中的线程，那么我们是不是可以在这里面捕获一下异常进行处理呢？如果我们把异常捕获了，那么还会将线程从线程池中移除吗？">
+<meta property="og:description" content="通过《线程池内运行的线程抛异常，线程池会怎么办》了解到当线程出现异常时，">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-05-27T08:26:45.160Z">
+<meta property="og:updated_time" content="2020-05-27T11:20:09.692Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="线程池中运行的线程，当等待队列未满的情况下，一定不大于核心线程数吗">
-<meta name="twitter:description" content="通过 我们既然知道了任务出现异常时会终止掉执行它的线程，那么抛出的异常我们要怎么捕获呢？难道每次都要在我们的任务中把所有的代码都放在try…catch中？ 我们知道线程池提供了一个ThreadFactory接口，这个接口的目的是让我们自定义线程池中的线程，那么我们是不是可以在这里面捕获一下异常进行处理呢？如果我们把异常捕获了，那么还会将线程从线程池中移除吗？">
+<meta name="twitter:description" content="通过《线程池内运行的线程抛异常，线程池会怎么办》了解到当线程出现异常时，">
   <!-- Canonical links -->
   <link rel="canonical" href="http://luxiaowan.github.io/2020/05/27/线程池中运行的线程，当等待队列未满的情况下，一定不大于核心线程数吗/index.html">
   
@@ -408,7 +408,7 @@
         <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
         
 	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 151(字)</span>
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 32(字)</span>
 	
 	
 		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 1(分)</span>
@@ -418,9 +418,7 @@
     </div>
     <div class="article-entry marked-body" itemprop="articleBody">
       
-        <p>通过</p>
-<p>我们既然知道了任务出现异常时会终止掉执行它的线程，那么抛出的异常我们要怎么捕获呢？难道每次都要在我们的任务中把所有的代码都放在try…catch中？</p>
-<p>我们知道线程池提供了一个ThreadFactory接口，这个接口的目的是让我们自定义线程池中的线程，那么我们是不是可以在这里面捕获一下异常进行处理呢？如果我们把异常捕获了，那么还会将线程从线程池中移除吗？</p>
+        <p>通过<a href="https://luxiaowan.github.io/2020/05/27/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%86%85%E8%BF%90%E8%A1%8C%E7%9A%84%E7%BA%BF%E7%A8%8B%E6%8A%9B%E5%BC%82%E5%B8%B8%EF%BC%8C%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%BC%9A%E6%80%8E%E4%B9%88%E5%8A%9E/">《线程池内运行的线程抛异常，线程池会怎么办》</a>了解到当线程出现异常时，</p>
 
       
     </div>
