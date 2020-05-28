@@ -226,7 +226,7 @@
     <link href="http://luxiaowan.github.io/2020/05/22/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%8A%A5%E9%94%99%EF%BC%9Acannot-deserialize-from-Object-value-(no-delegate--or-property-based-Creator)/"/>
     <id>http://luxiaowan.github.io/2020/05/22/反序列化报错：cannot-deserialize-from-Object-value-(no-delegate--or-property-based-Creator)/</id>
     <published>2020-05-22T15:50:00.000Z</published>
-    <updated>2020-05-22T15:51:32.514Z</updated>
+    <updated>2020-05-28T18:51:33.418Z</updated>
     
     <content type="html"><![CDATA[<p>反序列化报错：cannot deserialize from Object value (no delegate- or property-based Creator)</p><p>这个原因最根本的是没有找到无参构造方法，解决办法是给类加一个无参构造方法</p>]]></content>
     
@@ -242,8 +242,10 @@
     </summary>
     
     
-      <category term="SpringBoot" scheme="http://luxiaowan.github.io/categories/SpringBoot/"/>
+      <category term="BUG" scheme="http://luxiaowan.github.io/categories/BUG/"/>
     
+    
+      <category term="SpringBoot" scheme="http://luxiaowan.github.io/tags/SpringBoot/"/>
     
   </entry>
   
