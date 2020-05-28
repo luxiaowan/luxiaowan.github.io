@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>JVM优化之分配速率 | 串一串</title>
+  <meta name="description" content="在实际的开发过程中，使用Java语言开发的应用基本上都会遇到性能问题，比如接口超时、服务器负载高、并发数低、数据库性能低或死锁等，并且现在随着互联网的发展，“猛快槽”的开发方式会让代码变得越来越臃肿，随着系统访问量的增加，各种性能问题就随之而来了。 应用的性能问题非常多，比如磁盘、内存、网络IO、应用代码、数据库、缓存、JVM等，有前辈总结过可以将Java性能优化分为4个层级：  应用层优化：也就">
+<meta name="keywords" content="JVM">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVM优化之分配速率">
+<meta property="og:url" content="http://luxiaowan.github.io/2020/05/28/JVM优化之分配速率/index.html">
+<meta property="og:site_name" content="串一串">
+<meta property="og:description" content="在实际的开发过程中，使用Java语言开发的应用基本上都会遇到性能问题，比如接口超时、服务器负载高、并发数低、数据库性能低或死锁等，并且现在随着互联网的发展，“猛快槽”的开发方式会让代码变得越来越臃肿，随着系统访问量的增加，各种性能问题就随之而来了。 应用的性能问题非常多，比如磁盘、内存、网络IO、应用代码、数据库、缓存、JVM等，有前辈总结过可以将Java性能优化分为4个层级：  应用层优化：也就">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200529013346025.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200529015605343.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200529020327070.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200529022229415.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200529023002189.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200529023022780.png">
+<meta property="og:updated_time" content="2020-05-28T18:48:40.341Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JVM优化之分配速率">
+<meta name="twitter:description" content="在实际的开发过程中，使用Java语言开发的应用基本上都会遇到性能问题，比如接口超时、服务器负载高、并发数低、数据库性能低或死锁等，并且现在随着互联网的发展，“猛快槽”的开发方式会让代码变得越来越臃肿，随着系统访问量的增加，各种性能问题就随之而来了。 应用的性能问题非常多，比如磁盘、内存、网络IO、应用代码、数据库、缓存、JVM等，有前辈总结过可以将Java性能优化分为4个层级：  应用层优化：也就">
+<meta name="twitter:image" content="http://luxiaowan.github.io/images/image-20200529013346025.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://luxiaowan.github.io/2020/05/28/JVM优化之分配速率/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="../../../../css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/luxiaowan" target="_blank">
+          <img class="img-circle img-rotate" src="../../../../images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">串一串</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">浪人</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Suzhou, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="../../../../.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="../../../../archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="../../../../repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="../../../../books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="../../../../links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="../../../../about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>断舍离!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="../../../../categories/BUG/">BUG</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Docker/">Docker</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Git/">Git</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Java/">Java</a><span class="category-list-count">38</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Jenkins/">Jenkins</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kafka/">Kafka</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kubernates/">Kubernates</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Linux/">Linux</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MongoDB/">MongoDB</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MyBatis/">MyBatis</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MySQL/">MySQL</a><span class="category-list-count">18</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Nacos/">Nacos</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/NoSQL/">NoSQL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/RabbitMQ/">RabbitMQ</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Redis/">Redis</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Spring/">Spring</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/SpringBoot/">SpringBoot</a><span class="category-list-count">14</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/分布式/">分布式</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/杂谈/">杂谈</a><span class="category-list-count">5</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Bug/">Bug</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Docker/">Docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Eureka/">Eureka</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/GC/">GC</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/JVM/">JVM</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java与MongoDB/">Java与MongoDB</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Maven/">Maven</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MongoDB错误记录/">MongoDB错误记录</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MySQL/">MySQL</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Sentinel/">Sentinel</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/SpringCloud/">SpringCloud</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基本指令/">基本指令</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基础应用/">基础应用</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/服务治理/">服务治理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/监控/">监控</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/索引/">索引</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/阿里/">阿里</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/面试/">面试</a><span class="tag-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="../../../../tags/Bug/" style="font-size: 13px;">Bug</a> <a href="../../../../tags/Docker/" style="font-size: 13px;">Docker</a> <a href="../../../../tags/Eureka/" style="font-size: 13.2px;">Eureka</a> <a href="../../../../tags/GC/" style="font-size: 13px;">GC</a> <a href="../../../../tags/JVM/" style="font-size: 13.2px;">JVM</a> <a href="../../../../tags/Java/" style="font-size: 13.2px;">Java</a> <a href="../../../../tags/Java与MongoDB/" style="font-size: 13px;">Java与MongoDB</a> <a href="../../../../tags/Maven/" style="font-size: 13.4px;">Maven</a> <a href="../../../../tags/MongoDB错误记录/" style="font-size: 13px;">MongoDB错误记录</a> <a href="../../../../tags/MySQL/" style="font-size: 13.2px;">MySQL</a> <a href="../../../../tags/Sentinel/" style="font-size: 13px;">Sentinel</a> <a href="../../../../tags/SpringCloud/" style="font-size: 13.8px;">SpringCloud</a> <a href="../../../../tags/基本指令/" style="font-size: 13px;">基本指令</a> <a href="../../../../tags/基础应用/" style="font-size: 13.2px;">基础应用</a> <a href="../../../../tags/服务治理/" style="font-size: 13px;">服务治理</a> <a href="../../../../tags/监控/" style="font-size: 13px;">监控</a> <a href="../../../../tags/索引/" style="font-size: 14px;">索引</a> <a href="../../../../tags/阿里/" style="font-size: 13.2px;">阿里</a> <a href="../../../../tags/面试/" style="font-size: 13.6px;">面试</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/05/">五月 2020</a><span class="archive-list-count">27</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/04/">四月 2020</a><span class="archive-list-count">51</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/03/">三月 2020</a><span class="archive-list-count">17</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/01/">一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/12/">十二月 2019</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/11/">十一月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/10/">十月 2019</a><span class="archive-list-count">16</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/01/">一月 2019</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled ">
+        
+          <li>
+            
+            <div class="item-thumb">
+              <a href="" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="" class="title">JVM优化之分配速率</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-28T15:53:00.000Z" itemprop="datePublished">2020-05-28</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../线程池中运行的线程，当等待队列未满的情况下，一定不大于核心线程数吗/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../线程池中运行的线程，当等待队列未满的情况下，一定不大于核心线程数吗/" class="title">线程池中运行的线程，当等待队列未满的情况下，一定不大于核心线程数吗</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-28T03:17:00.000Z" itemprop="datePublished">2020-05-28</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../27/线程池内运行的线程抛异常，线程池会怎么办/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../27/线程池内运行的线程抛异常，线程池会怎么办/" class="title">线程池内运行的线程抛异常，线程池会怎么办</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-27T04:56:00.000Z" itemprop="datePublished">2020-05-27</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../26/Nginx配置RabbitMQ页面bug/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/RabbitMQ/">RabbitMQ</a>
+              </p>
+              <p class="item-title">
+                <a href="../../26/Nginx配置RabbitMQ页面bug/" class="title">Nginx配置RabbitMQ页面bug</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-25T19:10:00.000Z" itemprop="datePublished">2020-05-26</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../26/Docker容器无法停止和删除/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Docker/">Docker</a>
+              </p>
+              <p class="item-title">
+                <a href="../../26/Docker容器无法停止和删除/" class="title">Docker容器无法停止和删除</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-25T17:38:00.000Z" itemprop="datePublished">2020-05-26</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-JVM优化之分配速率" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      JVM优化之分配速率
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="" class="article-date">
+	  <time datetime="2020-05-28T15:53:00.000Z" itemprop="datePublished">2020-05-28</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="../../../../categories/Java/">Java</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="../../../../tags/JVM/">JVM</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1.7k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 6(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <p>在实际的开发过程中，使用Java语言开发的应用基本上都会遇到性能问题，比如接口超时、服务器负载高、并发数低、数据库性能低或死锁等，并且现在随着互联网的发展，“猛快槽”的开发方式会让代码变得越来越臃肿，随着系统访问量的增加，各种性能问题就随之而来了。</p>
+<p>应用的性能问题非常多，比如磁盘、内存、网络IO、应用代码、数据库、缓存、JVM等，有前辈总结过可以将Java性能优化分为4个层级：</p>
+<ol>
+<li>应用层优化：也就是代码层，主要是代码上的优化，这个主要就要靠代码review和扎实的个人基础价知识了，可以通过Java线程栈定位问题代码</li>
+<li>数据库层优化：优化数据库读写方面的优化，分析SQL、定位死锁、分库分表</li>
+<li>框架层优化：为应用选择合适的框架是最重要的，合适的框架能够带来更优的性能</li>
+<li>JVM层优化：JVM是应用的最底层，属于是最难也是最容易出现性能瓶颈的一层，GC、JVM参数合理使用</li>
+</ol>
+<p>优化难度逐层增加，涉及的知识和解决的问题也不同，我们本文主要讲解一下JVM的年轻代GC方面的优化知识。</p>
+<hr>
+<p>运行代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.LockSupport;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Boxing</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">volatile</span> Double sensorValue;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">readSensor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            sensorValue = Math.random();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">processSensorValue</span><span class="params">(Double value)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (value != <span class="keyword">null</span>) &#123;</span><br><span class="line">            LockSupport.parkNanos(<span class="number">1000</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> iterations = args.length &gt; <span class="number">0</span> ? Integer.parseInt(args[<span class="number">0</span>]) : <span class="number">1_000_000</span>;</span><br><span class="line"></span><br><span class="line">        initSensor();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; iterations; i++) &#123;</span><br><span class="line">            processSensorValue(sensorValue);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">initSensor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Thread sensorReader = <span class="keyword">new</span> Thread(Boxing::readSensor);</span><br><span class="line"></span><br><span class="line">        sensorReader.setDaemon(<span class="keyword">true</span>);</span><br><span class="line">        sensorReader.start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>JVM参数设置为<code>-XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xmx32m</code>，运行代码，查看GC情况：</p>
+<p><img src="/images/image-20200529013346025.png" alt="image-20200529013346025"></p>
+<blockquote>
+<p>这里先说一下什么叫分配速率(Allocation Rate)，分配速率是指单位时间内分配的内存量，通常使用<code>MB/sec</code>作为单位，也可以使用<code>PB/year</code>来表示，分配速率过高就会严重影响程序的性能，在JVM中会导致巨大的GC开销</p>
+<p>计算上一次GC之后与下一次GC之前的年轻代使用量，两者差值除以时间，就是分配速率</p>
+</blockquote>
+<p>从上图GC日志中，我们计算一下信息：</p>
+<ul>
+<li>在JVM启动后391ms，共创建8704kb的对象，第一次YGC之后，年轻代中还有1004kb的存活对象</li>
+<li>在JVM启动后459ms，年轻代的使用量再次增加到9708kb，触发第二次YGC，GC之后年轻代的使用量缩减到1004kb</li>
+<li>在JVM启动后471ms，年轻代的使用量为9708kb，GC后为1020kb</li>
+</ul>
+<p>然后我们现在来计算一下这三次GC的分配速率：</p>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Time</th>
+<th>YGC before</th>
+<th>YGC after</th>
+<th>Allocated During</th>
+<th>Allocation Rate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1st YGC</td>
+<td>391ms</td>
+<td>8704kb</td>
+<td>1004kb</td>
+<td>8704kb</td>
+<td>22MB/sec</td>
+</tr>
+<tr>
+<td>2nd YGC</td>
+<td>459ms</td>
+<td>9708kb</td>
+<td>1004kb</td>
+<td>8704kb</td>
+<td>51MB/sec</td>
+</tr>
+<tr>
+<td>3rd YGC</td>
+<td>471ms</td>
+<td>9708kb</td>
+<td>1020kb</td>
+<td>8704kb</td>
+<td>709MB/sec</td>
+</tr>
+<tr>
+<td>Total</td>
+<td>471ms</td>
+<td></td>
+<td></td>
+<td>26112kb</td>
+<td>55MB/sec</td>
+</tr>
+</tbody>
+</table>
+<p>从表中我们看到，该程序的内存分配速率在55MB/sec。</p>
+<hr>
+<h4 id="分配速率的意义"><a class="markdownIt-Anchor" href="#分配速率的意义"></a> 分配速率的意义</h4>
+<p>分配速率的变化会增加或降低STW的频率，从而影响吞吐量，但仅仅只有年轻代的YGC会受分配速率的影响，老年代GC的频率和持续时间不收分配速率的直接影响，而是受到提升速率的影响，也就是Major GC是受Minor GC影响的。</p>
+<p>我们知道年轻代中分为Eden、Survivor from和Survivor to三个区，因为分配速率直接影响Minor GC，所以我们先看下修改Eden的大小是否会减小Minor GC的频率，提升分配速率。</p>
+<p>使用JVM参数<code>-XX:NewSize</code>、<code>-XX:MaxNewSize</code>和<code>-XX:SurvivorRatio</code>设置Eden和Survivor区的大小，我们将Eden区分别设置为100M和500M，看一下GC日志：</p>
+<ul>
+<li>
+<p>Eden区100M</p>
+<p>JVM参数：<code>-XX:NewSize=125m -XX:MaxNewSize=125m -XX:SurvivorRatio=8</code></p>
+<p><img src="/images/image-20200529015605343.png" alt="image-20200529015605343"></p>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Time</th>
+<th>YGC before</th>
+<th>YGC after</th>
+<th>Allocated During</th>
+<th>Allocation Rate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1st YGC</td>
+<td>686ms</td>
+<td>102400kb</td>
+<td>1967kb</td>
+<td>102400kb</td>
+<td>146MB/sec</td>
+</tr>
+<tr>
+<td>2nd YGC</td>
+<td>820ms</td>
+<td>104367kb</td>
+<td>1548kb</td>
+<td>102400kb</td>
+<td>747MB/sec</td>
+</tr>
+<tr>
+<td>3rd YGC</td>
+<td>947ms</td>
+<td>103948kb</td>
+<td>1548kb</td>
+<td>102400kb</td>
+<td>788MB/sec</td>
+</tr>
+<tr>
+<td>Total</td>
+<td>947ms</td>
+<td></td>
+<td></td>
+<td>307200kb</td>
+<td>317MB/sec</td>
+</tr>
+</tbody>
+</table>
+<p>分配速率为317MB/sec</p>
+</li>
+<li>
+<p>Eden区500M</p>
+<p>JVM参数：<code>-XX:NewSize=625m -XX:MaxNewSize=625m -XX:SurvivorRatio=8</code></p>
+<p><img src="/images/image-20200529020327070.png" alt="image-20200529020327070"></p>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Time</th>
+<th>YGC before</th>
+<th>YGC after</th>
+<th>Allocated During</th>
+<th>Allocation Rate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1st YGC</td>
+<td>1126ms</td>
+<td>512000kb</td>
+<td>1967kb</td>
+<td>512000kb</td>
+<td>445MB/sec</td>
+</tr>
+<tr>
+<td>2nd YGC</td>
+<td>1752ms</td>
+<td>513967kb</td>
+<td>1836kb</td>
+<td>512000kb</td>
+<td>799MB/sec</td>
+</tr>
+<tr>
+<td>3rd YGC</td>
+<td>2429ms</td>
+<td>513836kb</td>
+<td>1772kb</td>
+<td>512000kb</td>
+<td>739MB/sec</td>
+</tr>
+<tr>
+<td>Total</td>
+<td>2429ms</td>
+<td></td>
+<td></td>
+<td>1536000kb</td>
+<td>618MB/sec</td>
+</tr>
+</tbody>
+</table>
+<p>分配速率为618MB/sec</p>
+</li>
+</ul>
+<p>随着Eden区大小越来越大，分配速率也越来越大，因为减少了GC频率，就等于减少了任务线程的停顿，就可以做更多的工作，也就创建了更多的对象，所以对于同一个Java应用来说，分配速率越高，性能越高。</p>
+<hr>
+<h4 id="高分配速率对jvm的影响"><a class="markdownIt-Anchor" href="#高分配速率对jvm的影响"></a> 高分配速率对JVM的影响</h4>
+<p>如果创建了过多的朝生夕死的对象，Minor GC的频率就会增加，在并发较大的情况下，会严重的影响吞吐量，从上面的三个场景可以看出来，当年轻代越大时Minor GC的次数就会越来越少，但是分配速率并没有降低，如果每次GC后只有少量的对象存活，Minor GC的暂停时间也不会明显的增加。</p>
+<p>但是有时候增加年轻代的大小并不能彻底的解决问题，我们通过工具jvisualvm查看堆信息</p>
+<p><img src="/images/image-20200529022229415.png" alt="image-20200529022229415"></p>
+<p>大部分堆内存都被Double对象占用了，这个对象是在readSensor()方法中创建的，最简单的代码层面的优化就是将包装类Double换成原生类型，因为原生类型不算是对象，所以也就不会在堆中分配内存，而是之间覆盖一个属性域即可，不会产生GC事件，所以GC基本上完全消除。并且JVM通过逃逸分析技术来避免过度分配。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.LockSupport;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Boxing</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">volatile</span> <span class="keyword">double</span> sensorValue = Double.NaN;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">readSensor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            sensorValue = Math.random();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">processSensorValue</span><span class="params">(<span class="keyword">double</span> value)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (Double.isNaN(value)) &#123;</span><br><span class="line">            LockSupport.parkNanos(<span class="number">1000</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> iterations = args.length &gt; <span class="number">0</span> ? Integer.parseInt(args[<span class="number">0</span>]) : <span class="number">1_000_000</span>;</span><br><span class="line"></span><br><span class="line">        initSensor();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; iterations;) &#123;</span><br><span class="line">            processSensorValue(sensorValue);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">initSensor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Thread sensorReader = <span class="keyword">new</span> Thread(Boxing::readSensor);</span><br><span class="line"></span><br><span class="line">        sensorReader.setDaemon(<span class="keyword">true</span>);</span><br><span class="line">        sensorReader.start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/images/image-20200529023002189.png" alt="image-20200529023002189"></p>
+<p><img src="/images/image-20200529023022780.png" alt="image-20200529023022780"></p>
+<p>控制台未输出任何GC日志，而jvisualvm上监控到的堆使用情况也极低，由此可见在代码中可以在适当情况下使用原生类型代替包装类。</p>
+<hr>
+<h4 id="总结"><a class="markdownIt-Anchor" href="#总结"></a> 总结</h4>
+<p>在年轻代使用上，应当适当的提高分配速率，减少Minor GC的频率，可以通过两种方式实现</p>
+<ol>
+<li>增大新生代大小</li>
+<li>使用原生类型代替包装类，减少堆内对象的创建</li>
+</ol>
+<p>简单点说就是少创建对象、多分配空间，以减少GC次数，加大系统吞吐量</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://luxiaowan.github.io/2020/05/28/JVM优化之分配速率/" title="JVM优化之分配速率" target="_blank" rel="external">http://luxiaowan.github.io/2020/05/28/JVM优化之分配速率/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/luxiaowan" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="../../../../images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/luxiaowan" target="_blank"><span class="text-dark">串一串</span><small class="ml-1x">浪人</small></a></h3>
+        <div>断舍离</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    
+    <li class="next">
+      <a href="../线程池中运行的线程，当等待队列未满的情况下，一定不大于核心线程数吗/" title="线程池中运行的线程，当等待队列未满的情况下，一定不大于核心线程数吗"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2020 cc
+        
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="../../../../js/plugin.min.js"></script>
+<script src="../../../../js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '../../../../content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="../../../../js/insight.js"></script>
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+
+
+
+
+
+
+</body>
+</html>
