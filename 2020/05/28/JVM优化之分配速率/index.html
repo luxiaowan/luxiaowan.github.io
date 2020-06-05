@@ -18,13 +18,13 @@
   
   
   <title>JVM优化之分配速率 | 串一串</title>
-  <meta name="description" content="在实际的开发过程中，使用Java语言开发的应用基本上都会遇到性能问题，比如接口超时、服务器负载高、并发数低、数据库性能低或死锁等，并且现在随着互联网的发展，“猛快槽”的开发方式会让代码变得越来越臃肿，随着系统访问量的增加，各种性能问题就随之而来了。 应用的性能问题非常多，比如磁盘、内存、网络IO、应用代码、数据库、缓存、JVM等，有前辈总结过可以将Java性能优化分为4个层级：  应用层优化：也就">
+  <meta name="description" content="在实际的开发过程中，使用Java语言开发的应用基本上都会遇到性能问题，比如接口超时、服务器负载高、并发数低、数据库性能低或死锁等，并且现在随着互联网的发展，“猛快糙”的开发方式会让代码变得越来越臃肿，随着系统访问量的增加，各种性能问题就随之而来了。 应用的性能问题非常多，比如磁盘、内存、网络IO、应用代码、数据库、缓存、JVM等，有前辈总结过可以将Java性能优化分为4个层级：  应用层优化：也就">
 <meta name="keywords" content="JVM">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JVM优化之分配速率">
 <meta property="og:url" content="http://luxiaowan.github.io/2020/05/28/JVM优化之分配速率/index.html">
 <meta property="og:site_name" content="串一串">
-<meta property="og:description" content="在实际的开发过程中，使用Java语言开发的应用基本上都会遇到性能问题，比如接口超时、服务器负载高、并发数低、数据库性能低或死锁等，并且现在随着互联网的发展，“猛快槽”的开发方式会让代码变得越来越臃肿，随着系统访问量的增加，各种性能问题就随之而来了。 应用的性能问题非常多，比如磁盘、内存、网络IO、应用代码、数据库、缓存、JVM等，有前辈总结过可以将Java性能优化分为4个层级：  应用层优化：也就">
+<meta property="og:description" content="在实际的开发过程中，使用Java语言开发的应用基本上都会遇到性能问题，比如接口超时、服务器负载高、并发数低、数据库性能低或死锁等，并且现在随着互联网的发展，“猛快糙”的开发方式会让代码变得越来越臃肿，随着系统访问量的增加，各种性能问题就随之而来了。 应用的性能问题非常多，比如磁盘、内存、网络IO、应用代码、数据库、缓存、JVM等，有前辈总结过可以将Java性能优化分为4个层级：  应用层优化：也就">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://luxiaowan.github.io/images/image-20200529013346025.png">
 <meta property="og:image" content="http://luxiaowan.github.io/images/image-20200529015605343.png">
@@ -32,10 +32,10 @@
 <meta property="og:image" content="http://luxiaowan.github.io/images/image-20200529022229415.png">
 <meta property="og:image" content="http://luxiaowan.github.io/images/image-20200529023002189.png">
 <meta property="og:image" content="http://luxiaowan.github.io/images/image-20200529023022780.png">
-<meta property="og:updated_time" content="2020-05-28T18:48:40.341Z">
+<meta property="og:updated_time" content="2020-06-04T12:56:43.438Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JVM优化之分配速率">
-<meta name="twitter:description" content="在实际的开发过程中，使用Java语言开发的应用基本上都会遇到性能问题，比如接口超时、服务器负载高、并发数低、数据库性能低或死锁等，并且现在随着互联网的发展，“猛快槽”的开发方式会让代码变得越来越臃肿，随着系统访问量的增加，各种性能问题就随之而来了。 应用的性能问题非常多，比如磁盘、内存、网络IO、应用代码、数据库、缓存、JVM等，有前辈总结过可以将Java性能优化分为4个层级：  应用层优化：也就">
+<meta name="twitter:description" content="在实际的开发过程中，使用Java语言开发的应用基本上都会遇到性能问题，比如接口超时、服务器负载高、并发数低、数据库性能低或死锁等，并且现在随着互联网的发展，“猛快糙”的开发方式会让代码变得越来越臃肿，随着系统访问量的增加，各种性能问题就随之而来了。 应用的性能问题非常多，比如磁盘、内存、网络IO、应用代码、数据库、缓存、JVM等，有前辈总结过可以将Java性能优化分为4个层级：  应用层优化：也就">
 <meta name="twitter:image" content="http://luxiaowan.github.io/images/image-20200529013346025.png">
   <!-- Canonical links -->
   <link rel="canonical" href="http://luxiaowan.github.io/2020/05/28/JVM优化之分配速率/index.html">
@@ -431,10 +431,10 @@
     </div>
     <div class="article-entry marked-body" itemprop="articleBody">
       
-        <p>在实际的开发过程中，使用Java语言开发的应用基本上都会遇到性能问题，比如接口超时、服务器负载高、并发数低、数据库性能低或死锁等，并且现在随着互联网的发展，“猛快槽”的开发方式会让代码变得越来越臃肿，随着系统访问量的增加，各种性能问题就随之而来了。</p>
+        <p>在实际的开发过程中，使用Java语言开发的应用基本上都会遇到性能问题，比如接口超时、服务器负载高、并发数低、数据库性能低或死锁等，并且现在随着互联网的发展，“猛快糙”的开发方式会让代码变得越来越臃肿，随着系统访问量的增加，各种性能问题就随之而来了。</p>
 <p>应用的性能问题非常多，比如磁盘、内存、网络IO、应用代码、数据库、缓存、JVM等，有前辈总结过可以将Java性能优化分为4个层级：</p>
 <ol>
-<li>应用层优化：也就是代码层，主要是代码上的优化，这个主要就要靠代码review和扎实的个人基础价知识了，可以通过Java线程栈定位问题代码</li>
+<li>应用层优化：也就是代码层，主要是代码上的优化，这个主要就要靠代码review和扎实的个人基础知识了，可以通过Java线程栈定位问题代码</li>
 <li>数据库层优化：优化数据库读写方面的优化，分析SQL、定位死锁、分库分表</li>
 <li>框架层优化：为应用选择合适的框架是最重要的，合适的框架能够带来更优的性能</li>
 <li>JVM层优化：JVM是应用的最底层，属于是最难也是最容易出现性能瓶颈的一层，GC、JVM参数合理使用</li>

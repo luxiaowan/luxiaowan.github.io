@@ -30,7 +30,7 @@
 <meta property="og:image" content="http://luxiaowan.github.io/images/how-java-garbage-collection-works.png">
 <meta property="og:image" content="http://luxiaowan.github.io/images/image-20200529111456993.png">
 <meta property="og:image" content="http://luxiaowan.github.io/images/image-20200529120119214.png">
-<meta property="og:updated_time" content="2020-05-29T04:21:04.343Z">
+<meta property="og:updated_time" content="2020-06-04T13:16:34.603Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JVM优化之提升速率">
 <meta name="twitter:description" content="提升速率(promotion rate)是用于衡量单位时间内从新生代晋升到来年代的数据量，一般用MB/sec表示单位。JVM会将存活时间较长的对象从新生代提升到老年代，根据分代规则，老年代中不仅有存活时间长的对象，也有存活时间短的对象，这些存活时间短的对象的晋升过程就是过早提升，简单点讲就是对象存活时间尚未达到晋升年龄之前就被提升到了老年代。   测量提升速率 一般情况下我们需要通过GC日志来测量">
@@ -441,7 +441,7 @@
 <tr>
 <th>Event</th>
 <th>Time</th>
-<th>Yound</th>
+<th>Young</th>
 <th>整个堆减少内存</th>
 <th>提升量</th>
 <th>提升速率</th>
