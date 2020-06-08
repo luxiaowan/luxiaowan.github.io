@@ -31,7 +31,7 @@
 <meta property="og:image" content="http://luxiaowan.github.io/images/image-20200530001545556.png">
 <meta property="og:image" content="http://luxiaowan.github.io/images/image-20200530002013851.png">
 <meta property="og:image" content="http://luxiaowan.github.io/images/image-20200530002029511.png">
-<meta property="og:updated_time" content="2020-05-30T16:09:39.152Z">
+<meta property="og:updated_time" content="2020-06-07T13:21:08.340Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="软引用、弱引用和虚引用">
 <meta name="twitter:description" content="强引用 强引用(strong reference)是使用最普遍的引用，如果一个对象具有强引用，那垃圾回收器绝不会回收它，例如Object obj = new Object();，即使当内存空间不足时，JVM宁愿抛出OOM，也不会回收具有强引用的对象来解决内存不足的问题。 我们可以显示的设置对象为null，或者跳出对象的生命周期范围，让垃圾收集器将其判定为不存在引用，是个可以被回收的对象，例如ob">
@@ -471,7 +471,7 @@
 </ol>
 </blockquote>
 <h4 id="软引用"><a class="markdownIt-Anchor" href="#软引用"></a> 软引用</h4>
-<p>软引用(Soft Reference)是比弱引用更难被垃圾回收器回收的对象，什么时候回收软引用完全由JVM自己觉得，一般只会在即将OOM时才会回收软引用，算是JVM内存管理最后的倔强。这就意味着可能会有非常频繁的Full GC，STW时间也变长，因为老年代中的存活对象多了。</p>
+<p>软引用(Soft Reference)是比弱引用更难被垃圾回收器回收的对象，什么时候回收软引用完全由JVM自己决定，一般只会在即将OOM时才会回收软引用，算是JVM内存管理最后的倔强。这就意味着可能会有非常频繁的Full GC，STW时间也变长，因为老年代中的存活对象多了。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">  SoftReference&lt;String&gt; cc_sr = <span class="keyword">new</span> SoftReference&lt;&gt;(<span class="keyword">new</span> String(<span class="string">"串串"</span>));</span><br><span class="line">  System.out.println(cc_sr.get());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h4 id="虚引用"><a class="markdownIt-Anchor" href="#虚引用"></a> 虚引用</h4>
 <p>虚引用和弱引用、软引用不同，它并不影响对象的生命周期，使用<code>java.lang.ref.PhantomReference</code>类表示，和弱引用、软引用不同的是，虚引用必须和引用队列关联使用，当GC准备回收一个对象时，如果发现它还有虚引用，就会把这个虚引用放进与之关联的引用队列中。</p>
