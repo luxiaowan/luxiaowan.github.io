@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://luxiaowan.github.io/"/>
-  <updated>2020-05-31T15:49:19.810Z</updated>
+  <updated>2020-06-09T01:54:30.542Z</updated>
   <id>http://luxiaowan.github.io/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>推荐十款IDEA撸码神器插件</title>
+    <link href="http://luxiaowan.github.io/2020/06/09/%E6%8E%A8%E8%8D%90%E5%87%A0%E6%AC%BEIDEA%E6%92%B8%E7%A0%81%E7%A5%9E%E5%99%A8%E6%8F%92%E4%BB%B6/"/>
+    <id>http://luxiaowan.github.io/2020/06/09/推荐几款IDEA撸码神器插件/</id>
+    <published>2020-06-09T00:55:00.000Z</published>
+    <updated>2020-06-09T01:54:30.542Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h3><p>IDEA作为一款常用的代码编辑工具，以功能强大和人性化等特点备受推崇，并且在使用过程中，我们还可以借助一些强大的插件来帮助我们简化编码工作。下面介绍几款我常用的功能性插件，每一个功能都相当不错，大家可以选择性使用。</p><h3 id="插件"><a class="markdownIt-Anchor" href="#插件"></a> 插件</h3><ol><li><p>Alibaba Java Coding Guidelines</p><p>及时检测代码中的坏味道，在扫描代码之后，将不符合阿里规约的代码显示出来，并且我们可以开启实时检测，也就是在编码的同时进行代码检测，这样可以快速的发现代码问题，但是这样对系统的开销较大。</p><p><img src="/images/image-20200609090644138.png" alt="image-20200609090644138"></p><blockquote><p>使用方式：</p></blockquote><ul><li>检测某个类：在类文件上/中右击，选择编码规约扫描</li><li>检测某个包下的所有类：在包名上右击，选择编码规约扫描</li><li>检测某个工程下的所有类：在工程上右击，选择编码规约扫描</li></ul><img src="/images/image-20200609090721705.png" alt="image-20200609090721705" style="zoom:33%;"></li><li><p>CodeGlance</p><p>在编辑器窗格中嵌入一个类似于Sublime中的代码小地图。使用自定义的颜色进行语法高亮，可以同时处理浅色和深色主题。具体样式如下：</p><img src="/images/image-20200609091153736.png" alt="image-20200609091153736" style="zoom:50%;"></li><li><p>Eclipse Code Formatter</p><p>该插件允许直接从IntelliJ使用Eclipse的代码格式化程序，解决在同时使用IDEA和Eclipse的团队环境中维护通用代码风格的问题。</p><p>文末奉上个人使用的<code>CodeFormatter.xml</code>文件。</p><p><img src="/images/image-20200609091452097.png" alt="image-20200609091452097"></p></li><li><p>Free Mybatis plugin</p><p>这个是简化MyBatis开发的最基础插件，关键是免费的，它可以让MyBatis的Mapper.java和Mapper.xml建立跳转关系，快速通过方法找到SQL，或通过SQL找到方法。</p><img src="/images/image-20200609092347294.png" alt="image-20200609092347294" style="zoom:50%;"><img src="/images/image-20200609092414704.png" alt="image-20200609092414704" style="zoom:50%;"></li><li><p>Lombok</p><p>我们在使用Lombok的时候，如果再idea中不安装插件，那么代码中使用了Lombok生成的代码会报错，所以要是想在idea中使用Lombok，必须安装Lombok插件，免费的</p></li><li><p>Maven Helper</p><p>可以帮助我们解决Maven依赖的包冲突，和<code>mvn dependency:tree</code>作用一样，不过这个插件是可视化的，简单方便</p><p><img src="/images/image-20200609092732290.png" alt="image-20200609092732290"></p></li><li><p>Rainbow Brackets</p><p>这是一个比较炫酷的插件，主要的作用其实就是将括号变成彩色的，这样在比对代码块的时候就更方便了</p><img src="/images/image-20200609093031332.png" alt="image-20200609093031332" style="zoom:50%;"></li><li><p>stackoverflow</p><p>这个插件可以直接选中代码或报错信息进行查找，该插件使用的搜索引擎是谷歌，所以没有VPN的同学可以忽略该插件</p></li><li><p>VisualVM Launcher</p><p>这个插件是个神器，可以在运行代码的同时启动jvisualvm进行项目监控</p><img src="/images/image-20200609094657696.png" alt="image-20200609094657696" style="zoom:50%;"></li><li><p>Save Actions</p><p>这个插件用处还是蛮大的，就不多做介绍了，可以看图理解</p><p><img src="/images/image-20200609095258282.png" alt="image-20200609095258282"></p></li></ol><hr><p>上面介绍了10个插件神器，大多是经常使用的，当然还有很多很厉害的插件，就不多做描述了</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;&lt;/a&gt; 前言&lt;/h3&gt;
+&lt;p&gt;IDEA作为一款常用的代码编辑工具，以功能强大和人性化等特点备受推崇，并且在使用过程中，我们还可以借助一些强大的插件来帮助我们简化编码工作。下面
+      
+    
+    </summary>
+    
+    
+      <category term="杂谈" scheme="http://luxiaowan.github.io/categories/%E6%9D%82%E8%B0%88/"/>
+    
+    
+  </entry>
   
   <entry>
     <title>Cannot Resolve org.openjfx:javafx.base:11.0.0-SNAPSHOT</title>
@@ -505,31 +530,6 @@
     
     
       <category term="Redis" scheme="http://luxiaowan.github.io/categories/Redis/"/>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>JVM命令之jcmd</title>
-    <link href="http://luxiaowan.github.io/2020/05/11/JVM%E5%91%BD%E4%BB%A4%E4%B9%8Bjcmd/"/>
-    <id>http://luxiaowan.github.io/2020/05/11/JVM命令之jcmd/</id>
-    <published>2020-05-11T10:21:00.000Z</published>
-    <updated>2020-05-11T12:21:17.456Z</updated>
-    
-    <content type="html"><![CDATA[<h3 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h3><p>在jdk1.7之后，jdk命令家族新增了一个特牛的命令：jcmd，它是一个多功能的根据，汇集了jps、jmap、jstack、jinfo、jstat等多个命令的功能，也就是我们之前要使用多个JVM命令才能达到的目的，现在只需要使用一个jcmd命令即可。</p><p><img src="/images/image-20200511182956340.png" alt="image-20200511182956340"></p><ul><li>jcmd &lt;pid | main class&gt; &lt;command … | PerfCounter.print | -f file&gt;<ul><li>pid：Java进程ID</li><li>main class：Java进程的main类，main类名称可以使用通配符，如果正在运行的进程中有多个进程的main类名称相同，则会将诊断命令请求发送到所有的命中进程中</li><li>command：诊断指令参数，可以通过<code>jcmd pid help</code>查看进程支持的参数</li><li>PerfCounter.print：打印Java进程上可用的性能计数器，该计数器的列表会随着Java进程的不同而发生变化</li><li>-f file：从文件file中读取命令并在目标Java进程上执行这些命令。在文件中，每个命令必须单独的写在一行里，以<code>#</code>开头的行会被忽略，当所有行都被调用完毕之后，或者读取到stop命令，将会终止对file的处理</li></ul></li><li>-l：列出JVM进程</li><li>-h：显示帮助信息</li></ul><h3 id="示例"><a class="markdownIt-Anchor" href="#示例"></a> 示例</h3><ol><li><p>jcmd -l</p><p>查看当前机器上所有的jvm进程信息，与<code>jps -l</code>、<code>jcmd</code>命令效果一样</p><p><img src="/images/image-20200511193521904.png" alt="image-20200511193521904"></p></li><li><p>jcmd pid PerfCounter.print</p><p>查看指定进程的性能统计信息，相当于<code>jstat -J-Djstat.showUnsupported=true -snap pid</code>效果一样</p><p><img src="/images/image-20200511193725364.png" alt="image-20200511193725364"></p></li><li><p>jcmd pid help</p><p>查看指定进程支持的操作参数</p><p><img src="/images/image-20200511193818369.png" alt="image-20200511193818369"></p></li><li><p>jcmd pid help command</p><p>查看指定命令的帮助信息</p><p><img src="/images/image-20200511193938227.png" alt="image-20200511193938227"></p></li><li><p>jcmd pid VM.uptime</p><p>查看虚拟机的运行时长</p><p><img src="/images/image-20200511194101355.png" alt="image-20200511194101355"></p></li><li><p>jcmd pid VM.classloader_stats</p><p>查看类加载器信息，等同于<code>jmap -clstats</code>命令</p><p><img src="/images/image-20200511194314593.png" alt="image-20200511194314593"></p></li><li><p>jcmd pid Thread.print</p><p>打印Java进程的线程信息，与<code>jstack</code>效果一样</p><p><img src="/images/image-20200511194510978.png" alt="image-20200511194510978"></p></li><li><p>jcmd pid GC.class_histogram</p><p>查看进程中的类统计信息，与<code>jmap -histo</code>效果一样</p><p><img src="/images/image-20200511194712997.png" alt="image-20200511194712997"></p></li><li><p>jcmd pid GC.heap_dump filepath</p><p>生成堆转储文件，与<code>jmap -dump:format=b,file=a.hprof</code>效果一样</p><p><img src="/images/image-20200511194938288.png" alt="image-20200511194938288"></p></li><li><p>jcmd pid GC.heap_info</p><p>查看JVM的堆信息，与<code>jmap -heap</code>效果一样</p><p><img src="/images/image-20200511195121583.png" alt="image-20200511195121583"></p></li><li><p>jcmd pid GC.finalizer_info</p><p>查看正在等待回收的对象信息，与<code>jmap -finalizerinfo</code>效果一样</p></li><li><p>jcmd pid GC.run</p><p>告诉垃圾收集器进行垃圾收集，等于是对JVM执行了<code>System.gc()</code></p></li><li><p>jcmd pid VM.version</p><p>查看JVM当前版本，和<code>jinfo pid | grep version</code>效果一样</p><p><img src="/images/image-20200511200800384.png" alt="image-20200511200800384"></p></li><li><p>jcmd pid VM.system_properties</p><p>查看JVM系统属性信息，和<code>jinfo</code>效果一样</p><p><img src="/images/image-20200511200911867.png" alt="image-20200511200911867"></p></li><li><p>jcmd pid VM.flags</p><p>查看JVM的启动参数，与<code>jinfo -flags</code>效果一样</p><p><img src="/images/image-20200511202039543.png" alt="image-20200511202039543"></p></li></ol>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;h3 id=&quot;前言&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#前言&quot;&gt;&lt;/a&gt; 前言&lt;/h3&gt;
-&lt;p&gt;在jdk1.7之后，jdk命令家族新增了一个特牛的命令：jcmd，它是一个多功能的根据，汇集了jps、jmap、jstack、jinfo、jst
-      
-    
-    </summary>
-    
-    
-      <category term="Java" scheme="http://luxiaowan.github.io/categories/Java/"/>
     
     
   </entry>
