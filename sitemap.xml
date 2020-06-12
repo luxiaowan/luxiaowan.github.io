@@ -2,9 +2,51 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://luxiaowan.github.io/2020/06/11/%E8%AE%B2%E8%AE%B2Redis%E6%8C%81%E4%B9%85%E5%8C%96/</loc>
+    
+    <lastmod>2020-06-12T02:54:33.304Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://luxiaowan.github.io/2020/03/26/Redis%E7%9B%B8%E5%85%B3%E4%B8%9C%E8%A5%BF/</loc>
+    
+    <lastmod>2020-06-12T01:28:10.968Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://luxiaowan.github.io/2019/10/12/char%E4%B8%8Evarchar%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/</loc>
+    
+    <lastmod>2020-06-11T14:06:04.649Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://luxiaowan.github.io/2020/05/19/MySQL%E8%87%AA%E5%A2%9E%E4%B8%BB%E9%94%AE%E7%94%A8%E5%AE%8C%E4%BA%86%E5%92%8B%E6%95%B4/</loc>
+    
+    <lastmod>2020-06-11T13:40:21.775Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://luxiaowan.github.io/2020/05/28/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%B8%AD%E8%BF%90%E8%A1%8C%E7%9A%84%E7%BA%BF%E7%A8%8B%EF%BC%8C%E5%BD%93%E7%AD%89%E5%BE%85%E9%98%9F%E5%88%97%E6%9C%AA%E6%BB%A1%E7%9A%84%E6%83%85%E5%86%B5%E4%B8%8B%EF%BC%8C%E4%B8%80%E5%AE%9A%E4%B8%8D%E5%A4%A7%E4%BA%8E%E6%A0%B8%E5%BF%83%E7%BA%BF%E7%A8%8B%E6%95%B0%E5%90%97/</loc>
+    
+    <lastmod>2020-06-11T05:46:11.984Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://luxiaowan.github.io/2020/05/27/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%86%85%E8%BF%90%E8%A1%8C%E7%9A%84%E7%BA%BF%E7%A8%8B%E6%8A%9B%E5%BC%82%E5%B8%B8%EF%BC%8C%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%BC%9A%E6%80%8E%E4%B9%88%E5%8A%9E/</loc>
+    
+    <lastmod>2020-06-11T04:58:59.499Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://luxiaowan.github.io/2020/06/09/MySQL%E5%A6%82%E4%BD%95%E5%AD%98%E5%82%A8%E5%A4%9A%E9%80%89%E6%A1%86%E7%9A%84%E7%BB%93%E6%9E%9C/</loc>
     
-    <lastmod>2020-06-10T14:49:23.634Z</lastmod>
+    <lastmod>2020-06-10T15:23:24.532Z</lastmod>
     
   </url>
   
@@ -65,20 +107,6 @@
   </url>
   
   <url>
-    <loc>http://luxiaowan.github.io/2020/05/28/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%B8%AD%E8%BF%90%E8%A1%8C%E7%9A%84%E7%BA%BF%E7%A8%8B%EF%BC%8C%E5%BD%93%E7%AD%89%E5%BE%85%E9%98%9F%E5%88%97%E6%9C%AA%E6%BB%A1%E7%9A%84%E6%83%85%E5%86%B5%E4%B8%8B%EF%BC%8C%E4%B8%80%E5%AE%9A%E4%B8%8D%E5%A4%A7%E4%BA%8E%E6%A0%B8%E5%BF%83%E7%BA%BF%E7%A8%8B%E6%95%B0%E5%90%97/</loc>
-    
-    <lastmod>2020-05-28T09:38:56.730Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://luxiaowan.github.io/2020/05/27/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%86%85%E8%BF%90%E8%A1%8C%E7%9A%84%E7%BA%BF%E7%A8%8B%E6%8A%9B%E5%BC%82%E5%B8%B8%EF%BC%8C%E7%BA%BF%E7%A8%8B%E6%B1%A0%E4%BC%9A%E6%80%8E%E4%B9%88%E5%8A%9E/</loc>
-    
-    <lastmod>2020-05-28T09:38:46.197Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://luxiaowan.github.io/2020/05/26/Nginx%E9%85%8D%E7%BD%AERabbitMQ%E9%A1%B5%E9%9D%A2bug/</loc>
     
     <lastmod>2020-05-25T19:15:24.686Z</lastmod>
@@ -124,13 +152,6 @@
     <loc>http://luxiaowan.github.io/2020/05/21/Cannot-determine-value-type-from-string-xxxxxx/</loc>
     
     <lastmod>2020-05-21T12:11:07.814Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://luxiaowan.github.io/2020/05/19/MySQL%E8%87%AA%E5%A2%9E%E4%B8%BB%E9%94%AE%E7%94%A8%E5%AE%8C%E4%BA%86%E5%92%8B%E6%95%B4/</loc>
-    
-    <lastmod>2020-05-18T16:31:42.594Z</lastmod>
     
   </url>
   
@@ -695,13 +716,6 @@
   </url>
   
   <url>
-    <loc>http://luxiaowan.github.io/2020/03/26/Redis%E7%9B%B8%E5%85%B3%E4%B8%9C%E8%A5%BF/</loc>
-    
-    <lastmod>2020-03-28T16:03:57.189Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://luxiaowan.github.io/2020/03/24/%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86%E6%80%9D%E8%80%83/</loc>
     
     <lastmod>2020-03-24T06:29:57.075Z</lastmod>
@@ -835,14 +849,14 @@
   </url>
   
   <url>
-    <loc>http://luxiaowan.github.io/2019/12/20/Docker%E5%AE%89%E8%A3%85phpmyadmin/</loc>
+    <loc>http://luxiaowan.github.io/2019/12/20/Nacos%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/</loc>
     
     <lastmod>2019-12-20T15:07:26.882Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://luxiaowan.github.io/2019/12/20/Nacos%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/</loc>
+    <loc>http://luxiaowan.github.io/2019/12/20/Docker%E5%AE%89%E8%A3%85phpmyadmin/</loc>
     
     <lastmod>2019-12-20T15:07:26.882Z</lastmod>
     
@@ -978,13 +992,6 @@
     <loc>http://luxiaowan.github.io/2019/10/24/Java%E7%AE%80%E5%8D%95%E6%93%8D%E4%BD%9CMongoDB/</loc>
     
     <lastmod>2019-10-24T13:20:12.762Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://luxiaowan.github.io/2019/10/12/char%E4%B8%8Evarchar%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/</loc>
-    
-    <lastmod>2019-10-21T16:19:50.476Z</lastmod>
     
   </url>
   
