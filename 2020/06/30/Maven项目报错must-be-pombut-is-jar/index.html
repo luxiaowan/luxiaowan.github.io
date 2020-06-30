@@ -18,19 +18,19 @@
   
   
   <title>Maven项目报错must Be &#34;Pom&#34; but Is &#34;Jar&#34; | 串一串</title>
-  <meta name="description" content="今天在创建新项目时，由于手误，出现了一个bug：must be “pom” but is “jar”，信息图如下：  整个项目结构为：  也就是code-ac的pom.xml的packaging应该是pom，但是在xml中未明确指定packaging，所以默认使用的是jar，因此出现了上面的bug。 解决办法： 在code-ac的pom.xml文件中指定packaging为pom即可。  拓展：">
+  <meta name="description" content="今天在创建新项目时，由于手误，出现了一个bug：must be “pom” but is “jar”，信息图如下：  整个项目结构为：  也就是code-ac的pom.xml的packaging应该是pom，但是在xml中未明确指定packaging，所以默认使用的是jar，因此出现了上面的bug。 解决办法： 在code-ac的pom.xml文件中指定packaging为pom即可。如果修改之后">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Maven项目报错must Be &quot;Pom&quot; but Is &quot;Jar&quot;">
 <meta property="og:url" content="http://luxiaowan.github.io/2020/06/30/Maven项目报错must-be-pombut-is-jar/index.html">
 <meta property="og:site_name" content="串一串">
-<meta property="og:description" content="今天在创建新项目时，由于手误，出现了一个bug：must be “pom” but is “jar”，信息图如下：  整个项目结构为：  也就是code-ac的pom.xml的packaging应该是pom，但是在xml中未明确指定packaging，所以默认使用的是jar，因此出现了上面的bug。 解决办法： 在code-ac的pom.xml文件中指定packaging为pom即可。  拓展：">
+<meta property="og:description" content="今天在创建新项目时，由于手误，出现了一个bug：must be “pom” but is “jar”，信息图如下：  整个项目结构为：  也就是code-ac的pom.xml的packaging应该是pom，但是在xml中未明确指定packaging，所以默认使用的是jar，因此出现了上面的bug。 解决办法： 在code-ac的pom.xml文件中指定packaging为pom即可。如果修改之后">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://luxiaowan.github.io/images/image-20200630155755899.png">
 <meta property="og:image" content="http://luxiaowan.github.io/images/image-20200701001402668.png">
-<meta property="og:updated_time" content="2020-06-30T16:26:17.472Z">
+<meta property="og:updated_time" content="2020-06-30T16:35:06.948Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Maven项目报错must Be &quot;Pom&quot; but Is &quot;Jar&quot;">
-<meta name="twitter:description" content="今天在创建新项目时，由于手误，出现了一个bug：must be “pom” but is “jar”，信息图如下：  整个项目结构为：  也就是code-ac的pom.xml的packaging应该是pom，但是在xml中未明确指定packaging，所以默认使用的是jar，因此出现了上面的bug。 解决办法： 在code-ac的pom.xml文件中指定packaging为pom即可。  拓展：">
+<meta name="twitter:description" content="今天在创建新项目时，由于手误，出现了一个bug：must be “pom” but is “jar”，信息图如下：  整个项目结构为：  也就是code-ac的pom.xml的packaging应该是pom，但是在xml中未明确指定packaging，所以默认使用的是jar，因此出现了上面的bug。 解决办法： 在code-ac的pom.xml文件中指定packaging为pom即可。如果修改之后">
 <meta name="twitter:image" content="http://luxiaowan.github.io/images/image-20200630155755899.png">
   <!-- Canonical links -->
   <link rel="canonical" href="http://luxiaowan.github.io/2020/06/30/Maven项目报错must-be-pombut-is-jar/index.html">
@@ -411,7 +411,7 @@
         <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
         
 	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 294(字)</span>
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 339(字)</span>
 	
 	
 		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 1(分)</span>
@@ -427,7 +427,7 @@
 <img src="/images/image-20200701001402668.png" alt="image-20200701001402668" style="zoom:50%;">
 <p>也就是<code>code-ac</code>的<code>pom.xml</code>的packaging应该是pom，但是在xml中未明确指定packaging，所以默认使用的是jar，因此出现了上面的bug。</p>
 <p>解决办法：</p>
-<p>在<code>code-ac</code>的<code>pom.xml</code>文件中指定packaging为pom即可。</p>
+<p>在<code>code-ac</code>的<code>pom.xml</code>文件中指定packaging为pom即可。如果修改之后仍然继续报错，那么就把磁盘上的本地maven库中项目响应的包删除掉，也就是把缓存删除掉，即可。</p>
 <hr>
 <p>拓展：</p>
 <p>Q: 为什么在未指定packaging的时候，默认使用的是jar类型？</p>
