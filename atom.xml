@@ -46,16 +46,19 @@
     <link href="http://luxiaowan.github.io/2020/06/28/Nginx%E5%87%BA%E7%8E%B0403-forbidden/"/>
     <id>http://luxiaowan.github.io/2020/06/28/Nginx出现403-forbidden/</id>
     <published>2020-06-28T14:25:00.000Z</published>
-    <updated>2020-06-28T14:55:34.500Z</updated>
+    <updated>2020-07-01T14:25:02.037Z</updated>
     
-    <content type="html"><![CDATA[<p>今天遇到了一个特别奇怪的问题，通过Nginx访问某个资源的时候，突然报403 Permission denied，但是整个服务都是正常的，排查了半天，没找到原因，查阅了一些资料，</p>]]></content>
+    <content type="html"><![CDATA[<p>今天遇到了一个特别奇怪的问题，通过Nginx访问某个资源的时候，突然报403 Permission denied，但是整个服务都是正常的，排查了半天，没找到原因，查阅了一些资料，大致会出现以下四种可能性情况：</p><ol><li><p>文件没有访问权限</p><p>解决办法很简单，修改文件或文件夹的读写权限即可，或者使用目录的所属用户重新启动Nginx</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod -R 777 /data/www/html</span><br></pre></td></tr></table></figure></li><li><p>缺少index指定的文件</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">server&#123;</span><br><span class="line">listen 80;</span><br><span class="line">server_name localhost;</span><br><span class="line">index index.php index.html;</span><br><span class="line">root /data/www/html</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>如果在目录<code>/data/www/html</code>中没有<code>index.php</code>和<code>index.html</code>文件，则会报403错误</p></li><li><p>SELinux为开启状态</p><p>SELinux是一组内核修改和用户空间工具，其提供了访问控制安全策略机制，包括了强制访问控制。</p><ul><li><p>查看SELinux状态</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/sbin/sestatus</span><br></pre></td></tr></table></figure><p><img src="/images/image-20200701221145777.png" alt="image-20200701221145777"></p></li><li><p>将SELINUX=enforcing 修改为 SELINUX=disabled 状态</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/selinux/config</span><br></pre></td></tr></table></figure><p><img src="/images/image-20200701221409168.png" alt="image-20200701221409168"></p></li><li><p>重启机器后生效</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">reboot now</span><br></pre></td></tr></table></figure></li></ul></li><li><p>Nginx启动用户和工作用户不一致</p><p>我遇到的就是这个情况，通过命令<code>ps -ef | grep nginx</code>查看nginx进程信息</p><p><img src="/images/image-20200701221629953.png" alt="image-20200701221629953"></p><p>或者通过<code>ps aux | grep &quot;nginx: worker process&quot; | awk '{print $1}'</code>查看</p><p><img src="/images/image-20200701221732763.png" alt="image-20200701221732763"></p><p>在<code>/etc/nginx/nginx.conf</code>文件中将修改为何启动用户一样，然后重新启动nginx即可</p><p><img src="/images/image-20200701221913666.png" alt="image-20200701221913666"></p><p>将<code>user nginx</code>修改为<code>user root</code>，然后重启nginx进程。</p></li></ol>]]></content>
     
     <summary type="html">
     
       
       
-        &lt;p&gt;今天遇到了一个特别奇怪的问题，通过Nginx访问某个资源的时候，突然报403 Permission denied，但是整个服务都是正常的，排查了半天，没找到原因，查阅了一些资料，&lt;/p&gt;
-
+        &lt;p&gt;今天遇到了一个特别奇怪的问题，通过Nginx访问某个资源的时候，突然报403 Permission denied，但是整个服务都是正常的，排查了半天，没找到原因，查阅了一些资料，大致会出现以下四种可能性情况：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;文件没有访问权限&lt;/p&gt;
+&lt;p
       
     
     </summary>

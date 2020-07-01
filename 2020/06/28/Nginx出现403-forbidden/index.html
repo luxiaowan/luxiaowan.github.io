@@ -18,17 +18,23 @@
   
   
   <title>Nginx出现403 Forbidden | 串一串</title>
-  <meta name="description" content="今天遇到了一个特别奇怪的问题，通过Nginx访问某个资源的时候，突然报403 Permission denied，但是整个服务都是正常的，排查了半天，没找到原因，查阅了一些资料，">
+  <meta name="description" content="今天遇到了一个特别奇怪的问题，通过Nginx访问某个资源的时候，突然报403 Permission denied，但是整个服务都是正常的，排查了半天，没找到原因，查阅了一些资料，大致会出现以下四种可能性情况：   文件没有访问权限 解决办法很简单，修改文件或文件夹的读写权限即可，或者使用目录的所属用户重新启动Nginx 1chmod -R 777 /data/www/html   缺少index指">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Nginx出现403 Forbidden">
 <meta property="og:url" content="http://luxiaowan.github.io/2020/06/28/Nginx出现403-forbidden/index.html">
 <meta property="og:site_name" content="串一串">
-<meta property="og:description" content="今天遇到了一个特别奇怪的问题，通过Nginx访问某个资源的时候，突然报403 Permission denied，但是整个服务都是正常的，排查了半天，没找到原因，查阅了一些资料，">
+<meta property="og:description" content="今天遇到了一个特别奇怪的问题，通过Nginx访问某个资源的时候，突然报403 Permission denied，但是整个服务都是正常的，排查了半天，没找到原因，查阅了一些资料，大致会出现以下四种可能性情况：   文件没有访问权限 解决办法很简单，修改文件或文件夹的读写权限即可，或者使用目录的所属用户重新启动Nginx 1chmod -R 777 /data/www/html   缺少index指">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-06-28T14:55:34.500Z">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200701221145777.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200701221409168.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200701221629953.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200701221732763.png">
+<meta property="og:image" content="http://luxiaowan.github.io/images/image-20200701221913666.png">
+<meta property="og:updated_time" content="2020-07-01T14:25:02.037Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Nginx出现403 Forbidden">
-<meta name="twitter:description" content="今天遇到了一个特别奇怪的问题，通过Nginx访问某个资源的时候，突然报403 Permission denied，但是整个服务都是正常的，排查了半天，没找到原因，查阅了一些资料，">
+<meta name="twitter:description" content="今天遇到了一个特别奇怪的问题，通过Nginx访问某个资源的时候，突然报403 Permission denied，但是整个服务都是正常的，排查了半天，没找到原因，查阅了一些资料，大致会出现以下四种可能性情况：   文件没有访问权限 解决办法很简单，修改文件或文件夹的读写权限即可，或者使用目录的所属用户重新启动Nginx 1chmod -R 777 /data/www/html   缺少index指">
+<meta name="twitter:image" content="http://luxiaowan.github.io/images/image-20200701221145777.png">
   <!-- Canonical links -->
   <link rel="canonical" href="http://luxiaowan.github.io/2020/06/28/Nginx出现403-forbidden/index.html">
   
@@ -408,7 +414,7 @@
         <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
         
 	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 60(字)</span>
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 344(字)</span>
 	
 	
 		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 1(分)</span>
@@ -418,7 +424,49 @@
     </div>
     <div class="article-entry marked-body" itemprop="articleBody">
       
-        <p>今天遇到了一个特别奇怪的问题，通过Nginx访问某个资源的时候，突然报403 Permission denied，但是整个服务都是正常的，排查了半天，没找到原因，查阅了一些资料，</p>
+        <p>今天遇到了一个特别奇怪的问题，通过Nginx访问某个资源的时候，突然报403 Permission denied，但是整个服务都是正常的，排查了半天，没找到原因，查阅了一些资料，大致会出现以下四种可能性情况：</p>
+<ol>
+<li>
+<p>文件没有访问权限</p>
+<p>解决办法很简单，修改文件或文件夹的读写权限即可，或者使用目录的所属用户重新启动Nginx</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod -R 777 /data/www/html</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>缺少index指定的文件</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">server&#123;</span><br><span class="line">	listen 80;</span><br><span class="line">	server_name localhost;</span><br><span class="line">	index index.php index.html;</span><br><span class="line">	root /data/www/html</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果在目录<code>/data/www/html</code>中没有<code>index.php</code>和<code>index.html</code>文件，则会报403错误</p>
+</li>
+<li>
+<p>SELinux为开启状态</p>
+<p>SELinux是一组内核修改和用户空间工具，其提供了访问控制安全策略机制，包括了强制访问控制。</p>
+<ul>
+<li>
+<p>查看SELinux状态</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/sbin/sestatus</span><br></pre></td></tr></table></figure>
+<p><img src="/images/image-20200701221145777.png" alt="image-20200701221145777"></p>
+</li>
+<li>
+<p>将SELINUX=enforcing 修改为 SELINUX=disabled 状态</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/selinux/config</span><br></pre></td></tr></table></figure>
+<p><img src="/images/image-20200701221409168.png" alt="image-20200701221409168"></p>
+</li>
+<li>
+<p>重启机器后生效</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">reboot now</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li>
+<p>Nginx启动用户和工作用户不一致</p>
+<p>我遇到的就是这个情况，通过命令<code>ps -ef | grep nginx</code>查看nginx进程信息</p>
+<p><img src="/images/image-20200701221629953.png" alt="image-20200701221629953"></p>
+<p>或者通过<code>ps aux | grep &quot;nginx: worker process&quot; | awk '{print $1}'</code>查看</p>
+<p><img src="/images/image-20200701221732763.png" alt="image-20200701221732763"></p>
+<p>在<code>/etc/nginx/nginx.conf</code>文件中将修改为何启动用户一样，然后重新启动nginx即可</p>
+<p><img src="/images/image-20200701221913666.png" alt="image-20200701221913666"></p>
+<p>将<code>user nginx</code>修改为<code>user root</code>，然后重启nginx进程。</p>
+</li>
+</ol>
 
       
     </div>
