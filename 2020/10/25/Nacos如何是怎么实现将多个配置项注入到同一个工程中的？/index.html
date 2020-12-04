@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>Nacos如何是怎么实现将多个配置项注入到同一个工程中的？ | 串一串</title>
+  <meta name="description" content="在使用Nacos的时候，有没有想过如何将多个配置同时注入到一个工程中？比如下面的一个场景： 多个项目工程的数据库配置一致，但是又有不同的私有化配置，根据抽象原则，我们是否可以将重复的配置信息单独放到一个共享的配置文件里，然后再给一些项目配置一个独享的配置文件呢？ 在使用本地配置的时候，可以给工程指定多个yaml或者xml等文件，然后加载器会根据路径将全部文件依次加载到项目运行环境中，那么使用Nac">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nacos如何是怎么实现将多个配置项注入到同一个工程中的？">
+<meta property="og:url" content="http://chuanyichuan.github.io/2020/10/25/Nacos如何是怎么实现将多个配置项注入到同一个工程中的？/index.html">
+<meta property="og:site_name" content="串一串">
+<meta property="og:description" content="在使用Nacos的时候，有没有想过如何将多个配置同时注入到一个工程中？比如下面的一个场景： 多个项目工程的数据库配置一致，但是又有不同的私有化配置，根据抽象原则，我们是否可以将重复的配置信息单独放到一个共享的配置文件里，然后再给一些项目配置一个独享的配置文件呢？ 在使用本地配置的时候，可以给工程指定多个yaml或者xml等文件，然后加载器会根据路径将全部文件依次加载到项目运行环境中，那么使用Nac">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20201028222225464.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20201028232556099.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20201028232653686.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20201028234429362.png">
+<meta property="og:updated_time" content="2020-11-05T16:43:12.009Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Nacos如何是怎么实现将多个配置项注入到同一个工程中的？">
+<meta name="twitter:description" content="在使用Nacos的时候，有没有想过如何将多个配置同时注入到一个工程中？比如下面的一个场景： 多个项目工程的数据库配置一致，但是又有不同的私有化配置，根据抽象原则，我们是否可以将重复的配置信息单独放到一个共享的配置文件里，然后再给一些项目配置一个独享的配置文件呢？ 在使用本地配置的时候，可以给工程指定多个yaml或者xml等文件，然后加载器会根据路径将全部文件依次加载到项目运行环境中，那么使用Nac">
+<meta name="twitter:image" content="http://chuanyichuan.github.io/images/image-20201028222225464.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://chuanyichuan.github.io/2020/10/25/Nacos如何是怎么实现将多个配置项注入到同一个工程中的？/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="../../../../css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/luxiaowan" target="_blank">
+          <img class="img-circle img-rotate" src="../../../../images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">串一串</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">浪人</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Suzhou, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="../../../../.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="../../../../archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="../../../../repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="../../../../books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="../../../../links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="../../../../about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>断舍离!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="../../../../categories/BUG/">BUG</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Docker/">Docker</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Elasticsearch/">Elasticsearch</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Git/">Git</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Java/">Java</a><span class="category-list-count">43</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Jenkins/">Jenkins</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kafka/">Kafka</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kubernates/">Kubernates</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Linux/">Linux</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MongoDB/">MongoDB</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MyBatis/">MyBatis</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MySQL/">MySQL</a><span class="category-list-count">20</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Nacos/">Nacos</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/NoSQL/">NoSQL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/RabbitMQ/">RabbitMQ</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Redis/">Redis</a><span class="category-list-count">12</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Spring/">Spring</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/SpringBoot/">SpringBoot</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/k8s/">k8s</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/分布式/">分布式</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/杂谈/">杂谈</a><span class="category-list-count">7</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Bug/">Bug</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Docker/">Docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Eureka/">Eureka</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/GC/">GC</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/JVM/">JVM</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java与MongoDB/">Java与MongoDB</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Maven/">Maven</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MongoDB错误记录/">MongoDB错误记录</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MySQL/">MySQL</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Sentinel/">Sentinel</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/SpringBoot/">SpringBoot</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/SpringBoot-Admin/">SpringBoot Admin</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/SpringCloud/">SpringCloud</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基本指令/">基本指令</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基础应用/">基础应用</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/服务治理/">服务治理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/监控/">监控</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/索引/">索引</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/阿里/">阿里</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/面试/">面试</a><span class="tag-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="../../../../tags/Bug/" style="font-size: 13px;">Bug</a> <a href="../../../../tags/Docker/" style="font-size: 13px;">Docker</a> <a href="../../../../tags/Eureka/" style="font-size: 13.2px;">Eureka</a> <a href="../../../../tags/GC/" style="font-size: 13px;">GC</a> <a href="../../../../tags/JVM/" style="font-size: 13.4px;">JVM</a> <a href="../../../../tags/Java/" style="font-size: 13.2px;">Java</a> <a href="../../../../tags/Java与MongoDB/" style="font-size: 13px;">Java与MongoDB</a> <a href="../../../../tags/Maven/" style="font-size: 13.4px;">Maven</a> <a href="../../../../tags/MongoDB错误记录/" style="font-size: 13px;">MongoDB错误记录</a> <a href="../../../../tags/MySQL/" style="font-size: 13.2px;">MySQL</a> <a href="../../../../tags/Sentinel/" style="font-size: 13px;">Sentinel</a> <a href="../../../../tags/SpringBoot/" style="font-size: 13px;">SpringBoot</a> <a href="../../../../tags/SpringBoot-Admin/" style="font-size: 13.2px;">SpringBoot Admin</a> <a href="../../../../tags/SpringCloud/" style="font-size: 13.8px;">SpringCloud</a> <a href="../../../../tags/基本指令/" style="font-size: 13px;">基本指令</a> <a href="../../../../tags/基础应用/" style="font-size: 13.2px;">基础应用</a> <a href="../../../../tags/服务治理/" style="font-size: 13px;">服务治理</a> <a href="../../../../tags/监控/" style="font-size: 13px;">监控</a> <a href="../../../../tags/索引/" style="font-size: 14px;">索引</a> <a href="../../../../tags/阿里/" style="font-size: 13.2px;">阿里</a> <a href="../../../../tags/面试/" style="font-size: 13.6px;">面试</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/12/">十二月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/11/">十一月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/10/">十月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/08/">八月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/07/">七月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/06/">六月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/05/">五月 2020</a><span class="archive-list-count">31</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/04/">四月 2020</a><span class="archive-list-count">51</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/03/">三月 2020</a><span class="archive-list-count">17</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/01/">一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/12/">十二月 2019</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/11/">十一月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/10/">十月 2019</a><span class="archive-list-count">16</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/01/">一月 2019</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled ">
+        
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../12/04/MySQL Cluster安装/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/MySQL/">MySQL</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../12/04/MySQL Cluster安装/" class="title">MySQL Cluster安装</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-12-03T16:00:00.000Z" itemprop="datePublished">2020-12-04</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../12/02/Java接收Python发送的RabbitMQ消息全是byte数组/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Java/">Java</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../12/02/Java接收Python发送的RabbitMQ消息全是byte数组/" class="title">Java接收Python发送的RabbitMQ消息全是byte数组</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-12-02T14:45:00.000Z" itemprop="datePublished">2020-12-02</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../11/25/解决IntelliJ-IDEA创建SpringBoot项目失败/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/SpringBoot/">SpringBoot</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../11/25/解决IntelliJ-IDEA创建SpringBoot项目失败/" class="title">解决IntelliJ IDEA创建SpringBoot项目失败</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-11-25T12:25:00.000Z" itemprop="datePublished">2020-11-25</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../11/23/SpringBoot Admin使用Nacos作为服务注册中心/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/SpringBoot/">SpringBoot</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../11/23/SpringBoot Admin使用Nacos作为服务注册中心/" class="title">SpringBoot Admin使用Nacos作为服务注册中心</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-11-23T01:05:00.000Z" itemprop="datePublished">2020-11-23</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../11/22/SpringBoot Admin安全配置/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/SpringBoot/">SpringBoot</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../11/22/SpringBoot Admin安全配置/" class="title">SpringBoot Admin安全配置</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-11-22T15:15:00.000Z" itemprop="datePublished">2020-11-22</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-Nacos如何是怎么实现将多个配置项注入到同一个工程中的？" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Nacos如何是怎么实现将多个配置项注入到同一个工程中的？
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="" class="article-date">
+	  <time datetime="2020-10-25T15:59:59.000Z" itemprop="datePublished">2020-10-25</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="../../../../categories/Nacos/">Nacos</a>
+  </span>
+
+        
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1.3k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 6(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <p>在使用Nacos的时候，有没有想过如何将多个配置同时注入到一个工程中？比如下面的一个场景：</p>
+<p>多个项目工程的数据库配置一致，但是又有不同的私有化配置，根据抽象原则，我们是否可以将重复的配置信息单独放到一个共享的配置文件里，然后再给一些项目配置一个独享的配置文件呢？</p>
+<p>在使用本地配置的时候，可以给工程指定多个yaml或者xml等文件，然后加载器会根据路径将全部文件依次加载到项目运行环境中，那么使用Nacos怎么办呢？</p>
+<p>在Nacos中，提供了<code>nacos.config.dataId</code>配置参数，他可以接收一个配置文件名称，如果名称写错的话，会找不到配置文件。翻看一下<code>com.alibaba.boot.nacos.config.properties.NacosConfigProperties</code>类的话，可以发现在dataId下方有一个变量名叫dataIds</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ConfigurationProperties</span>(NacosConfigConstants.PREFIX) <span class="comment">// NacosConfigConstants.PREFIX = "nacos.config"</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NacosConfigProperties</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> String serverAddr = <span class="string">"127.0.0.1:8848"</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> String dataId;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> String dataIds;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>OK！看到这里，我们知道了Nacos是可以配置多个配置文件的，但是如何配置，且使用什么字符作为分隔符呢？源代码里竟然没有说明，说好的javadoc呢？</p>
+<p>既然没有注释，我们就只能看一下<code>dataIds</code>字段的是如何被解析的吧，代码在<code>com.alibaba.boot.nacos.config.util.NacosConfigLoader#reqGlobalNacosConfig</code>中（至于如何知道在这里的，你细品）。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> List&lt;NacosPropertySource&gt; <span class="title">reqGlobalNacosConfig</span><span class="params">(Properties globalProperties, ConfigType type)</span> </span>&#123;</span><br><span class="line">  List&lt;String&gt; dataIds = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">  <span class="comment">// 步骤1</span></span><br><span class="line">  <span class="keyword">if</span> (StringUtils.isEmpty(nacosConfigProperties.getDataId())) &#123;</span><br><span class="line">    <span class="comment">// 步骤2</span></span><br><span class="line">    <span class="keyword">final</span> String ids = environment.resolvePlaceholders(nacosConfigProperties.getDataIds());</span><br><span class="line">    <span class="comment">// 步骤3</span></span><br><span class="line">    dataIds.addAll(Arrays.asList(ids.split(<span class="string">","</span>)));</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// 步骤4</span></span><br><span class="line">    dataIds.add(nacosConfigProperties.getDataId());</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">final</span> String groupName = environment.resolvePlaceholders(nacosConfigProperties.getGroup());</span><br><span class="line">  <span class="keyword">final</span> <span class="keyword">boolean</span> isAutoRefresh = nacosConfigProperties.isAutoRefresh();</span><br><span class="line">  <span class="comment">// 步骤5</span></span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> ArrayList&lt;&gt;(Arrays.asList(reqNacosConfig(globalProperties, dataIds.toArray(<span class="keyword">new</span> String[<span class="number">0</span>]), 																															groupName, type, isAutoRefresh)));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上代码可以抽象为一个流程图：</p>
+<img src="/images/image-20201028222225464.png" alt="image-20201028222225464" style="zoom:50%;">
+<p>关于本文中最核心的代码应属<code>ids.split(&quot;,&quot;)</code>，这句话告诉我们<code>dataIds</code>字段是以逗号<code>,</code>作为分隔符的，那么我们现在就可以潇洒的操作我们的配置了。</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">nacos.config.server-addr</span>=<span class="string">127.0.0.1:8848</span></span><br><span class="line"><span class="meta">nacos.config.namespace</span>=<span class="string">dev</span></span><br><span class="line"><span class="meta">nacos.config.data-ids</span>=<span class="string">starter_error,starter</span></span><br><span class="line"><span class="meta">nacos.config.auto-refresh</span>=<span class="string">true</span></span><br><span class="line"><span class="meta">nacos.config.type</span>=<span class="string">yaml</span></span><br><span class="line"><span class="meta">nacos.config.bootstrap.enable</span>=<span class="string">true</span></span><br></pre></td></tr></table></figure>
+<p>疑问：既然有了dataIds，为什么还需要dataId呢？</p>
+<blockquote>
+<p>拓展</p>
+</blockquote>
+<p>在<code>NacosConfigProperties</code>中发现一个<code>extConfig</code>属性，这个是做什么用的呢？我们找到解析该属性的方法，就在<code>reqGlobalNacosConfig</code>方法下方<code>com.alibaba.boot.nacos.config.util.NacosConfigLoader#reqSubNacosConfig</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> List&lt;NacosPropertySource&gt; <span class="title">reqSubNacosConfig</span><span class="params">(NacosConfigProperties.Config config, Properties globalProperties, ConfigType type)</span> </span>&#123;</span><br><span class="line">  Properties subConfigProperties = buildSubNacosProperties(globalProperties, config);</span><br><span class="line">  ArrayList&lt;String&gt; dataIds = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">  <span class="keyword">if</span> (StringUtils.isEmpty(config.getDataId())) &#123;</span><br><span class="line">    <span class="keyword">final</span> String ids = environment.resolvePlaceholders(config.getDataIds());</span><br><span class="line">    dataIds.addAll(Arrays.asList(ids.split(<span class="string">","</span>)));</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    dataIds.add(config.getDataId());</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">final</span> String groupName = environment.resolvePlaceholders(config.getGroup());</span><br><span class="line">  <span class="keyword">final</span> <span class="keyword">boolean</span> isAutoRefresh = config.isAutoRefresh();</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> ArrayList&lt;&gt;(Arrays.asList(reqNacosConfig(subConfigProperties, dataIds.toArray(<span class="keyword">new</span> String[<span class="number">0</span>]), 																														groupName, type, isAutoRefresh)));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从逻辑上发现和<code>reqGlobalNacosConfig</code>方法一样，那么解析出来的<code>NacosPropertySource</code>实例有什么用处呢？在方法调用处我们发现解析出来的实例和dataIds的配置信息同级。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">loadConfig</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  Properties globalProperties = buildGlobalNacosProperties();</span><br><span class="line">  MutablePropertySources mutablePropertySources = environment.getPropertySources();</span><br><span class="line">  <span class="comment">// 步骤1</span></span><br><span class="line">  List&lt;NacosPropertySource&gt; sources = reqGlobalNacosConfig(globalProperties, nacosConfigProperties.getType());</span><br><span class="line">  <span class="keyword">for</span> (NacosConfigProperties.Config config : nacosConfigProperties.getExtConfig()) &#123;</span><br><span class="line">    <span class="comment">// 步骤2</span></span><br><span class="line">    List&lt;NacosPropertySource&gt; elements = reqSubNacosConfig(config, globalProperties, config.getType());</span><br><span class="line">    <span class="comment">// 步骤3</span></span><br><span class="line">    sources.addAll(elements);</span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>步骤1和步骤2都是解析相关的配置信息，步骤3是将<code>extConfig</code>属性指定的配置文件加入到步骤1的list中。那么我们来看一下<code>extConfig</code>属性的定义<code>com.alibaba.boot.nacos.config.properties.NacosConfigProperties.Config</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Config</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">private</span> String serverAddr;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">private</span> String endpoint;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">private</span> String namespace;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">private</span> String accessKey;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">private</span> String secretKey;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">private</span> String ramRoleName;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">private</span> String dataId;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">private</span> String dataIds;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">private</span> String group = Constants.DEFAULT_GROUP;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">private</span> ConfigType type;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">private</span> String maxRetry;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">private</span> String configLongPollTimeout;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">private</span> String configRetryTime;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">private</span> <span class="keyword">boolean</span> autoRefresh = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">private</span> <span class="keyword">boolean</span> enableRemoteSyncConfig = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">private</span> String username;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">private</span> String password;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该类的属性和外层<code>NacosConfigProperties</code>几乎一样，那么我们是否可以使用dataId和extConfig中的dataId来代替dataIds呢（有点脱裤子放x的感觉）？那么我们的配置就可以修改一下了。</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">nacos.config.server-addr</span>=<span class="string">127.0.0.1:8848</span></span><br><span class="line"><span class="meta">nacos.config.namespace</span>=<span class="string">dev</span></span><br><span class="line"><span class="meta">nacos.config.data-ids</span>=<span class="string">starter</span></span><br><span class="line"><span class="meta">nacos.config.auto-refresh</span>=<span class="string">true</span></span><br><span class="line"><span class="meta">nacos.config.type</span>=<span class="string">yaml</span></span><br><span class="line"><span class="meta">nacos.config.bootstrap.enable</span>=<span class="string">true</span></span><br><span class="line"></span><br><span class="line"><span class="meta">nacos.config.ext-config.server-addr</span>=<span class="string">127.0.0.1:8848</span></span><br><span class="line"><span class="meta">nacos.config.ext-config.namespace</span>=<span class="string">dev</span></span><br><span class="line"><span class="meta">nacos.config.ext-config.data-id</span>=<span class="string">starter_error</span></span><br><span class="line"><span class="meta">nacos.config.ext-config.auto-refresh</span>=<span class="string">true</span></span><br><span class="line"><span class="meta">nacos.config.ext-config.type</span>=<span class="string">yaml</span></span><br></pre></td></tr></table></figure>
+<p>然后启动服务，看下控制台的日志输出：</p>
+<img src="/images/image-20201028232556099.png" alt="image-20201028232556099" style="zoom:50%;">
+<img src="/images/image-20201028232653686.png" alt="image-20201028232653686" style="zoom:50%;">
+<p>从日志中看出是先加载了外层的配置，然后再加载<code>extConfig</code>的配置，那注入时间是否有区别呢？我们把数据库配置文件放在ext中，看看启动是否正常：</p>
+<p><img src="/images/image-20201028234429362.png" alt="image-20201028234429362"></p>
+<p>哦吼~报错了，我们不能把核心配置放在extConfig中加载。</p>
+<p>在上述配置中，我们发现extConfig中也有<code>serverAddr</code>等一系列配置属性，意思也就是我们可以同时将不同注册中心里的配置注入到一个项目工程里，比如：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">nacos.config.server-addr</span>=<span class="string">127.0.0.1:8848</span></span><br><span class="line"><span class="meta">nacos.config.namespace</span>=<span class="string">dev</span></span><br><span class="line"><span class="meta">nacos.config.data-ids</span>=<span class="string">starter</span></span><br><span class="line"><span class="meta">nacos.config.auto-refresh</span>=<span class="string">true</span></span><br><span class="line"><span class="meta">nacos.config.type</span>=<span class="string">yaml</span></span><br><span class="line"><span class="meta">nacos.config.bootstrap.enable</span>=<span class="string">true</span></span><br><span class="line"></span><br><span class="line"><span class="meta">nacos.config.ext-config[0].server-addr</span>=<span class="string">127.0.0.2:8848</span></span><br><span class="line"><span class="meta">nacos.config.ext-config[0].namespace</span>=<span class="string">dev</span></span><br><span class="line"><span class="meta">nacos.config.ext-config[0].data-id</span>=<span class="string">starter_error</span></span><br><span class="line"><span class="meta">nacos.config.ext-config[0].auto-refresh</span>=<span class="string">true</span></span><br><span class="line"><span class="meta">nacos.config.ext-config[0].type</span>=<span class="string">yaml</span></span><br><span class="line"></span><br><span class="line"><span class="meta">nacos.config.ext-config[1].server-addr</span>=<span class="string">127.0.0.3:8848</span></span><br><span class="line"><span class="meta">nacos.config.ext-config[1].namespace</span>=<span class="string">dev</span></span><br><span class="line"><span class="meta">nacos.config.ext-config[1].data-id</span>=<span class="string">starter_error_ext</span></span><br><span class="line"><span class="meta">nacos.config.ext-config[1].auto-refresh</span>=<span class="string">true</span></span><br><span class="line"><span class="meta">nacos.config.ext-config[1].type</span>=<span class="string">yaml</span></span><br></pre></td></tr></table></figure>
+<p>哦吼~功能好强大，同时我们也可以在extConfig中使用<code>dataIds</code>注入该配置中心的多个配置了。</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://chuanyichuan.github.io/2020/10/25/Nacos如何是怎么实现将多个配置项注入到同一个工程中的？/" title="Nacos如何是怎么实现将多个配置项注入到同一个工程中的？" target="_blank" rel="external">http://chuanyichuan.github.io/2020/10/25/Nacos如何是怎么实现将多个配置项注入到同一个工程中的？/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/luxiaowan" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="../../../../images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/luxiaowan" target="_blank"><span class="text-dark">串一串</span><small class="ml-1x">浪人</small></a></h3>
+        <div>断舍离</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="../../26/k8s运维命令/" title="K8s运维命令"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="../../22/Nacos为Map和List注入数据/" title="Nacos为Map和List注入数据"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2020 cc
+        
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="../../../../js/plugin.min.js"></script>
+<script src="../../../../js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '../../../../content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="../../../../js/insight.js"></script>
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+
+
+
+
+
+
+</body>
+</html>
