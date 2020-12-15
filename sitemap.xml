@@ -2,16 +2,23 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://chuanyichuan.github.io/2020/12/15/%E8%A7%A3%E5%86%B3Centos%E4%BD%BF%E7%94%A8ssh%E8%BF%9E%E6%8E%A5%E8%87%AA%E5%8A%A8%E6%96%AD%E5%BC%80/</loc>
+    <loc>http://chuanyichuan.github.io/2020/12/15/Linux%E5%AE%89%E8%A3%85kubernetes%E9%9B%86%E7%BE%A4/</loc>
     
-    <lastmod>2020-12-15T01:45:49.945Z</lastmod>
+    <lastmod>2020-12-15T06:44:26.938Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://chuanyichuan.github.io/2020/12/15/Linux%E5%AE%89%E8%A3%85kubernetes%E9%9B%86%E7%BE%A4/</loc>
+    <loc>http://chuanyichuan.github.io/2020/12/15/Docker%E8%AE%BE%E7%BD%AE%E9%95%9C%E5%83%8F%E6%BA%90/</loc>
     
-    <lastmod>2020-12-15T01:08:25.358Z</lastmod>
+    <lastmod>2020-12-15T06:44:24.725Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://chuanyichuan.github.io/2020/12/15/%E8%A7%A3%E5%86%B3Centos%E4%BD%BF%E7%94%A8ssh%E8%BF%9E%E6%8E%A5%E8%87%AA%E5%8A%A8%E6%96%AD%E5%BC%80/</loc>
+    
+    <lastmod>2020-12-15T01:45:49.945Z</lastmod>
     
   </url>
   

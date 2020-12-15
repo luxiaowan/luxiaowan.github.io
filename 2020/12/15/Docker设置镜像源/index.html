@@ -17,28 +17,22 @@
   <meta http-equiv="window-target" content="_top">
   
   
-  <title>JVM命令之jmap | 串一串</title>
-  <meta name="description" content="简介 jmap是一个多功能命令，它可以生成Java应用的dump文件，也可以查看堆内对象的统计信息、查看ClassLoader信息和finalizer队列等，但是jmap会将整个JVM的线程全部暂停，所以在生产环境中慎重jmap命令。   参数   option：选项参数 pid：进程ID executable：生成核心dump的Java可执行文件 core：需要打印配置信息的核心文件 serv">
+  <title>Docker设置镜像源 | 串一串</title>
+  <meta name="description" content="打开/etc/docker/daemon.json文件，添加registry-mirrors，具体如下（添加网易的镜像源）： 123&amp;#123;    &quot;registry-mirrors&quot;: [&quot;http://hub-mirror.c.163.com&quot;]&amp;#125;  注意不要覆盖原有配置  国内的镜像源有以下几个比较常用的：   Docker中国区官方镜像： https://registry.d">
 <meta property="og:type" content="article">
-<meta property="og:title" content="JVM命令之jmap">
-<meta property="og:url" content="http://chuanyichuan.github.io/2020/05/11/JVM命令之jmap/index.html">
+<meta property="og:title" content="Docker设置镜像源">
+<meta property="og:url" content="http://chuanyichuan.github.io/2020/12/15/Docker设置镜像源/index.html">
 <meta property="og:site_name" content="串一串">
-<meta property="og:description" content="简介 jmap是一个多功能命令，它可以生成Java应用的dump文件，也可以查看堆内对象的统计信息、查看ClassLoader信息和finalizer队列等，但是jmap会将整个JVM的线程全部暂停，所以在生产环境中慎重jmap命令。   参数   option：选项参数 pid：进程ID executable：生成核心dump的Java可执行文件 core：需要打印配置信息的核心文件 serv">
+<meta property="og:description" content="打开/etc/docker/daemon.json文件，添加registry-mirrors，具体如下（添加网易的镜像源）： 123&amp;#123;    &quot;registry-mirrors&quot;: [&quot;http://hub-mirror.c.163.com&quot;]&amp;#125;  注意不要覆盖原有配置  国内的镜像源有以下几个比较常用的：   Docker中国区官方镜像： https://registry.d">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200511155155703.png">
-<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200511162040121.png">
-<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200511162552365.png">
-<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200511173916727.png">
-<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200511174142448.png">
-<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200511174414285.png">
-<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200511175932610.png">
-<meta property="og:updated_time" content="2020-05-11T10:02:02.532Z">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20201215144340360.png">
+<meta property="og:updated_time" content="2020-12-15T06:44:24.725Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="JVM命令之jmap">
-<meta name="twitter:description" content="简介 jmap是一个多功能命令，它可以生成Java应用的dump文件，也可以查看堆内对象的统计信息、查看ClassLoader信息和finalizer队列等，但是jmap会将整个JVM的线程全部暂停，所以在生产环境中慎重jmap命令。   参数   option：选项参数 pid：进程ID executable：生成核心dump的Java可执行文件 core：需要打印配置信息的核心文件 serv">
-<meta name="twitter:image" content="http://chuanyichuan.github.io/images/image-20200511155155703.png">
+<meta name="twitter:title" content="Docker设置镜像源">
+<meta name="twitter:description" content="打开/etc/docker/daemon.json文件，添加registry-mirrors，具体如下（添加网易的镜像源）： 123&amp;#123;    &quot;registry-mirrors&quot;: [&quot;http://hub-mirror.c.163.com&quot;]&amp;#125;  注意不要覆盖原有配置  国内的镜像源有以下几个比较常用的：   Docker中国区官方镜像： https://registry.d">
+<meta name="twitter:image" content="http://chuanyichuan.github.io/images/image-20201215144340360.png">
   <!-- Canonical links -->
-  <link rel="canonical" href="http://chuanyichuan.github.io/2020/05/11/JVM命令之jmap/index.html">
+  <link rel="canonical" href="http://chuanyichuan.github.io/2020/12/15/Docker设置镜像源/index.html">
   
     <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
   
@@ -242,7 +236,7 @@
           <li>
             
             <div class="item-thumb">
-              <a href="../../../12/15/解决Centos使用ssh连接自动断开/" class="thumb">
+              <a href="../解决Centos使用ssh连接自动断开/" class="thumb">
     
     
         <span class="thumb-image thumb-none"></span>
@@ -256,7 +250,7 @@
                 <a class="category-link" href="../../../../categories/Linux/">Linux</a>
               </p>
               <p class="item-title">
-                <a href="../../../12/15/解决Centos使用ssh连接自动断开/" class="title">解决Centos使用ssh连接自动断开</a>
+                <a href="../解决Centos使用ssh连接自动断开/" class="title">解决Centos使用ssh连接自动断开</a>
               </p>
               <p class="item-date">
                 <time datetime="2020-12-14T16:00:00.000Z" itemprop="datePublished">2020-12-15</time>
@@ -267,7 +261,7 @@
           <li>
             
             <div class="item-thumb">
-              <a href="../../../12/15/Linux安装kubernetes集群/" class="thumb">
+              <a href="../Linux安装kubernetes集群/" class="thumb">
     
     
         <span class="thumb-image thumb-none"></span>
@@ -281,7 +275,7 @@
                 <a class="category-link" href="../../../../categories/Kubernetes/">Kubernetes</a>
               </p>
               <p class="item-title">
-                <a href="../../../12/15/Linux安装kubernetes集群/" class="title">Linux安装kubernetes集群</a>
+                <a href="../Linux安装kubernetes集群/" class="title">Linux安装kubernetes集群</a>
               </p>
               <p class="item-date">
                 <time datetime="2020-12-14T16:00:00.000Z" itemprop="datePublished">2020-12-15</time>
@@ -292,7 +286,7 @@
           <li>
             
             <div class="item-thumb">
-              <a href="../../../12/15/Docker设置镜像源/" class="thumb">
+              <a href="" class="thumb">
     
     
         <span class="thumb-image thumb-none"></span>
@@ -306,7 +300,7 @@
                 <a class="category-link" href="../../../../categories/Docker/">Docker</a>
               </p>
               <p class="item-title">
-                <a href="../../../12/15/Docker设置镜像源/" class="title">Docker设置镜像源</a>
+                <a href="" class="title">Docker设置镜像源</a>
               </p>
               <p class="item-date">
                 <time datetime="2020-12-14T16:00:00.000Z" itemprop="datePublished">2020-12-15</time>
@@ -317,7 +311,7 @@
           <li>
             
             <div class="item-thumb">
-              <a href="../../../12/14/Linux服务器之间免密登录/" class="thumb">
+              <a href="../../14/Linux服务器之间免密登录/" class="thumb">
     
     
         <span class="thumb-image thumb-none"></span>
@@ -331,7 +325,7 @@
                 <a class="category-link" href="../../../../categories/Linux/">Linux</a>
               </p>
               <p class="item-title">
-                <a href="../../../12/14/Linux服务器之间免密登录/" class="title">Linux服务器之间免密登录</a>
+                <a href="../../14/Linux服务器之间免密登录/" class="title">Linux服务器之间免密登录</a>
               </p>
               <p class="item-date">
                 <time datetime="2020-12-13T16:27:40.355Z" itemprop="datePublished">2020-12-14</time>
@@ -342,7 +336,7 @@
           <li>
             
             <div class="item-thumb">
-              <a href="../../../12/10/搭建MySQL集群-MGR/" class="thumb">
+              <a href="../../10/搭建MySQL集群-MGR/" class="thumb">
     
     
         <span class="thumb-image thumb-none"></span>
@@ -356,7 +350,7 @@
                 <a class="category-link" href="../../../../categories/MySQL/">MySQL</a>
               </p>
               <p class="item-title">
-                <a href="../../../12/10/搭建MySQL集群-MGR/" class="title">使用HAProxy搭建MySQL集群</a>
+                <a href="../../10/搭建MySQL集群-MGR/" class="title">使用HAProxy搭建MySQL集群</a>
               </p>
               <p class="item-date">
                 <time datetime="2020-12-10T01:25:00.000Z" itemprop="datePublished">2020-12-10</time>
@@ -377,14 +371,14 @@
   
 <main class="main" role="main">
   <div class="content">
-  <article id="post-JVM命令之jmap" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+  <article id="post-Docker设置镜像源" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
     
     <div class="article-header">
       
         
   
     <h1 class="article-title" itemprop="name">
-      JVM命令之jmap
+      Docker设置镜像源
     </h1>
   
 
@@ -393,13 +387,13 @@
         <span class="article-date">
     <i class="icon icon-calendar-check"></i>
 	<a href="" class="article-date">
-	  <time datetime="2020-05-11T07:40:00.000Z" itemprop="datePublished">2020-05-11</time>
+	  <time datetime="2020-12-14T16:00:00.000Z" itemprop="datePublished">2020-12-15</time>
 	</a>
 </span>
         
   <span class="article-category">
     <i class="icon icon-folder"></i>
-    <a class="article-category-link" href="../../../../categories/Java/">Java</a>
+    <a class="article-category-link" href="../../../../categories/Docker/">Docker</a>
   </span>
 
         
@@ -416,92 +410,38 @@
         <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
         
 	
-		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 685(字)</span>
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 139(字)</span>
 	
 	
-		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 2(分)</span>
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 1(分)</span>
 	
 
       </div>
     </div>
     <div class="article-entry marked-body" itemprop="articleBody">
       
-        <h3 id="简介"><a class="markdownIt-Anchor" href="#简介"></a> 简介</h3>
-<p>jmap是一个多功能命令，它可以生成Java应用的dump文件，也可以查看堆内对象的统计信息、查看ClassLoader信息和finalizer队列等，但是jmap会将整个JVM的线程全部暂停，所以在生产环境中慎重jmap命令。</p>
-<img src="/images/image-20200511155155703.png" alt="image-20200511155155703" style="zoom:50%;">
+        <p>打开<code>/etc/docker/daemon.json</code>文件，添加<code>registry-mirrors</code>，具体如下（添加网易的镜像源）：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"registry-mirrors"</span>: [<span class="string">"http://hub-mirror.c.163.com"</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <blockquote>
-<p>参数</p>
+<p>注意不要覆盖原有配置</p>
 </blockquote>
-<ul>
-<li>option：选项参数</li>
-<li>pid：进程ID</li>
-<li>executable：生成核心dump的Java可执行文件</li>
-<li>core：需要打印配置信息的核心文件</li>
-<li>server_id：唯一服务ID，若一台主机上开启了多个远程debug服务</li>
-<li>remote server IP or hostname：远程debug服务的主机名或IP</li>
-</ul>
-<blockquote>
-<p>option选项</p>
-</blockquote>
-<ul>
-<li>none：查看进程的内存映像信息，和Solaris的pmap命令类似</li>
-<li>heap：显示JVM堆详细信息</li>
-<li>histo[:live]：打印堆中对象的统计信息，<code>:live</code>子选项是指定仅打印出存活的对象</li>
-<li>clstats：打印类加载器信息</li>
-<li>finalizerinfo：显示正在准备被回收的对象信息</li>
-<li>dump:&lt;dump-options&gt;：生成堆转储快照
-<ul>
-<li>live：仅转储堆中存活的对象</li>
-<li>format=b：二进制方式</li>
-<li>file：堆转储快照文件</li>
-</ul>
-</li>
-<li>F：当dump或histo没有响应时，使用该参数可以强制执行，但是若子选项是<code>:live</code>则使用-F也无效</li>
-<li>h | help：显示命令的帮助信息</li>
-<li>j&lt;flag&gt;：给运行中的JVM传参数给jmap</li>
-</ul>
-<h3 id="示例"><a class="markdownIt-Anchor" href="#示例"></a> 示例</h3>
-<blockquote>
-<p>准备：启动一个死循环的main方法</p>
-<p>通过jps命令查看应用的pid</p>
-<p>pid：10456</p>
-</blockquote>
+<p>国内的镜像源有以下几个比较常用的：</p>
 <ol>
 <li>
-<p>jmap pid</p>
-<p>查看进程的内存映像信息</p>
-<img src="/images/image-20200511162040121.png" alt="image-20200511162040121" style="zoom:50%;">
+<p>Docker中国区官方镜像： <a href="https://registry.docker-cn.com" target="_blank" rel="noopener">https://registry.docker-cn.com</a></p>
 </li>
 <li>
-<p>jmap -heap pid</p>
-<p>显示JVM堆详细信息</p>
-<p><img src="/images/image-20200511162552365.png" alt="image-20200511162552365"></p>
+<p>网易： <a href="http://hub-mirror.c.163.com" target="_blank" rel="noopener">http://hub-mirror.c.163.com</a></p>
 </li>
 <li>
-<p>jmap -histo:live pid</p>
-<p>显示堆中存活的对象的统计信息，信息包含每个存活的Java类、对象数量、内存大小（从大到小排列，单位：字节）、类全限定名</p>
-<p><img src="/images/image-20200511173916727.png" alt="image-20200511173916727"></p>
+<p>中国科技大学ustc： <a href="https://docker.mirrors.ustc.edu.cn" target="_blank" rel="noopener">https://docker.mirrors.ustc.edu.cn</a></p>
 </li>
 <li>
-<p>jmap -clstats pid</p>
-<p>打印类加载器信息，信息包含类加载器名称、所加载的类的数量、所加载的类的大小、父加载器、存活状态、加载器地址等</p>
-<p><img src="/images/image-20200511174142448.png" alt="image-20200511174142448"></p>
-</li>
-<li>
-<p>jmap -finalizerinfo pid</p>
-<p>打印正在等待被回收的对象信息</p>
-<p><img src="/images/image-20200511174414285.png" alt="image-20200511174414285"></p>
-<p>表示当前并无待回收对象</p>
-</li>
-<li>
-<p>jmap -dump:format=b,file=heapdump.hprof pid</p>
-<p>生成堆转储快照dump文件，以hprof二进制格式转储Java堆信息到指定的文件中，可以使用live子选项指定只将堆中存活的对象转储出来，生成的文件可以使用jhat命令或者MAT工具解析</p>
-<p><img src="/images/image-20200511175932610.png" alt="image-20200511175932610"></p>
+<p>阿里云</p>
+<p>阿里云的镜像加速器每个账号的都不相同，可以登录阿里云<strong>容器镜像服务</strong>查看自己的（<a href="https://cr.console.aliyun.com/%EF%BC%89" target="_blank" rel="noopener">https://cr.console.aliyun.com/）</a></p>
+<img src="/images/image-20201215144340360.png" alt="image-20201215144340360" style="zoom:50%;">
 </li>
 </ol>
-<h3 id="总结"><a class="markdownIt-Anchor" href="#总结"></a> 总结</h3>
-<p>在jmap执行时，JVM为了保证dump的信息的可靠性，会暂停应用的所有线程，如果堆内对象过大的话，这个过程会非常耗时，在生产环境慎用。</p>
-<p>但是当生产服务处了问题，这个时候不得不使用的话，那就用吧，应用都出问题了，还在意会不会STW干啥。</p>
 
       
     </div>
@@ -511,7 +451,7 @@
     
     <li class="post-copyright-link hidden-xs">
       <strong>本文链接：</strong>
-      <a href="http://chuanyichuan.github.io/2020/05/11/JVM命令之jmap/" title="JVM命令之jmap" target="_blank" rel="external">http://chuanyichuan.github.io/2020/05/11/JVM命令之jmap/</a>
+      <a href="http://chuanyichuan.github.io/2020/12/15/Docker设置镜像源/" title="Docker设置镜像源" target="_blank" rel="external">http://chuanyichuan.github.io/2020/12/15/Docker设置镜像源/</a>
     </li>
     
     <li class="post-copyright-license">
@@ -556,12 +496,12 @@
   <ul class="pager pull-left">
     
     <li class="prev">
-      <a href="../JVM命令之jcmd/" title="JVM命令之jcmd"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+      <a href="../Linux安装kubernetes集群/" title="Linux安装kubernetes集群"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
     </li>
     
     
     <li class="next">
-      <a href="../JVM命令之jstack/" title="JVM命令之jstack"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+      <a href="../../14/Linux服务器之间免密登录/" title="Linux服务器之间免密登录"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
     </li>
     
     
