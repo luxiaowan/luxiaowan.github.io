@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>使用HAProxy搭建MySQL集群 | 串一串</title>
+  <meta name="description" content="引言  我们知道搭建MySQL集群有MHA、MGR、MMM，以及MySQL官方提供的MySQL-Cluster方式，以下主要以MGR方式为主做介绍，稍后再介绍这几种集群方式的差异。 我们先简单的介绍一下MGR架构，MGR的全称是MySQL Group Replication，是官方在5.7.17版本推出的基于paxos协议的集群方案。有人说MGR是基于状态机的集群设计，每一个节点都可以看做是一个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用HAProxy搭建MySQL集群">
+<meta property="og:url" content="http://chuanyichuan.github.io/2020/12/10/搭建MySQL集群-MGR/index.html">
+<meta property="og:site_name" content="串一串">
+<meta property="og:description" content="引言  我们知道搭建MySQL集群有MHA、MGR、MMM，以及MySQL官方提供的MySQL-Cluster方式，以下主要以MGR方式为主做介绍，稍后再介绍这几种集群方式的差异。 我们先简单的介绍一下MGR架构，MGR的全称是MySQL Group Replication，是官方在5.7.17版本推出的基于paxos协议的集群方案。有人说MGR是基于状态机的集群设计，每一个节点都可以看做是一个">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://chuanyichuan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20201210093548972.png">
+<meta property="og:updated_time" content="2020-12-10T12:38:07.453Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用HAProxy搭建MySQL集群">
+<meta name="twitter:description" content="引言  我们知道搭建MySQL集群有MHA、MGR、MMM，以及MySQL官方提供的MySQL-Cluster方式，以下主要以MGR方式为主做介绍，稍后再介绍这几种集群方式的差异。 我们先简单的介绍一下MGR架构，MGR的全称是MySQL Group Replication，是官方在5.7.17版本推出的基于paxos协议的集群方案。有人说MGR是基于状态机的集群设计，每一个节点都可以看做是一个">
+<meta name="twitter:image" content="http://chuanyichuan.github.io/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20201210093548972.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://chuanyichuan.github.io/2020/12/10/搭建MySQL集群-MGR/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="../../../../css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/luxiaowan" target="_blank">
+          <img class="img-circle img-rotate" src="../../../../images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">串一串</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">浪人</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Suzhou, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="../../../../.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="../../../../archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="../../../../repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="../../../../books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="../../../../links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="../../../../about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>断舍离!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="../../../../categories/BUG/">BUG</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Docker/">Docker</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Elasticsearch/">Elasticsearch</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Git/">Git</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Java/">Java</a><span class="category-list-count">43</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Jenkins/">Jenkins</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kafka/">Kafka</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kubernates/">Kubernates</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kubernetes/">Kubernetes</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Linux/">Linux</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MongoDB/">MongoDB</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MyBatis/">MyBatis</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MySQL/">MySQL</a><span class="category-list-count">22</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Nacos/">Nacos</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/NoSQL/">NoSQL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/RabbitMQ/">RabbitMQ</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Redis/">Redis</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Spring/">Spring</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/SpringBoot/">SpringBoot</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/分布式/">分布式</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/杂谈/">杂谈</a><span class="category-list-count">7</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Bug/">Bug</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Docker/">Docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Eureka/">Eureka</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/GC/">GC</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/JVM/">JVM</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java与MongoDB/">Java与MongoDB</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Linux/">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Maven/">Maven</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MongoDB错误记录/">MongoDB错误记录</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MySQL/">MySQL</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Sentinel/">Sentinel</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/SpringBoot/">SpringBoot</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/SpringBoot-Admin/">SpringBoot Admin</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/SpringCloud/">SpringCloud</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/k8s/">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基本指令/">基本指令</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基础应用/">基础应用</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/服务治理/">服务治理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/监控/">监控</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/索引/">索引</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/阿里/">阿里</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/面试/">面试</a><span class="tag-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="../../../../tags/Bug/" style="font-size: 13px;">Bug</a> <a href="../../../../tags/Docker/" style="font-size: 13px;">Docker</a> <a href="../../../../tags/Eureka/" style="font-size: 13.2px;">Eureka</a> <a href="../../../../tags/GC/" style="font-size: 13px;">GC</a> <a href="../../../../tags/JVM/" style="font-size: 13.4px;">JVM</a> <a href="../../../../tags/Java/" style="font-size: 13.2px;">Java</a> <a href="../../../../tags/Java与MongoDB/" style="font-size: 13px;">Java与MongoDB</a> <a href="../../../../tags/Linux/" style="font-size: 13px;">Linux</a> <a href="../../../../tags/Maven/" style="font-size: 13.4px;">Maven</a> <a href="../../../../tags/MongoDB错误记录/" style="font-size: 13px;">MongoDB错误记录</a> <a href="../../../../tags/MySQL/" style="font-size: 13.2px;">MySQL</a> <a href="../../../../tags/Sentinel/" style="font-size: 13px;">Sentinel</a> <a href="../../../../tags/SpringBoot/" style="font-size: 13px;">SpringBoot</a> <a href="../../../../tags/SpringBoot-Admin/" style="font-size: 13.2px;">SpringBoot Admin</a> <a href="../../../../tags/SpringCloud/" style="font-size: 13.8px;">SpringCloud</a> <a href="../../../../tags/k8s/" style="font-size: 13px;">k8s</a> <a href="../../../../tags/基本指令/" style="font-size: 13px;">基本指令</a> <a href="../../../../tags/基础应用/" style="font-size: 13.2px;">基础应用</a> <a href="../../../../tags/服务治理/" style="font-size: 13px;">服务治理</a> <a href="../../../../tags/监控/" style="font-size: 13px;">监控</a> <a href="../../../../tags/索引/" style="font-size: 14px;">索引</a> <a href="../../../../tags/阿里/" style="font-size: 13.2px;">阿里</a> <a href="../../../../tags/面试/" style="font-size: 13.6px;">面试</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/12/">十二月 2020</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/11/">十一月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/10/">十月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/08/">八月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/07/">七月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/06/">六月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/05/">五月 2020</a><span class="archive-list-count">31</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/04/">四月 2020</a><span class="archive-list-count">51</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/03/">三月 2020</a><span class="archive-list-count">17</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/01/">一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/12/">十二月 2019</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/11/">十一月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/10/">十月 2019</a><span class="archive-list-count">16</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/01/">一月 2019</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled ">
+        
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../15/Linux安装kubernetes集群/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Kubernetes/">Kubernetes</a>
+              </p>
+              <p class="item-title">
+                <a href="../../15/Linux安装kubernetes集群/" class="title">Linux安装kubernetes集群</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-12-14T16:00:00.000Z" itemprop="datePublished">2020-12-15</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../14/Linux服务器之间免密登录/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Linux/">Linux</a>
+              </p>
+              <p class="item-title">
+                <a href="../../14/Linux服务器之间免密登录/" class="title">Linux服务器之间免密登录</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-12-13T16:27:40.355Z" itemprop="datePublished">2020-12-14</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../使用HAProxy搭建MySQL集群/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/MySQL/">MySQL</a>
+              </p>
+              <p class="item-title">
+                <a href="../使用HAProxy搭建MySQL集群/" class="title">使用HAProxy搭建MySQL集群</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-12-10T01:25:00.000Z" itemprop="datePublished">2020-12-10</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/MySQL/">MySQL</a>
+              </p>
+              <p class="item-title">
+                <a href="" class="title">使用HAProxy搭建MySQL集群</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-12-10T01:25:00.000Z" itemprop="datePublished">2020-12-10</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../06/Redis集群搭建/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Redis/">Redis</a>
+              </p>
+              <p class="item-title">
+                <a href="../../06/Redis集群搭建/" class="title">Redis集群搭建</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-12-06T15:56:00.000Z" itemprop="datePublished">2020-12-06</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-搭建MySQL集群-MGR" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      使用HAProxy搭建MySQL集群
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="" class="article-date">
+	  <time datetime="2020-12-10T01:25:00.000Z" itemprop="datePublished">2020-12-10</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="../../../../categories/MySQL/">MySQL</a>
+  </span>
+
+        
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1.1k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 5(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <blockquote>
+<p>引言</p>
+</blockquote>
+<p>我们知道搭建MySQL集群有MHA、MGR、MMM，以及MySQL官方提供的MySQL-Cluster方式，以下主要以MGR方式为主做介绍，稍后再介绍这几种集群方式的差异。</p>
+<p>我们先简单的介绍一下MGR架构，MGR的全称是MySQL Group Replication，是官方在5.7.17版本推出的基于paxos协议的集群方案。有人说MGR是基于状态机的集群设计，每一个节点都可以看做是一个状态机，任何一个节点出现</p>
+<ol>
+<li>
+<p>服务器信息</p>
+<p>我准备了四台机器，一台haproxy节点，三台MySQL节点，这三个MySQL节点均为Master，并且互为主备。</p>
+<table>
+<thead>
+<tr>
+<th>主机IP</th>
+<th>OS</th>
+<th>软件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10.154.8.18</td>
+<td>centos 7.0</td>
+<td>haproxy</td>
+</tr>
+<tr>
+<td>10.154.8.113</td>
+<td>centos 7.0</td>
+<td>master</td>
+</tr>
+<tr>
+<td>10.154.8.130</td>
+<td>centos 7.0</td>
+<td>master</td>
+</tr>
+<tr>
+<td>10.154.8.149</td>
+<td>centos 7.0</td>
+<td>master</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>架构图</p>
+<img src="/Users/chuan/Documents/projects_code/git-project/github_blog/source/images/image-20201210093548972.png" alt="image-20201210093548972" style="zoom:50%;">
+</li>
+</ol>
+<h1 id="安装mysql"><a class="markdownIt-Anchor" href="#安装mysql"></a> 安装MySQL</h1>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">cd /data1/software/mysql/</span><br><span class="line">tar -zxvf mysql-5.7.31-linux-glibc2.12-x86_64.tar.gz</span><br><span class="line"></span><br><span class="line">mkdir /usr/local/mysql</span><br><span class="line"></span><br><span class="line">cp -R /data1/software/mysql/mysql-5.7.31-linux-glibc2.12-x86_64/* /usr/local/mysql/</span><br><span class="line"></span><br><span class="line">mkdir /usr/local/mysql/data</span><br><span class="line"></span><br><span class="line">cd /usr/local/mysql</span><br><span class="line"></span><br><span class="line">groupadd mysql</span><br><span class="line">useradd mysql -g mysql</span><br><span class="line">chown -R mysql .</span><br><span class="line">chgrp -R mysql .</span><br><span class="line"></span><br><span class="line">/usr/local/mysql/bin/mysqld --initialize --user=mysql --basedir=/usr/local/mysql/ --datadir=/usr/local/mysql/data/ --explicit_defaults_for_timestamp</span><br><span class="line"></span><br><span class="line">rm -rf /tmp/mysql.sock</span><br><span class="line"></span><br><span class="line">ln -s /usr/local/mysql/mysql.sock /tmp/mysql.sock</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 开机启动设置</span></span><br><span class="line">cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysqld</span><br><span class="line"></span><br><span class="line">chmod +x /etc/init.d/mysqld</span><br><span class="line"></span><br><span class="line">chkconfig --add mysqld</span><br></pre></td></tr></table></figure>
+<h1 id="配置mysql"><a class="markdownIt-Anchor" href="#配置mysql"></a> 配置MySQL</h1>
+<p>vim /etc/my.cnf</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">basedir=/usr/local/mysql</span><br><span class="line">datadir=/usr/local/mysql/data</span><br><span class="line">port=3306</span><br><span class="line">socket=/usr/local/mysql/mysql.sock</span><br><span class="line">character_set_server=utf8mb4</span><br><span class="line"></span><br><span class="line">wait_timeout=360000</span><br><span class="line"></span><br><span class="line">log-bin=/usr/local/mysql/data/binlog</span><br><span class="line">log-bin-index=/usr/local/mysql/data/binlog.index</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 每个节点必须不同</span></span><br><span class="line">server-id = 208</span><br><span class="line"></span><br><span class="line">gtid-mode=on</span><br><span class="line">enforce-gtid-consistency=on</span><br><span class="line">master-info-repository=TABLE</span><br><span class="line">relay-log-info-repository=TABLE</span><br><span class="line">binlog-checksum=none</span><br><span class="line">log-slave-updates=on</span><br><span class="line">binlog-format=ROW</span><br><span class="line"></span><br><span class="line">transaction-write-set-extraction=XXHASH64</span><br><span class="line">loose-group_replication_group_name='7e6fe64a-3bc0-4117-9cac-2439f9c3f19e'</span><br><span class="line">loose-group_replication_start_on_boot=off</span><br><span class="line">loose-group_replication_local_address='10.154.8.113:33061'</span><br><span class="line">loose-group_replication_group_seeds='10.154.8.113:33061,10.154.8.130:33062,10.154.8.149:33063'</span><br><span class="line">loose-group_replication_bootstrap_group=off</span><br><span class="line"></span><br><span class="line">[mysqld_safe]</span><br><span class="line">log-error=/usr/local/mysql/data/error.err</span><br><span class="line">pid-file=/usr/local/mysql/data/mysql.pid</span><br><span class="line"></span><br><span class="line">!includedir /etc/my.cnf.d</span><br></pre></td></tr></table></figure>
+<h1 id="配置无需密码登录"><a class="markdownIt-Anchor" href="#配置无需密码登录"></a> 配置无需密码登录</h1>
+<p>略…</p>
+<h1 id="启动mysql"><a class="markdownIt-Anchor" href="#启动mysql"></a> 启动MySQL</h1>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">service mysqld start</span><br><span class="line"></span><br><span class="line">/usr/local/mysql/bin/mysql -uroot -p</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">alter</span> <span class="keyword">user</span> <span class="string">'root'</span>@<span class="string">'localhost'</span> <span class="keyword">identified</span> <span class="keyword">by</span> <span class="string">'ojbKwcrpqiOhsg8/i'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">GRANT</span> <span class="keyword">ALL</span> <span class="keyword">PRIVILEGES</span> <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">'root'</span>@<span class="string">'%'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">BY</span> <span class="string">'ojbKwcrpqiOhsg8/i'</span> <span class="keyword">WITH</span> <span class="keyword">GRANT</span> <span class="keyword">OPTION</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">grant</span> <span class="keyword">replication</span> <span class="keyword">slave</span>,<span class="keyword">replication</span> <span class="keyword">client</span> <span class="keyword">on</span> *.* <span class="keyword">to</span> <span class="string">'slave'</span>@<span class="string">'%'</span> <span class="keyword">identified</span> <span class="keyword">by</span> <span class="string">'k3G_w9Z&amp;eeip'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">flush</span> <span class="keyword">privileges</span>;</span><br></pre></td></tr></table></figure>
+<hr>
+<blockquote>
+<p>haproxy</p>
+</blockquote>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GRANT</span> <span class="keyword">ALL</span> <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">'haproxy'</span>@<span class="string">'%'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">BY</span> <span class="string">'123'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">GRANT</span> <span class="keyword">ALL</span> <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">'haproxy'</span>@<span class="string">'10.154.8.18'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">BY</span> <span class="string">'123'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">update</span> mysql.user <span class="keyword">set</span> authentication_string=<span class="keyword">PASSWORD</span>(<span class="string">''</span>) <span class="keyword">where</span> <span class="keyword">user</span>=<span class="string">'haproxy'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">flush</span> <span class="keyword">privileges</span>;</span><br></pre></td></tr></table></figure>
+<h3 id="mgr说明"><a class="markdownIt-Anchor" href="#mgr说明"></a> MGR说明</h3>
+<p>server-id=1　　// Mysql服务ID，集群内必须唯一<br>
+gtid-mode=on　　// 全局事务<br>
+enforce-gtid-consistency=on　　// 强制GTID的一致性<br>
+master-info-repository=TABLE　　// 将master.info元数据保存在系统表中<br>
+relay-log-info-repository=TABLE　　// 将relay.info元数据保存在系统表中<br>
+binlog-checksum=none　　// 禁用二进制日志事件校验<br>
+log-slave-updates=on　　// 级联复制<br>
+log-bin=binlog　　// 开启二进制日志记录<br>
+binlog-format=ROW　　// 以行的格式记录</p>
+<p>transaction-write-set-extraction=XXHASH64　　// 使用哈希算法将其编码为散列<br>
+loose-group_replication_group_name=‘7e6fe64a-3bc0-4117-9cac-2439f9c3f19e’　　// 加入的组名，可以修改，只要格式对<br>
+loose-group_replication_start_on_boot=off　　// 不自动启用组复制集群<br>
+loose-group_replication_local_address=‘node1:33061’　　// 以本机端口33061接受来自组中成员的传入连接<br>
+loose-group_replication_group_seeds=‘node1:33061,node2:33062,node3:33063’　　// 组中成员访问表<br>
+loose-group_replication_bootstrap_group=off　　// 不启用引导组</p>
+<h1 id="设置hostname映射"><a class="markdownIt-Anchor" href="#设置hostname映射"></a> 设置hostname映射</h1>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">vim /etc/hosts</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 使用hostname指令查看主机名</span></span><br><span class="line">10.154.8.18 devtools1e.novalocal node1</span><br><span class="line">10.154.8.113 devtools1b.novalocal node2</span><br><span class="line">10.154.8.130 devtools1c.novalocal node3</span><br><span class="line">10.154.8.149 devtools1d.novalocal node4</span><br></pre></td></tr></table></figure>
+<h1 id="开启组复制"><a class="markdownIt-Anchor" href="#开启组复制"></a> 开启组复制</h1>
+<ol>
+<li>主</li>
+</ol>
+  <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">change</span> <span class="keyword">master</span> <span class="keyword">to</span> master_user=<span class="string">'slave'</span>,master_password=<span class="string">'k3G_w9Z&amp;eeip'</span> <span class="keyword">for</span> channel <span class="string">'group_replication_recovery'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">install</span> <span class="keyword">PLUGIN</span> group_replication <span class="keyword">SONAME</span> <span class="string">'group_replication.so'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">GLOBAL</span> group_replication_ip_whitelist=<span class="string">"10.154.8.113,10.154.8.130,10.154.8.149"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 让该节点成为主节点</span></span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> group_replication_bootstrap_group=<span class="keyword">on</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">start</span> group_replication;</span><br><span class="line"></span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> group_replication_bootstrap_group=<span class="keyword">off</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> performance_schema.replication_group_members;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>
+<p>备</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">change</span> <span class="keyword">master</span> <span class="keyword">to</span> master_user=<span class="string">'slave'</span>,master_password=<span class="string">'k3G_t9Z&amp;eeip'</span> <span class="keyword">for</span> channel <span class="string">'group_replication_recovery'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">install</span> <span class="keyword">PLUGIN</span> group_replication <span class="keyword">SONAME</span> <span class="string">'group_replication.so'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">GLOBAL</span> group_replication_ip_whitelist=<span class="string">"10.154.8.113,10.154.8.130,10.154.8.149,10.154.8.208"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> group_replication_allow_local_disjoint_gtids_join=<span class="keyword">ON</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">start</span> group_replication;</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> performance_schema.replication_group_members;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h1 id="搭建haproxy"><a class="markdownIt-Anchor" href="#搭建haproxy"></a> 搭建haproxy</h1>
+<ol>
+<li>
+<p>下载haproxy-1.8.25.tar.gz</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget -C https://www.haproxy.org/download/1.8/src/haproxy-1.8.25.tar.gz</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>安装</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">mkdir /usr/local/haproxy</span><br><span class="line"></span><br><span class="line">mkdir /etc/haproxy</span><br><span class="line"></span><br><span class="line">touch /etc/haproxy/haproxy.conf</span><br><span class="line"></span><br><span class="line">yum install -y gcc</span><br><span class="line"></span><br><span class="line">tar -zxvf haproxy-1.8.25.tar.gz</span><br><span class="line"></span><br><span class="line">cd haproxy-1.8.25</span><br><span class="line"></span><br><span class="line">make TARGET=generic  prefix=/usr/local/haproxy</span><br><span class="line"></span><br><span class="line">make install PREFIX=/usr/local/haproxy</span><br><span class="line"></span><br><span class="line">ln -s /usr/local/haproxy/sbin/haproxy /usr/local/bin/</span><br><span class="line"></span><br><span class="line">ln -s /usr/local/haproxy/sbin/haproxy /usr/local/etc/haproxy</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>配置</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">cat &gt; /etc/haproxy/haproxy.conf &lt;&lt; EOF</span><br><span class="line">global</span><br><span class="line">    # chroot /usr/local/etc/haproxy</span><br><span class="line">    log 127.0.0.1 local5 info</span><br><span class="line">    daemon</span><br><span class="line">defaults</span><br><span class="line">    log global</span><br><span class="line">    mode http</span><br><span class="line">    option httplog</span><br><span class="line">    option dontlognull</span><br><span class="line">    timeout connect 5000</span><br><span class="line">    timeout client 50000</span><br><span class="line">    timeout server 50000</span><br><span class="line">listen admin_stats</span><br><span class="line">    bind 0.0.0.0:8888</span><br><span class="line">    mode http</span><br><span class="line">    stats uri /dbs_monitor</span><br><span class="line">    stats realm Global\ statistics</span><br><span class="line">    stats auth admin:admin</span><br><span class="line">    listen proxy-mysql</span><br><span class="line">    bind 0.0.0.0:3306</span><br><span class="line">    mode tcp</span><br><span class="line">    balance roundrobin</span><br><span class="line">    option tcplog</span><br><span class="line">    option mysql-check user haproxy</span><br><span class="line">    server MySQL_1 10.154.8.113:3306 check weight 1 maxconn 2000</span><br><span class="line">    server MySQL_2 10.154.8.130:3306 check weight 1 maxconn 2000</span><br><span class="line">    server MySQL_3 10.154.8.149:3306 check weight 1 maxconn 2000</span><br><span class="line">    option tcpka</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>启动</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">haproxy -f /etc/haproxy/haproxy.conf</span><br></pre></td></tr></table></figure></li>
+</ol>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://chuanyichuan.github.io/2020/12/10/搭建MySQL集群-MGR/" title="使用HAProxy搭建MySQL集群" target="_blank" rel="external">http://chuanyichuan.github.io/2020/12/10/搭建MySQL集群-MGR/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/luxiaowan" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="../../../../images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/luxiaowan" target="_blank"><span class="text-dark">串一串</span><small class="ml-1x">浪人</small></a></h3>
+        <div>断舍离</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="../使用HAProxy搭建MySQL集群/" title="使用HAProxy搭建MySQL集群"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="../../06/Redis集群搭建/" title="Redis集群搭建"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2020 cc
+        
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="../../../../js/plugin.min.js"></script>
+<script src="../../../../js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '../../../../content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="../../../../js/insight.js"></script>
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+
+
+
+
+
+
+</body>
+</html>
