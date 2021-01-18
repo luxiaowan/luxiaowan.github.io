@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>MySQL全量备份和增量备份 | 串一串</title>
+  <meta name="description" content="MySQL目前是市面上比较流程的关系型数据库，很多人使用MySQL里的数据真的安全吗？如果发生以下问题的话：  MySQL数据目录所在磁盘损坏 MySQL服务器发生故障 人为操作失误导致删除了一些数据 黑客入侵导致数据被攻陷等问题  这个时候如果没有备份数据库中的数据，造成的影响将是非常严重的，但是我们备份数据不能每天手动的去全量导出，如果放假忘记了或者啥啥啥的，咋整？所以还是要让备份交给服务器去">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL全量备份和增量备份">
+<meta property="og:url" content="http://chuanyichuan.github.io/2021/01/13/MySQL全量备份和增量备份/index.html">
+<meta property="og:site_name" content="串一串">
+<meta property="og:description" content="MySQL目前是市面上比较流程的关系型数据库，很多人使用MySQL里的数据真的安全吗？如果发生以下问题的话：  MySQL数据目录所在磁盘损坏 MySQL服务器发生故障 人为操作失误导致删除了一些数据 黑客入侵导致数据被攻陷等问题  这个时候如果没有备份数据库中的数据，造成的影响将是非常严重的，但是我们备份数据不能每天手动的去全量导出，如果放假忘记了或者啥啥啥的，咋整？所以还是要让备份交给服务器去">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20210114004925713.png">
+<meta property="og:updated_time" content="2021-01-14T02:30:04.326Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MySQL全量备份和增量备份">
+<meta name="twitter:description" content="MySQL目前是市面上比较流程的关系型数据库，很多人使用MySQL里的数据真的安全吗？如果发生以下问题的话：  MySQL数据目录所在磁盘损坏 MySQL服务器发生故障 人为操作失误导致删除了一些数据 黑客入侵导致数据被攻陷等问题  这个时候如果没有备份数据库中的数据，造成的影响将是非常严重的，但是我们备份数据不能每天手动的去全量导出，如果放假忘记了或者啥啥啥的，咋整？所以还是要让备份交给服务器去">
+<meta name="twitter:image" content="http://chuanyichuan.github.io/images/image-20210114004925713.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://chuanyichuan.github.io/2021/01/13/MySQL全量备份和增量备份/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="../../../../css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/luxiaowan" target="_blank">
+          <img class="img-circle img-rotate" src="../../../../images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">串一串</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">浪人</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Suzhou, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="../../../../.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="../../../../archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="../../../../repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="../../../../books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="../../../../links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="../../../../about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>断舍离!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="../../../../categories/BUG/">BUG</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Docker/">Docker</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Elasticsearch/">Elasticsearch</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Git/">Git</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Java/">Java</a><span class="category-list-count">43</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Jenkins/">Jenkins</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kafka/">Kafka</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kubernetes/">Kubernetes</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Linux/">Linux</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Maven/">Maven</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MongoDB/">MongoDB</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MyBatis/">MyBatis</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MySQL/">MySQL</a><span class="category-list-count">24</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Nacos/">Nacos</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/NoSQL/">NoSQL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/RabbitMQ/">RabbitMQ</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Redis/">Redis</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Spring/">Spring</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/SpringBoot/">SpringBoot</a><span class="category-list-count">19</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/分布式/">分布式</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/杂谈/">杂谈</a><span class="category-list-count">8</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Bug/">Bug</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Docker/">Docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Eureka/">Eureka</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/GC/">GC</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/JVM/">JVM</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java与MongoDB/">Java与MongoDB</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Linux/">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Maven/">Maven</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MongoDB错误记录/">MongoDB错误记录</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MySQL/">MySQL</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Sentinel/">Sentinel</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/SpringBoot/">SpringBoot</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/SpringBoot-Admin/">SpringBoot Admin</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/SpringCloud/">SpringCloud</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/k8s/">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基本指令/">基本指令</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基础应用/">基础应用</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/服务治理/">服务治理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/监控/">监控</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/索引/">索引</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/阿里/">阿里</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/面试/">面试</a><span class="tag-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="../../../../tags/Bug/" style="font-size: 13px;">Bug</a> <a href="../../../../tags/Docker/" style="font-size: 13px;">Docker</a> <a href="../../../../tags/Eureka/" style="font-size: 13.2px;">Eureka</a> <a href="../../../../tags/GC/" style="font-size: 13px;">GC</a> <a href="../../../../tags/JVM/" style="font-size: 13.4px;">JVM</a> <a href="../../../../tags/Java/" style="font-size: 13.2px;">Java</a> <a href="../../../../tags/Java与MongoDB/" style="font-size: 13px;">Java与MongoDB</a> <a href="../../../../tags/Linux/" style="font-size: 13px;">Linux</a> <a href="../../../../tags/Maven/" style="font-size: 13.4px;">Maven</a> <a href="../../../../tags/MongoDB错误记录/" style="font-size: 13px;">MongoDB错误记录</a> <a href="../../../../tags/MySQL/" style="font-size: 13.2px;">MySQL</a> <a href="../../../../tags/Sentinel/" style="font-size: 13px;">Sentinel</a> <a href="../../../../tags/SpringBoot/" style="font-size: 13px;">SpringBoot</a> <a href="../../../../tags/SpringBoot-Admin/" style="font-size: 13.2px;">SpringBoot Admin</a> <a href="../../../../tags/SpringCloud/" style="font-size: 13.8px;">SpringCloud</a> <a href="../../../../tags/k8s/" style="font-size: 13px;">k8s</a> <a href="../../../../tags/基本指令/" style="font-size: 13px;">基本指令</a> <a href="../../../../tags/基础应用/" style="font-size: 13.2px;">基础应用</a> <a href="../../../../tags/服务治理/" style="font-size: 13px;">服务治理</a> <a href="../../../../tags/监控/" style="font-size: 13px;">监控</a> <a href="../../../../tags/索引/" style="font-size: 14px;">索引</a> <a href="../../../../tags/阿里/" style="font-size: 13.2px;">阿里</a> <a href="../../../../tags/面试/" style="font-size: 13.6px;">面试</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2021/01/">一月 2021</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/12/">十二月 2020</a><span class="archive-list-count">11</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/11/">十一月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/10/">十月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/08/">八月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/07/">七月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/06/">六月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/05/">五月 2020</a><span class="archive-list-count">31</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/04/">四月 2020</a><span class="archive-list-count">51</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/03/">三月 2020</a><span class="archive-list-count">17</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/01/">一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/12/">十二月 2019</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/11/">十一月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/10/">十月 2019</a><span class="archive-list-count">16</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/01/">一月 2019</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled ">
+        
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../18/MyBatis自定义TypeHandler解决字段映射问题/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/MyBatis/">MyBatis</a>
+              </p>
+              <p class="item-title">
+                <a href="../../18/MyBatis自定义TypeHandler解决字段映射问题/" class="title">MyBatis自定义TypeHandler解决字段映射问题</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-01-18T15:22:00.000Z" itemprop="datePublished">2021-01-18</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../16/idea打包Java工程为jar/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/杂谈/">杂谈</a>
+              </p>
+              <p class="item-title">
+                <a href="../../16/idea打包Java工程为jar/" class="title">idea打包Java工程为jar</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-01-16T13:56:00.000Z" itemprop="datePublished">2021-01-16</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../14/MySQL数据迁移到Elasticsearch方案/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/MySQL/">MySQL</a>
+              </p>
+              <p class="item-title">
+                <a href="../../14/MySQL数据迁移到Elasticsearch方案/" class="title">MySQL数据迁移到Elasticsearch方案</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-01-14T02:38:00.000Z" itemprop="datePublished">2021-01-14</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/MySQL/">MySQL</a>
+              </p>
+              <p class="item-title">
+                <a href="" class="title">MySQL全量备份和增量备份</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-01-13T15:50:00.000Z" itemprop="datePublished">2021-01-13</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../07/Maven配置之dependencyManagement/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/Maven/">Maven</a>
+              </p>
+              <p class="item-title">
+                <a href="../../07/Maven配置之dependencyManagement/" class="title">Maven配置之dependencyManagement</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-01-07T12:40:00.000Z" itemprop="datePublished">2021-01-07</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-MySQL全量备份和增量备份" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      MySQL全量备份和增量备份
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="" class="article-date">
+	  <time datetime="2021-01-13T15:50:00.000Z" itemprop="datePublished">2021-01-13</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="../../../../categories/MySQL/">MySQL</a>
+  </span>
+
+        
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 2.1k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 9(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <p>MySQL目前是市面上比较流程的关系型数据库，很多人使用MySQL里的数据真的安全吗？如果发生以下问题的话：</p>
+<ul>
+<li>MySQL数据目录所在磁盘损坏</li>
+<li>MySQL服务器发生故障</li>
+<li>人为操作失误导致删除了一些数据</li>
+<li>黑客入侵导致数据被攻陷等问题</li>
+</ul>
+<p>这个时候如果没有备份数据库中的数据，造成的影响将是非常严重的，但是我们备份数据不能每天手动的去全量导出，如果放假忘记了或者啥啥啥的，咋整？所以还是要让备份交给服务器去做调度。</p>
+<p>这里推荐的备份工具是<code>innobackupex</code>，首先要安装它，步骤如下(centos)：</p>
+<p>官网：<a href="https://www.percona.com/downloads/Percona-XtraBackup-2.4/" target="_blank" rel="noopener">https://www.percona.com/downloads/Percona-XtraBackup-2.4/</a></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install percona-xtrabackup</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>如果安装失败，那么就更改一下yum源，然后再执行安装命令</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash"> <span class="comment"># 备份源</span></span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> </span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> <span class="comment"># 更新阿里云源</span></span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"></span></span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>在安装的过程中，如果出现依赖报错，那么就安装一下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install perl perl-devel libaio libaio-devel perl-Time-HiRes perl-DBD-MySQL</span><br></pre></td></tr></table></figure>
+<p>完整的命令过程如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 备份源</span></span><br><span class="line">mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 更新阿里云源</span></span><br><span class="line">wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 安装依赖</span></span><br><span class="line">yum -y install perl perl-devel libaio libaio-devel perl-Time-HiRes perl-DBD-MySQL</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 安装备份工具</span></span><br><span class="line">yum -y install percona-xtrabackup</span><br></pre></td></tr></table></figure>
+<p>测试是否安装成功，执行一下命令<code>innobackupex --help</code>，出现以下内容即为安装成功</p>
+<img src="/images/image-20210114004925713.png" alt="image-20210114004925713" style="zoom:50%;">
+<hr>
+<p>备份工具已经准备好了，那么我们就开始编写备份脚本（因为我们备份是一个逻辑流程，不是一条命令能解决的，这里就不特地讲解备份命令了，在下方的脚本中进行相关的解释）</p>
+<ol>
+<li>全量备份</li>
+</ol>
+<p>首先看一下全量备份，也就是将整个数据库的所有数据(包括库、表、视图、表数据等)，脚本的主要逻辑是这样的：</p>
+<ul>
+<li>声明数据库账号信息和数据留存时间等基础信息</li>
+<li>动态创建备份文件临时存储目录</li>
+<li>执行备份命令开始数据备份</li>
+<li>校验备份结果是否超过，如果成功则将最新备份的文件目录写入到指定文件中(用于动态增量备份)</li>
+<li>如果失败，则给备份管理人员发送告警提醒邮件</li>
+<li>筛选数据备份存储目录中指定日期之前的备份记录，然后删除已经过期的目录</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> <span class="built_in">set</span> -e</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 1. 声明数据库账号信息和数据留存时间等基础信息</span></span><br><span class="line">user=root # 数据库用户名</span><br><span class="line">password=rXH?py2 # 数据库密码</span><br><span class="line">LEAVE_DAY_AGO=$(date -d "-30 day" +'%s')</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 2. 动态创建备份文件临时存储目录</span></span><br><span class="line">[ -d /app/backupdb ]|| mkdir -p /app/backupdb &amp;&gt;&gt;/app/backupdb/backupdb_log.log</span><br><span class="line">[ -d /data/backup/db ]|| mkdir -p /data/backup/db &amp;&gt;&gt;/app/backupdb/backupdb_log.log</span><br><span class="line">echo "start copying ..." &amp;&gt;&gt;/app/backupdb/backupdb_log.log</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 3. 执行备份命令开始数据备份</span></span><br><span class="line">/usr/bin/innobackupex --user="$user" --password="$password" /data/backup/db/ &gt; /app/backupdb/backupdb_log.log 2&gt;&amp;1</span><br><span class="line"><span class="meta">#</span><span class="bash"> 4. 校验备份结果是否超过</span></span><br><span class="line">if [ "$?" != "0" ]; then</span><br><span class="line"><span class="meta">		#</span><span class="bash"> 4.1 备份失败，则给备份管理人员发送告警提醒邮件</span></span><br><span class="line">		</span><br><span class="line"><span class="meta">		#</span><span class="bash"> &lt;from_email&gt;：发送邮件</span></span><br><span class="line">    # &lt;receiver_email&gt;：多个邮箱以,分隔</span><br><span class="line">    # &lt;smtp_server&gt;：邮箱服务器</span><br><span class="line">    # &lt;send_account&gt;：邮件发送账户名</span><br><span class="line">    # &lt;send_password&gt;：邮件发送账户密码</span><br><span class="line">    /usr/local/bin/sendEmail -f &lt;from_email&gt; -t &lt;receiver_email&gt; -s &lt;smtp_server&gt; -u "数据库备份失败" -o message-charset=utf-8 -xu &lt;send_account&gt; -xp &lt;send_password&gt; -m "数据库备份失败，详情请查看日志文件 /app/backupdb/backupdb_log.log" -o tls=no &amp;&gt;&gt;/app/backupdb/backupdb_log.log</span><br><span class="line">    exit 1;</span><br><span class="line">else</span><br><span class="line"><span class="meta">		#</span><span class="bash"> 4.2 备份成功，则将最新备份的文件目录写入到指定文件中(用于动态增量备份)</span></span><br><span class="line">    echo "end copied! ..." &amp;&gt;&gt;/app/backupdb/backupdb_log.log</span><br><span class="line">    echo `ls -lt /data/backup/db/ | grep - | head -n 1 |awk '&#123;print $9&#125;'` &gt; /data/backup/last_backup_dir_name</span><br><span class="line">fi;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 5. 删除<span class="variable">$&#123;LEAVE_DAY_AGO&#125;</span>天前的备份目录及子目录、文件</span></span><br><span class="line">path="/data/backup/db"</span><br><span class="line">files=$(ls $path)</span><br><span class="line">for filename in $files</span><br><span class="line">do</span><br><span class="line">    file=($&#123;filename:0:10&#125;)</span><br><span class="line">    if echo $file | grep -Eq "[0-9]&#123;4&#125;-[0-9]&#123;1,2&#125;-[0-9]&#123;1,2&#125;" &amp;&amp; date -d $file +%Y%m%d &gt; /dev/null 2&gt;&amp;1;then</span><br><span class="line">        echo $filename 'format is right date' &amp;&gt;&gt;/app/backupdb/backupdb_log.log</span><br><span class="line">        file_time=$(date -d $file +'%s')</span><br><span class="line">        </span><br><span class="line">        # 校验备份记录是否已过期</span><br><span class="line">        if [ $file_time -lt $LEAVE_DAY_AGO ];then</span><br><span class="line">            rm -rf $path/$filename*</span><br><span class="line">            echo "删除$filename 备份目录" &amp;&gt;&gt;/app/backupdb/backupdb_log.log</span><br><span class="line">        else</span><br><span class="line">            echo "$filename 为有效期内数据库备份" &amp;&gt;&gt;/app/backupdb/backupdb_log.log</span><br><span class="line">        fi;</span><br><span class="line">    else</span><br><span class="line">        echo "日期格式不正确:" $filename &amp;&gt;&gt;/app/backupdb/backupdb_log.log</span><br><span class="line">    fi;</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>增量备份</li>
+</ol>
+<p>上面讲了全量备份，增量备份是依据于上一次全量备份的记录去做的增量，这里最重要的就是要获取到上一次备份生成的目录，也就是全量备份中4.2中保存的，具体步骤为：</p>
+<ul>
+<li>声明数据库账号信息和数据留存时间等基础信息</li>
+<li>动态创建备份文件临时存储目录</li>
+<li>搜索并获取上一次全量备份的目录地址</li>
+<li>执行备份命令开始数据备份</li>
+<li>校验备份结果是否超过，如果成功则将最新备份的文件目录写入到指定文件中(用于动态增量备份)</li>
+<li>如果失败，则给备份管理人员发送告警提醒邮件</li>
+<li>筛选数据备份存储目录中指定日期之前的备份记录，然后删除已经过期的目录</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> <span class="built_in">set</span> -e</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 1. 声明数据库账号信息和数据留存时间等基础信息</span></span><br><span class="line">user=root # 数据库用户名</span><br><span class="line">password=rXH?py2 # 数据库密码</span><br><span class="line">LEAVE_DAY_AGO=$(date -d "-30 day" +'%s')</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 2. 动态创建备份文件临时存储目录</span></span><br><span class="line">[ -d /app/backupdb ]|| mkdir -p /app/backupdb &amp;&gt;&gt;/app/backupdb/backupdb_increment_log.log</span><br><span class="line">[ -d /data/backup/db/increment ]|| mkdir -p /data/backup/db/increment &amp;&gt;&gt;/app/backupdb/backupdb_increment_log.log</span><br><span class="line">echo "increment start copying ..." &amp;&gt;&gt;/app/backupdb/backupdb_increment_log.log</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 3. 搜索并获取上一次全量备份的目录地址，这里也就是上一次全量备份输出的文件中的内容</span></span><br><span class="line">last_backup_dir_name=`echo /data/backup/last_backup_dir_name`</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 4. 执行备份命令开始数据备份</span></span><br><span class="line">/usr/bin/innobackupex --user="$user" --password="$password" --incremental /data/backup/db/increment/ --incremental-basedir /data/backup/db/"$last_backup_dir_name" &gt; /app/backupdb/backupdb_increment_log.log 2&gt;&amp;1</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 5. 校验备份结果是否超过</span></span><br><span class="line">if [ "$?" != "0" ]; then</span><br><span class="line"><span class="meta">		#</span><span class="bash"> 4.1 备份失败，则给备份管理人员发送告警提醒邮件</span></span><br><span class="line">		</span><br><span class="line"><span class="meta">		#</span><span class="bash"> &lt;from_email&gt;：发送邮件</span></span><br><span class="line">    # &lt;receiver_email&gt;：多个邮箱以,分隔</span><br><span class="line">    # &lt;smtp_server&gt;：邮箱服务器</span><br><span class="line">    # &lt;send_account&gt;：邮件发送账户名</span><br><span class="line">    # &lt;send_password&gt;：邮件发送账户密码</span><br><span class="line">    /usr/local/bin/sendEmail -f &lt;from_email&gt; -t &lt;receiver_email&gt; -s &lt;smtp_server&gt; -u "数据库增量备份失败" -o message-charset=utf-8 -xu &lt;send_account&gt; -xp &lt;send_password&gt; -m "数据库增量备份失败，详情请查看日志文件 /app/backupdb/backupdb_increment_log.log" -o tls=no &amp;&gt;&gt;/app/backupdb/backupdb_increment_log.log</span><br><span class="line">    exit 1;</span><br><span class="line">else</span><br><span class="line"><span class="meta">		#</span><span class="bash"> 4.2 备份成功，则将最新备份的文件目录写入到指定文件中(用于动态增量备份)</span></span><br><span class="line">    echo "increment end copied! ..." &amp;&gt;&gt;/app/backupdb/backupdb_increment_log.log</span><br><span class="line">fi;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 5. 删除30天前的备份目录及子目录、文件</span></span><br><span class="line">path="/data/backup/db/increment"</span><br><span class="line">files=$(ls $path)</span><br><span class="line">for filename in $files</span><br><span class="line">do</span><br><span class="line">    file=($&#123;filename:0:10&#125;)</span><br><span class="line">    if echo $file | grep -Eq "[0-9]&#123;4&#125;-[0-9]&#123;1,2&#125;-[0-9]&#123;1,2&#125;" &amp;&amp; date -d $file +%Y%m%d &gt; /dev/null 2&gt;&amp;1;then</span><br><span class="line">        echo $filename 'format is right date' &amp;&gt;&gt;/app/backupdb/backupdb_increment_log.log</span><br><span class="line">        file_time=$(date -d $file +'%s')</span><br><span class="line">        # 校验备份记录是否已过期</span><br><span class="line">        if [ $file_time -lt $LEAVE_DAY_AGO ];then</span><br><span class="line">            rm -rf $path/$filename*</span><br><span class="line">            echo "删除$filename 备份目录" &amp;&gt;&gt;/app/backupdb/backupdb_increment_log.log</span><br><span class="line">        else</span><br><span class="line">            echo "$filename 为有效期内数据库备份" &amp;&gt;&gt;/app/backupdb/backupdb_increment_log.log</span><br><span class="line">        fi;</span><br><span class="line">    else</span><br><span class="line">        echo "日期格式不正确:" $filename &amp;&gt;&gt;/app/backupdb/backupdb_increment_log.log</span><br><span class="line">    fi;</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+<hr>
+<p>到目前，MySQL全量和增量备份脚本都已经编写完成了，接下来就是将脚本的执行设置为系统调度<code>corntab</code>中，由crontab进行调度，设置crontab的命令为：<code>crontab -e</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">每周一凌晨4点执行全量备份</span></span><br><span class="line">0 4 * * 1 sh /app/backupdb/db_backup.sh &gt;&gt; /app/backupdb/backupdb_log.log</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">每天凌晨2点执行增量备份</span></span><br><span class="line">0 2 * * * sh /app/backupdb/db_backup_increment.sh &gt;&gt; /app/backupdb/backupdb_increment_log.log</span><br></pre></td></tr></table></figure>
+<hr>
+<p>既然讲了备份，那么就需要讲一下恢复，如何使用备份的数据进行全量恢复呢？下次再说</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://chuanyichuan.github.io/2021/01/13/MySQL全量备份和增量备份/" title="MySQL全量备份和增量备份" target="_blank" rel="external">http://chuanyichuan.github.io/2021/01/13/MySQL全量备份和增量备份/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/luxiaowan" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="../../../../images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/luxiaowan" target="_blank"><span class="text-dark">串一串</span><small class="ml-1x">浪人</small></a></h3>
+        <div>断舍离</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="../../14/MySQL数据迁移到Elasticsearch方案/" title="MySQL数据迁移到Elasticsearch方案"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="../../07/Maven配置之dependencyManagement/" title="Maven配置之dependencyManagement"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2021 cc
+        
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="../../../../js/plugin.min.js"></script>
+<script src="../../../../js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '../../../../content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="../../../../js/insight.js"></script>
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+
+
+
+
+
+
+</body>
+</html>
