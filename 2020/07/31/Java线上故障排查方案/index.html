@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>串一串</title>
+  <meta name="description" content="Java常见线上故障排查方案 [Toc]  一、前言 在软件开发过程中，排查和修复产线问题是每一位工程师都需要掌握的基本技能。但是在生产环境中，程序代码、硬件、网络、协作软件等任一因素，都会引发意想不到的问题，所以排查产线问题比较困难，所以问题的定位体现了一名工程师的基础能力，问题的解决则体现了工程师的技能素养。 以下从5个方面分享产线常见问题的排查手段。  Java常见线上问题总结 如何定位问">
+<meta property="og:type" content="article">
+<meta property="og:title" content="串一串">
+<meta property="og:url" content="http://chuanyichuan.github.io/2020/07/31/Java线上故障排查方案/index.html">
+<meta property="og:site_name" content="串一串">
+<meta property="og:description" content="Java常见线上故障排查方案 [Toc]  一、前言 在软件开发过程中，排查和修复产线问题是每一位工程师都需要掌握的基本技能。但是在生产环境中，程序代码、硬件、网络、协作软件等任一因素，都会引发意想不到的问题，所以排查产线问题比较困难，所以问题的定位体现了一名工程师的基础能力，问题的解决则体现了工程师的技能素养。 以下从5个方面分享产线常见问题的排查手段。  Java常见线上问题总结 如何定位问">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200816111710295.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200801002118834.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/lianlugenzong.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/zipkin_shixianyuanli.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200828133012936.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200729222952334.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200729232039110.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200729233426254.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200729235208628.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200731094500674.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200730073118096.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200730073608447.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200730074025618.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200730080727795.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200731135913046.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200731142334372.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200731142546242.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200731174415360.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200731174500483.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200731174614221.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200731150046756.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200731145734188.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200731152302029.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/a15157a0-ec9e-11e7-a3aa-b3fbc77f24b9.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/af04e150-ec9e-11e7-a3aa-b3fbc77f24b9.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200731172509079.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200713103126878.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200713103551014.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200713104345005.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200713104647552.png">
+<meta property="og:image" content="http://chuanyichuan.github.io/images/image-20200731173042239.png">
+<meta property="og:updated_time" content="2021-02-03T02:36:17.370Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="串一串">
+<meta name="twitter:description" content="Java常见线上故障排查方案 [Toc]  一、前言 在软件开发过程中，排查和修复产线问题是每一位工程师都需要掌握的基本技能。但是在生产环境中，程序代码、硬件、网络、协作软件等任一因素，都会引发意想不到的问题，所以排查产线问题比较困难，所以问题的定位体现了一名工程师的基础能力，问题的解决则体现了工程师的技能素养。 以下从5个方面分享产线常见问题的排查手段。  Java常见线上问题总结 如何定位问">
+<meta name="twitter:image" content="http://chuanyichuan.github.io/images/image-20200816111710295.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://chuanyichuan.github.io/2020/07/31/Java线上故障排查方案/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="串一串" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="../../../../css/style.css">
+  
+  
+  
+  
+</head>
+
+
+<body class="main-center theme-purple" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/luxiaowan" target="_blank">
+          <img class="img-circle img-rotate" src="../../../../images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">串一串</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">浪人</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Suzhou, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="../../../../.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="../../../../archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="../../../../repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="../../../../books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="../../../../links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="../../../../about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>断舍离!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="../../../../categories/BUG/">BUG</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Docker/">Docker</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Elasticsearch/">Elasticsearch</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Git/">Git</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Java/">Java</a><span class="category-list-count">43</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Jenkins/">Jenkins</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kafka/">Kafka</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Kubernetes/">Kubernetes</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Linux/">Linux</a><span class="category-list-count">11</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Maven/">Maven</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MongoDB/">MongoDB</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MyBatis/">MyBatis</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/MySQL/">MySQL</a><span class="category-list-count">25</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Nacos/">Nacos</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/NoSQL/">NoSQL</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/RabbitMQ/">RabbitMQ</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Redis/">Redis</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/Spring/">Spring</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/SpringBoot/">SpringBoot</a><span class="category-list-count">19</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/分布式/">分布式</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="../../../../categories/杂谈/">杂谈</a><span class="category-list-count">9</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Bug/">Bug</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Docker/">Docker</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Eureka/">Eureka</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/GC/">GC</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/JVM/">JVM</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java/">Java</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Java与MongoDB/">Java与MongoDB</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Linux/">Linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Maven/">Maven</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MongoDB错误记录/">MongoDB错误记录</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/MySQL/">MySQL</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/Sentinel/">Sentinel</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/SpringBoot/">SpringBoot</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/SpringBoot-Admin/">SpringBoot Admin</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/SpringCloud/">SpringCloud</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/k8s/">k8s</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基本指令/">基本指令</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/基础应用/">基础应用</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/服务治理/">服务治理</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/监控/">监控</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/索引/">索引</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/阿里/">阿里</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="../../../../tags/面试/">面试</a><span class="tag-list-count">4</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="../../../../tags/Bug/" style="font-size: 13px;">Bug</a> <a href="../../../../tags/Docker/" style="font-size: 13px;">Docker</a> <a href="../../../../tags/Eureka/" style="font-size: 13.2px;">Eureka</a> <a href="../../../../tags/GC/" style="font-size: 13px;">GC</a> <a href="../../../../tags/JVM/" style="font-size: 13.4px;">JVM</a> <a href="../../../../tags/Java/" style="font-size: 13.2px;">Java</a> <a href="../../../../tags/Java与MongoDB/" style="font-size: 13px;">Java与MongoDB</a> <a href="../../../../tags/Linux/" style="font-size: 13px;">Linux</a> <a href="../../../../tags/Maven/" style="font-size: 13.4px;">Maven</a> <a href="../../../../tags/MongoDB错误记录/" style="font-size: 13px;">MongoDB错误记录</a> <a href="../../../../tags/MySQL/" style="font-size: 13.2px;">MySQL</a> <a href="../../../../tags/Sentinel/" style="font-size: 13px;">Sentinel</a> <a href="../../../../tags/SpringBoot/" style="font-size: 13px;">SpringBoot</a> <a href="../../../../tags/SpringBoot-Admin/" style="font-size: 13.2px;">SpringBoot Admin</a> <a href="../../../../tags/SpringCloud/" style="font-size: 13.8px;">SpringCloud</a> <a href="../../../../tags/k8s/" style="font-size: 13px;">k8s</a> <a href="../../../../tags/基本指令/" style="font-size: 13px;">基本指令</a> <a href="../../../../tags/基础应用/" style="font-size: 13.2px;">基础应用</a> <a href="../../../../tags/服务治理/" style="font-size: 13px;">服务治理</a> <a href="../../../../tags/监控/" style="font-size: 13px;">监控</a> <a href="../../../../tags/索引/" style="font-size: 14px;">索引</a> <a href="../../../../tags/阿里/" style="font-size: 13.2px;">阿里</a> <a href="../../../../tags/面试/" style="font-size: 13.6px;">面试</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2021/02/">二月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2021/01/">一月 2021</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/12/">十二月 2020</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/11/">十一月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/10/">十月 2020</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/08/">八月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/07/">七月 2020</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/06/">六月 2020</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/05/">五月 2020</a><span class="archive-list-count">31</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/04/">四月 2020</a><span class="archive-list-count">51</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/03/">三月 2020</a><span class="archive-list-count">17</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2020/01/">一月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/12/">十二月 2019</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/11/">十一月 2019</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/10/">十月 2019</a><span class="archive-list-count">16</span></li><li class="archive-list-item"><a class="archive-list-link" href="../../../../archives/2019/01/">一月 2019</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled ">
+        
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../../2021/02/05/MySQL修改启动端口无效/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/MySQL/">MySQL</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../../2021/02/05/MySQL修改启动端口无效/" class="title">MySQL修改启动端口无效</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-02-05T15:16:00.000Z" itemprop="datePublished">2021-02-05</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../../2021/01/27/服务器Load过高排查手册/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/杂谈/">杂谈</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../../2021/01/27/服务器Load过高排查手册/" class="title">服务器Load过高排查手册</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-01-27T14:50:00.000Z" itemprop="datePublished">2021-01-27</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../../2021/01/18/MyBatis自定义TypeHandler解决字段映射问题/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/MyBatis/">MyBatis</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../../2021/01/18/MyBatis自定义TypeHandler解决字段映射问题/" class="title">MyBatis自定义TypeHandler解决字段映射问题</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-01-18T15:22:00.000Z" itemprop="datePublished">2021-01-18</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../../2021/01/16/idea打包Java工程为jar/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/杂谈/">杂谈</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../../2021/01/16/idea打包Java工程为jar/" class="title">idea打包Java工程为jar</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-01-16T13:56:00.000Z" itemprop="datePublished">2021-01-16</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-thumb">
+              <a href="../../../../2021/01/14/MySQL数据迁移到Elasticsearch方案/" class="thumb">
+    
+    
+        <span class="thumb-image thumb-none"></span>
+    
+</a>
+
+            </div>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="../../../../categories/MySQL/">MySQL</a>
+              </p>
+              <p class="item-title">
+                <a href="../../../../2021/01/14/MySQL数据迁移到Elasticsearch方案/" class="title">MySQL数据迁移到Elasticsearch方案</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-01-14T02:38:00.000Z" itemprop="datePublished">2021-01-14</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-Java线上故障排查方案" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="" class="article-date">
+	  <time datetime="2020-07-31T10:18:35.459Z" itemprop="datePublished">2020-07-31</time>
+	</a>
+</span>
+        
+        
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 7.3k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 28(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h1 id="java常见线上故障排查方案"><a class="markdownIt-Anchor" href="#java常见线上故障排查方案"></a> Java常见线上故障排查方案</h1>
+<p>[Toc]</p>
+<h2 id="一-前言"><a class="markdownIt-Anchor" href="#一-前言"></a> 一、前言</h2>
+<p>在软件开发过程中，排查和修复产线问题是每一位工程师都需要掌握的基本技能。但是在生产环境中，程序代码、硬件、网络、协作软件等任一因素，都会引发意想不到的问题，所以排查产线问题比较困难，所以问题的定位体现了一名工程师的基础能力，问题的解决则体现了工程师的技能素养。</p>
+<p>以下从5个方面分享产线常见问题的排查手段。</p>
+<ol>
+<li>Java常见线上问题总结</li>
+<li>如何定位问题</li>
+<li>APM链路跟踪分析</li>
+<li>常用Linux分析命令</li>
+<li>Arthas（阿尔萨斯）诊断命令</li>
+<li>JVM问题定位命令</li>
+<li>GC分析</li>
+</ol>
+<h2 id="二-java常见线上问题总结"><a class="markdownIt-Anchor" href="#二-java常见线上问题总结"></a> 二、Java常见线上问题总结</h2>
+<p>绝大多数Java线上问题从表象来看通常可以归纳为4个方面：<strong>CPU</strong>、<strong>内存</strong>、<strong>磁盘</strong>、<strong>网络</strong>。比如，应用上线后突然CPU使用率99%、内存泄漏、STW时间过长，这些问题通常可以分为两大类：</p>
+<ul>
+<li>
+<p><strong>系统异常</strong>  （CPU占用率过高、磁盘使用率100%、系统可用内存低等）</p>
+</li>
+<li>
+<p><strong>业务异常</strong>  （服务运行一段时间自动退出、服务间调用时间过长、多线程并发异常、死锁等）</p>
+</li>
+</ul>
+<h2 id="三-如何定位问题"><a class="markdownIt-Anchor" href="#三-如何定位问题"></a> 三、如何定位问题</h2>
+<p>解决问题的第一步是定位问题，因为只有定位到了问题产生的原因，才能准确的抉择出解决方案，排查手段一般包括以下几项，也可以将此理解为排查顺序：</p>
+<ol>
+<li>业务日志分析排查</li>
+<li>APM分析排查</li>
+<li>外部环境排查</li>
+<li>应用服务排查</li>
+<li>云厂商或运营商问题排查</li>
+</ol>
+<h3 id="31-业务日志分析排查"><a class="markdownIt-Anchor" href="#31-业务日志分析排查"></a> 3.1、业务日志分析排查</h3>
+<p>通常情况下，大部分错误信息都会在日志上有所体现，比如看看下面这段代码：</p>
+<p><img src="/images/image-20200816111710295.png" alt="image-20200816111710295"></p>
+<p>这段代码使用了<code>并发流</code>将数据加入到一个List中，再运行过程中，抛出了<code>ArrayIndexOutOfBoundsException</code>，具体异常栈信息如下：</p>
+<p><img src="/images/image-20200801002118834.png" alt="image-20200801002118834"></p>
+<p>通过日志可以看到出错的位置在<code>TaskServiceImpl.java</code>文件的第75行代码上，错误信息是<code>java.lang.ArrayIndexOutOfBoundsException:163</code>，这就是问题定位，整体描述出来就是：<code>在TaskServiceImpl.java文件中第75行代码上出现了数组越界异常，引起异常的原因是在调用java.util.ArrayList#add()方法时因为并发请求导致没有动态扩展数组容量</code>。</p>
+<p>为什么我们能够直接描述出来是在调用<code>ArrayList#add()</code>方法时因为并发请求导致的没有动态扩展数组容量呢？因为我们结合ArrayList的内部实现原理及动态扩容的特性，可以知道在单线程的情况下，代码是串行执行，ArrayList内的数组都会是先扩容再插入，所以不会出现数组越界的错误，既然单线程不会引起该错误，那一定就是多线程并发造成的了，解决方案就是给代码加锁或者由并发改串行，就是这么简单，这就是技能素养的体现。</p>
+<p>通过上面的分析，教育了我们：一定要在关键代码逻辑位置输出相关日志，尤其是在代码发生异常的时候，定要将日志输出到文件中，只有这样，才更利于我们的排查。</p>
+<h3 id="32-apm分析排查"><a class="markdownIt-Anchor" href="#32-apm分析排查"></a> 3.2、APM分析排查</h3>
+<p>APM，全称Application Performance Management，应用性能管理，目的是通过各种探针采集数据，收集关键指标，同时搭配数据呈现以实现对应用程序性能管理和故障管理的系统化解决方案。通过分布式链路调用跟踪系统，通过在系统请求中透传 trace-id，将所有相关日志进行聚合，然后日志统一采集和分析后，以图形化的形式展示给工程师们，而他们在排查问题的时候，可以简单粗暴且直观的调度出问题最根本的原因。</p>
+<p>业务日志较优于解决单体服务异常，但现在的应用通常使用的是分布式架构，而在分布式系统中，仅通过单服务节点的日志，很难将错误信息与请求链路关联在一起，也就是通过系统中某个服务的异常日志信息很难定位到问题的根本原因。并且我们还需要关注各服务执行过程中的耗时情况，及时的发现异常服务，并根据异常信息进行修复。要满足这种需求，仅通过分析单个服务的日志信息是不够的，此时则需要APM进行全链路分析，通过请求链路监控，实时的发现链路中相关服务的异常情况。</p>
+<blockquote>
+<p>业务流程图</p>
+</blockquote>
+<p><img src="/images/lianlugenzong.png" alt="img"></p>
+<blockquote>
+<p>实现架构图</p>
+</blockquote>
+<p><img src="/images/zipkin_shixianyuanli.png" alt="img"></p>
+<p>比如我们使用Skywalking，进入到Skywalking的控制台查看的链路信息就是这样的：</p>
+<p><img src="/images/image-20200828133012936.png" alt="image-20200828133012936"></p>
+<blockquote>
+<p>目前市场上使用较多的链路跟踪工具有如下几个：</p>
+</blockquote>
+<p>Apache Skywalking：<a href="https://skywalking.apache.org/" target="_blank" rel="noopener">https://skywalking.apache.org/</a></p>
+<p>Pinpoint：<a href="https://pinpoint.com/product/for-engineers" target="_blank" rel="noopener">https://pinpoint.com/product/for-engineers</a></p>
+<p>SpringCloud Zipkin：<a href="https://docs.spring.io/spring-cloud-sleuth/docs/current-SNAPSHOT/reference/html/#sending-spans-to-zipkin" target="_blank" rel="noopener">https://docs.spring.io/spring-cloud-sleuth/docs/current-SNAPSHOT/reference/html/#sending-spans-to-zipkin</a></p>
+<h3 id="33-物理环境排查"><a class="markdownIt-Anchor" href="#33-物理环境排查"></a> 3.3、物理环境排查</h3>
+<p>物理环境是指工程所依附的物理环境，比如服务器、宿主机、容器等，细分为服务器负载、CPU、内存、磁盘、网络几个方面。</p>
+<h4 id="331-cpu分析"><a class="markdownIt-Anchor" href="#331-cpu分析"></a> 3.3.1 CPU分析</h4>
+<p>排查CPU的目的主要是查看服务器CPU的使用率， 使用top命令分析CPU使用情况</p>
+<h4 id="332-内存分析"><a class="markdownIt-Anchor" href="#332-内存分析"></a> 3.3.2 内存分析</h4>
+<p>使用free -m命令查看内存使用情况</p>
+<h4 id="333-磁盘分析"><a class="markdownIt-Anchor" href="#333-磁盘分析"></a> 3.3.3 磁盘分析</h4>
+<p>使用df -h、iostat、lsof等命令查看磁盘IO情况，找到读写异常的进程</p>
+<h4 id="334-网络分析"><a class="markdownIt-Anchor" href="#334-网络分析"></a> 3.3.4 网络分析</h4>
+<p>使用dstat、vmstat等命令查看网络流量、TCP连接等情况，分析异常流量</p>
+<h3 id="34-应用服务排查"><a class="markdownIt-Anchor" href="#34-应用服务排查"></a> 3.4、应用服务排查</h3>
+<p>应用排查，排查应用本身最有可能引发的问题，针对各种场景进行对应分析</p>
+<h4 id="341-cpu分析"><a class="markdownIt-Anchor" href="#341-cpu分析"></a> 3.4.1 CPU分析</h4>
+<p>使用jstack等命令进行JVM分析</p>
+<h4 id="342-内存分析"><a class="markdownIt-Anchor" href="#342-内存分析"></a> 3.4.2 内存分析</h4>
+<p>使用jmap等命令分析内存使用情况</p>
+<h3 id="35-云厂商或运营商问题排查"><a class="markdownIt-Anchor" href="#35-云厂商或运营商问题排查"></a> 3.5、云厂商或运营商问题排查</h3>
+<p>排查到了这一步的话，只需关注云厂商或运营商官方公告即可。</p>
+<p>假设我们从业务日志、APM分析中都没分析出问题所在，那么此时基本只能连接到生产环境中进行排查了。根据上面的外部排查方案，这里简单复习下常用的Linux分析命令以便从系统层面上分析。</p>
+<h2 id="四-常用linux分析命令"><a class="markdownIt-Anchor" href="#四-常用linux分析命令"></a> 四、常用Linux分析命令</h2>
+<p>针对外部环境排查，需要使用的常用Linux分析命令包括 : top、free、df、lsof、dstat、vmstat等，简单介绍如下：</p>
+<h3 id="41-cpu"><a class="markdownIt-Anchor" href="#41-cpu"></a> 4.1 CPU</h3>
+<p>CPU使用率是衡量系统繁忙程度的重要指标。但是<strong>CPU使用率的安全阈值是相对的，取决于你的系统的IO密集型还是计算密集型</strong>。一般计算密集型应用CPU使用率偏高load偏低，IO密集型相反。</p>
+<p>top命令是Linux下常用的 CPU 性能分析工具，能够实时显示系统中各个进程的资源占用状况，常用于服务端性能分析。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">top</span><br></pre></td></tr></table></figure>
+<p><img src="/images/image-20200729222952334.png" alt="image-20200729222952334"></p>
+<blockquote>
+<p>top 命令显示了各个进程 CPU 使用情况，一般 CPU 使用率从高到低排序展示输出。其中 Load Average 显示最近1分钟、5分钟和15分钟的系统平均负载，上图各值为3.4、3.31、3.46。</p>
+<p>我们一般会关注 CPU 使用率最高的进程，正常情况下就是我们的应用主进程。第七行以下：各进程的状态监控，参数说明：</p>
+<ul>
+<li>PID : 进程id</li>
+<li>USER : 进程所有者的用户名</li>
+<li>PR : 进程优先级</li>
+<li>NI : nice值。负值表示高优先级，正值表示低优先级</li>
+<li>VIRT : 进程使用的虚拟内存总量，单位kb</li>
+<li>SHR : 共享内存大小</li>
+<li>%CPU : 上次更新到现在的CPU时间占用百分比</li>
+<li>%MEM : 进程使用的物理内存百分比</li>
+<li>TIME+ : 进程使用的CPU时间总计，单位1/100秒</li>
+<li>COMMAND : 命令名称、命令行</li>
+</ul>
+</blockquote>
+<h3 id="42-内存"><a class="markdownIt-Anchor" href="#42-内存"></a> 4.2 内存</h3>
+<p>内存是排查线上问题的重要参考依据，free 是显示的当前内存的使用，-h 表示人类可读性。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">free -h</span><br></pre></td></tr></table></figure>
+<p><img src="/images/image-20200729232039110.png" alt="image-20200729232039110"></p>
+<blockquote>
+<p>参数说明：</p>
+<ul>
+<li>
+<p>total ：内存总数</p>
+</li>
+<li>
+<p>used：已经使用的内存数</p>
+</li>
+<li>
+<p>free：空闲的内存数</p>
+</li>
+<li>
+<p>shared：被共享使用的物理内存大小</p>
+</li>
+<li>
+<p>buffers/buffer：被 buffer 和 cache 使用的物理内存大小</p>
+</li>
+<li>
+<p>available： 还可以被应用程序使用的物理内存大小</p>
+</li>
+</ul>
+</blockquote>
+<h3 id="43-磁盘"><a class="markdownIt-Anchor" href="#43-磁盘"></a> 4.3 磁盘</h3>
+<p>磁盘满了很多时候会引发系统服务不可用等问题</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">df -h</span><br></pre></td></tr></table></figure>
+<p><img src="/images/image-20200729233426254.png" alt="image-20200729233426254"></p>
+<h3 id="44-网络"><a class="markdownIt-Anchor" href="#44-网络"></a> 4.4 网络</h3>
+<p>dstat 是一个可以取代vmstat，iostat，netstat和ifstat这些命令的多功能产品。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dstat</span><br></pre></td></tr></table></figure>
+<p><img src="/images/image-20200729235208628.png" alt="image-20200729235208628"></p>
+<blockquote>
+<p>默认情况下，dstat每秒都会刷新数据。需要注意的是报告的第一行，由于dstat会通过上一次的报告来给出一个总结，所以第一次运行时是没有平均值和总值的相关数据。</p>
+<p>默认输出解释：</p>
+<p>CPU状态：显示了用户，系统和空闲部分，便于分析CPU当前的使用状况</p>
+<p>磁盘统计：磁盘的读写操作，显示磁盘的读、写总数。</p>
+<p>网络统计：网络设备发送和接受的数据，显示了网络收、发数据总数。</p>
+<p>分页统计：系统的分页活动。</p>
+<p>系统统计：这一项显示的是中断（int）和上下文切换（csw）。</p>
+</blockquote>
+<p>到了这一步，如果CPU、内存、磁盘、网络这四个地方都没有问题的话，那就进入了应用本身的问题排查阶段。下一步就该使用jvm命令进行问题定位了，但很多研发可能由于自身工作经验不足、对Java内存模型理解不深、尚未掌握Jvm排查命令等原因对Jvm相关排查畏手畏脚，不够自信，进而影响排查进度。针对这种情况，本文推荐一款开源的Java诊断工具，对Jvm不熟的研发可以尝试学习使用下。相对Jvm命令来说简单多了。</p>
+<h2 id="五-arthas诊断命令"><a class="markdownIt-Anchor" href="#五-arthas诊断命令"></a> 五、Arthas诊断命令</h2>
+<img src="/images/image-20200731094500674.png" alt="image-20200731094500674" style="zoom:50%;">
+<p>Arthas 是Alibaba开源的Java诊断工具，深受开发者喜爱。</p>
+<p>当你遇到以下类似问题而束手无策时，Arthas 可以帮助你解决：</p>
+<ul>
+<li>这个类从哪个 jar 包加载的？为什么会报各种类相关的 Exception？</li>
+<li>我改的代码为什么没有执行到？难道是我没 commit？分支搞错了？</li>
+<li>遇到问题无法在线上 debug，难道只能通过加日志再重新发布吗？</li>
+<li>线上遇到某个用户的数据处理有问题，但线上同样无法 debug，线下无法重现！</li>
+<li>是否有一个全局视角来查看系统的运行状况？</li>
+<li>有什么办法可以监控到JVM的实时运行状态？</li>
+<li>怎么快速定位应用的热点，生成火焰图？</li>
+</ul>
+<p>Arthas支持JDK 6+，支持Linux、Mac、Winodws，采用命令行交互模式，同时提供丰富的 Tab 自动补全功能，进一步方便进行问题的定位和诊断。</p>
+<h3 id="51-下载安装"><a class="markdownIt-Anchor" href="#51-下载安装"></a> 5.1 下载安装</h3>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -O https://alibaba.github.io/arthas/arthas-boot.jar</span><br></pre></td></tr></table></figure>
+<h3 id="52-启动arthas"><a class="markdownIt-Anchor" href="#52-启动arthas"></a> 5.2 启动Arthas</h3>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar arthas-boot.jar</span><br></pre></td></tr></table></figure>
+<p><img src="/images/image-20200730073118096.png" alt="image-20200730073118096"></p>
+<p>arthas 会列出已存在的Java进程，并提醒输入序号，键入回车，进入arthas 诊断界面。</p>
+<h3 id="53-开始诊断"><a class="markdownIt-Anchor" href="#53-开始诊断"></a> 5.3 开始诊断</h3>
+<p>按照提醒，这里输入需要诊断的序号，输入回车，响应界面如下：</p>
+<p><img src="/images/image-20200730073608447.png" alt="image-20200730073608447"></p>
+<h3 id="54-查看dashboard"><a class="markdownIt-Anchor" href="#54-查看dashboard"></a> 5.4 查看dashboard</h3>
+<p>输入dashboard【支持Tab补全命令】，输入回车，会展示当前系统的实时面板，按ctrl+c可以中断执行。</p>
+<p><img src="/images/image-20200730074025618.png" alt="image-20200730074025618"></p>
+<p>上图线上了当前系统对应的<strong>线程</strong>、<strong>内存（分代）</strong>、<strong>GC</strong>、<strong>Runtime</strong>的各项信息。</p>
+<p>除了dashboard命令外，arthas还有许多常用命令，这里挑一些做简单说明。</p>
+<h3 id="55-arthas常见命令介绍"><a class="markdownIt-Anchor" href="#55-arthas常见命令介绍"></a> 5.5 arthas常见命令介绍</h3>
+<ul>
+<li>jvm 查看当前 JVM 的信息</li>
+<li>thread 查看当前 JVM 的线程堆栈信息，-b选项可以一键检测死锁</li>
+<li>trace 方法内部调用路径，并输出方法路径上的每个节点上耗时，服务间调用时间过长时使用</li>
+<li>stack 输出当前方法被调用的调用路径</li>
+<li>Jad 反编译指定已加载类的源码，反编译便于理解业务</li>
+<li>logger 查看和修改logger，可以动态更新日志级别。</li>
+</ul>
+<blockquote>
+<p>这里只列出常用命令，完整列表参考命令列表：<a href="https://alibaba.github.io/arthas/commands.html%E3%80%82" target="_blank" rel="noopener">https://alibaba.github.io/arthas/commands.html。</a></p>
+</blockquote>
+<p>arthas使用上相对JVM命令简单很多，即便是工作年限不多的小伙伴学起来也很快。熟练使用arthas应该能诊断出大部分线上应用问题，但生产环境通常不允许擅自拷贝jar包，而且arthas会拖慢应用本身，如果条件不允许，又该如何诊断呢？这边简单介绍下jdk自带的命令行工具。</p>
+<h2 id="六-jvm问题定位命令"><a class="markdownIt-Anchor" href="#六-jvm问题定位命令"></a> 六、JVM问题定位命令</h2>
+<p>在 JDK 安装目录的 bin 目录下默认提供了很多有价值的命令行工具。每个小工具体积基本都比较小，因为这些工具只是 jdk\lib\tools.jar 的简单封装。</p>
+<p><img src="/images/image-20200730080727795.png" alt="image-20200730080727795"></p>
+<p>其中，定位排查问题时最为常用命令包括：jps（进程）、jmap（内存）、jstack（线程）、jinfo（参数）等。</p>
+<ul>
+<li>jps：查询当前机器所有Java进程信息</li>
+<li>jmap：输出某个 Java 进程内存情况</li>
+<li>jstack：打印某个 Java 线程的线程栈信息</li>
+<li>jinfo：用于查看 jvm 的配置参数</li>
+</ul>
+<h3 id="61-jps"><a class="markdownIt-Anchor" href="#61-jps"></a> 6.1 jps</h3>
+<p>jps 用于输出当前用户启动的所有进程 ID，当线上发现故障或者问题时，利用 jps 快速定位对应的 Java 进程 ID。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jps -m</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>参数解释：</p>
+<p>-m：输出传入 main 方法的参数</p>
+<p>-l：输出完全的包名，应用主类名，jar的完全路径名</p>
+</blockquote>
+<p><img src="/images/image-20200731135913046.png" alt="image-20200731135913046"></p>
+<p>当然，我们也可以使用 Linux 提供的查询进程状态命令也能快速获取 Tomcat 服务的进程 id。比如：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -ef | grep tomcat</span><br></pre></td></tr></table></figure>
+<h3 id="62-jmap"><a class="markdownIt-Anchor" href="#62-jmap"></a> 6.2 jmap</h3>
+<p>jmap（Java Memory Map）可以输出所有内存中对象的工具，甚至可以将 VM 中的 heap，以二进制输出成文本，使用方式如下：<br>
+jmap -heap：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jmap -heap pid   输出当前进程JVM堆内存新生代、老年代、持久代、GC算法等信息</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>**注意：**pid 通过jps命令得知</p>
+</blockquote>
+<p><img src="/images/image-20200731142334372.png" alt="image-20200731142334372"></p>
+<p>jmap -histo：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jmap -histo:live pid | head -n 20  输出当前进程内存中所有对象包含的大小</span><br></pre></td></tr></table></figure>
+<p><img src="/images/image-20200731142546242.png" alt="image-20200731142546242"></p>
+<p>输出当前进程内存中所有对象实例数（instances）和大小（bytes），如果某个业务对象实例数和大小存在异常情况，可能存在内存泄露或者业务设计方面存在不合理之处。</p>
+<p>jmap -dump：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">jmap -dump:format=b,file=/apps/logs/gc/dump.hprof &#123;pid&#125; </span><br><span class="line">以二进制形式输出当前内存的堆情况，便于导入MAT等工具进行分析情况</span><br></pre></td></tr></table></figure>
+<p>一般我们要求给 JVM 添加参数 <strong>-XX:+Heap Dump On Out Of Memory Error OOM</strong> 确保应用发生 OOM 时 JVM 能够保存并 dump 出当前的内存镜像。当然如果你决定手动 dump 内存时，dump 操作占据一定 CPU 时间片、内存资源、磁盘资源等，因此会带来一定的负面影响。</p>
+<p>此外，dump 的文件可能比较大,一般我们可以考虑使用<strong>zip</strong>命令对文件进行压缩处理，这样在下载文件时能减少带宽的开销。在下载 dump 文件完成之后，由于 dump 文件较大可将 dump 文件备份至制定位置或者直接删除，以释放磁盘在这块的空间占用。</p>
+<h3 id="63-jstack"><a class="markdownIt-Anchor" href="#63-jstack"></a> 6.3 jstack</h3>
+<p>jstack用于打印某个 Java 线程的线程栈信息，通常用以下三步分析：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">printf '%x\n' tid    10进制至16进制线程转换</span><br><span class="line">jstack pid | grep tid -C 30 --color   </span><br><span class="line">ps -mp 8278 -o THREAD,tid,time | head -n 40</span><br></pre></td></tr></table></figure>
+<p>举个栗子，某 Java 进程 CPU 占用率高，我们想要定位到其中 CPU 占用率最高的线程，如何定位？</p>
+<p>1、利用 top 命令可以查出占 CPU 最高的线程 pid</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">top -Hp pid</span><br></pre></td></tr></table></figure>
+<p><img src="/images/image-20200731174415360.png" alt="image-20200731174415360"></p>
+<p>2、 占用率最高的线程 ID 为 22021，将其转换为16进制形式（因为 java native 线程以16进制形式输出）</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">printf '%x\n' 22021</span><br></pre></td></tr></table></figure>
+<p><img src="/images/image-20200731174500483.png" alt="image-20200731174500483"></p>
+<p>3、 利用 jstack 打印出 Java 线程调用栈信息</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jstack 21993 | grep '0x5605' -A 50 --color</span><br></pre></td></tr></table></figure>
+<p><img src="/images/image-20200731174614221.png" alt="image-20200731174614221"></p>
+<h3 id="64-jinfo"><a class="markdownIt-Anchor" href="#64-jinfo"></a> 6.4 jinfo</h3>
+<p>jinfo可以用来查看正在运行的 java 应用程序的扩展参数，包括Java System属性和JVM命令行参数；也可以动态的修改正在运行的 JVM 一些参数。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jinfo pid</span><br></pre></td></tr></table></figure>
+<p><img src="/images/image-20200731150046756.png" alt="image-20200731150046756"></p>
+<h3 id="65-jstat"><a class="markdownIt-Anchor" href="#65-jstat"></a> 6.5 jstat</h3>
+<p>jstat命令可以查看堆内存各部分的使用量，以及加载类的数量。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jstat -gc pid</span><br></pre></td></tr></table></figure>
+<p><img src="/images/image-20200731145734188.png" alt="image-20200731145734188"></p>
+<h3 id="66-内存分析工具-mat"><a class="markdownIt-Anchor" href="#66-内存分析工具-mat"></a> 6.6 内存分析工具 MAT</h3>
+<h4 id="661-什么是-mat"><a class="markdownIt-Anchor" href="#661-什么是-mat"></a> 6.6.1 什么是 MAT</h4>
+<p>MAT（Memory Analyzer Tool），一个基于 Eclipse 的内存分析工具，是一个快速、功能丰富的 JAVA heap 分析工具，它可以帮助我们查找内存泄漏和减少内存消耗。使用内存分析工具从众多的对象中进行分析，快速的计算出在内存中对象的占用大小，看看是谁阻止了垃圾收集器的回收工作，并可以通过报表直观的查看到可能造成这种结果的对象。</p>
+<p><img src="/images/image-20200731152302029.png" alt="image-20200731152302029"></p>
+<p>右侧的饼图显示当前快照中最大的对象。单击工具栏上的柱状图，可以查看当前堆的类信息，包括类的对象数量、浅堆（Shallow heap）、深堆（Retained Heap）。</p>
+<p><strong>浅堆</strong>表示一个对象结构所占用内存的大小。<strong>深堆</strong>表示一个对象被回收后，可以真实释放的内存大小。</p>
+<ul>
+<li>
+<p>支配树（The Dominator Tree）：</p>
+<p>列出了堆中最大的对象，第二层级的节点表示当被第一层级的节点所引用到的对象，当第一层级对象被回收时，这些对象也将被回收。这个工具可以帮助我们定位对象间的引用情况，垃圾回收时候的引用依赖关系</p>
+</li>
+<li>
+<p>Path to GC Roots</p>
+<p>被JVM持有的对象，如当前运行的线程对象，被systemclass loader加载的对象被称为GC Roots， 从一个对象到GC Roots的引用链被称为Path to GC Roots， 通过分析Path to GC Roots可以找出JAVA的内存泄露问题，当程序不在访问该对象时仍存在到该对象的引用路径。</p>
+</li>
+</ul>
+<h2 id="七-gc分析"><a class="markdownIt-Anchor" href="#七-gc分析"></a> 七、GC分析</h2>
+<h3 id="71-gc-日志分析"><a class="markdownIt-Anchor" href="#71-gc-日志分析"></a> 7.1 GC 日志分析</h3>
+<h4 id="711-gc-日志详细分析"><a class="markdownIt-Anchor" href="#711-gc-日志详细分析"></a> 7.1.1 GC 日志详细分析</h4>
+<p>Java 虚拟机GC日志是用于定位问题重要的日志信息，频繁的GC将导致应用吞吐量下降、响应时间增加，甚至导致服务不可用。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+PrintGCDetails -XX:+PrintGCDateStamps -Xloggc:/apps/logs/gc/gc.log -XX:+UseConcMarkSweepGC</span><br></pre></td></tr></table></figure>
+<p>我们可以在 Java 应用的启动参数中增加**-XX:+PrintGCDetails **可以输出 GC 的详细日志，例外还可以增加其他的辅助参数，如 -Xloggc 制定 GC 日志文件地址。如果你的应用还没有开启该参数,下次重启时请加入该参数。</p>
+<p><img src="/images/a15157a0-ec9e-11e7-a3aa-b3fbc77f24b9.png" alt="enter image description here"></p>
+<p>上图为线上某应用在平稳运行状态下的GC日志截图。</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2017</span><span class="number">-12</span><span class="number">-29</span>T18:<span class="number">25</span>:<span class="number">22.753</span>+<span class="number">0800</span>: <span class="number">73143.256</span>: [GC2017<span class="number">-12</span><span class="number">-29</span>T18:<span class="number">25</span>:<span class="number">22.753</span>+<span class="number">0800</span>: <span class="number">73143.257</span>: [ParNew: <span class="number">559782</span>K-&gt;<span class="number">1000</span>K(<span class="number">629120</span>K), <span class="number">0.0135760</span> secs] <span class="number">825452</span>K-&gt;<span class="number">266673</span>K(<span class="number">2027264</span>K), <span class="number">0.0140300</span> secs] [Times: user=<span class="number">0.02</span> sys=<span class="number">0.00</span>, real=<span class="number">0.02</span> secs] </span><br><span class="line">[<span class="number">2017</span><span class="number">-12</span><span class="number">-29</span>T18:<span class="number">25</span>:<span class="number">22.753</span>+<span class="number">0800</span>: <span class="number">73143.256</span>] ： 自JVM启动<span class="number">73143.256</span>秒时发生本次GC.</span><br><span class="line">[ParNew: <span class="number">559782</span>K-&gt;<span class="number">1000</span>K(<span class="number">629120</span>K), <span class="number">0.0135760</span> secs] : 对新生代进行的GC，使用ParNew收集器，<span class="number">559782</span>K是新生代回收前的大小,<span class="number">1000</span>K是新生代回收后大小,<span class="number">629120</span>K是当前新生代分配的内存总大小, <span class="number">0.0135760</span> secs表示本次新生代回收耗时 <span class="number">0.0135760</span>秒</span><br><span class="line">[<span class="number">825452</span>K-&gt;<span class="number">266673</span>K(<span class="number">2027264</span>K), <span class="number">0.0140300</span> secs]:<span class="number">825452</span>K是回收堆内存大小,<span class="number">266673</span>K是回收堆之后内存大小，<span class="number">2027264</span>K是当前堆内存总大小,<span class="number">0.0140300</span> secs表示本次回收共耗时<span class="number">0.0140300</span>秒</span><br><span class="line">[Times: user=<span class="number">0.02</span> sys=<span class="number">0.00</span>, real=<span class="number">0.02</span> secs] : 用户态耗时<span class="number">0.02</span>秒,系统态耗时<span class="number">0.00</span>,实际耗时<span class="number">0.02</span>秒</span><br></pre></td></tr></table></figure>
+<p>无论是 minor GC 或者是 Full GC，我们主要关注 GC 回收实时耗时， 如 real=0.02secs，即 stop the world 时间，如果该时间过长，则严重影响应用性能。</p>
+<h4 id="712-cms-gc-日志分析"><a class="markdownIt-Anchor" href="#712-cms-gc-日志分析"></a> 7.1.2 CMS GC 日志分析</h4>
+<p>Concurrent Mark Sweep（CMS）是老年代垃圾收集器，从名字（Mark Sweep）可以看出，CMS 收集器就是“标记-清除”算法实现的，分为六个步骤：</p>
+<ul>
+<li>初始标记（STW initial mark）</li>
+<li>并发标记（Concurrent marking）</li>
+<li>并发预清理（Concurrent precleaning）</li>
+<li>重新标记（STW remark）</li>
+<li>并发清理（Concurrent sweeping）</li>
+<li>并发重置（Concurrent reset）</li>
+</ul>
+<p>其中初始标记（STW initial mark） 和 重新标记（STW remark）需要“Stop the World”。</p>
+<p><strong>初始标记</strong> ：在这个阶段，需要虚拟机停顿正在执行的任务，官方的叫法 STW（Stop The Word）。这个过程从垃圾回收的&quot;根对象&quot;开始，只扫描到能够和&quot;根对象&quot;直接关联的对象，并作标记。所以这个过程虽然暂停了整个 JVM，但是很快就完成了。</p>
+<p><strong>并发标记</strong> ：这个阶段紧随初始标记阶段，在初始标记的基础上继续向下追溯标记。并发标记阶段，应用程序的线程和并发标记的线程并发执行，所以用户不会感受到停顿。</p>
+<p><strong>并发预清理</strong> ：并发预清理阶段仍然是并发的。在这个阶段，虚拟机查找在执行并发标记阶段新进入老年代的对象（可能会有一些对象从新生代晋升到老年代， 或者有一些对象被分配到老年代）。通过重新扫描，减少下一个阶段&quot;重新标记&quot;的工作，因为下一个阶段会 Stop The World。</p>
+<p><strong>重新标记</strong> ：这个阶段会暂停虚拟机，收集器线程扫描在 CMS 堆中剩余的对象。扫描从&quot;跟对象&quot;开始向下追溯，并处理对象关联。</p>
+<p><strong>并发清理</strong> ：清理垃圾对象，这个阶段收集器线程和应用程序线程并发执行。</p>
+<p><strong>并发重置</strong> ：这个阶段，重置 CMS 收集器的数据结构，等待下一次垃圾回收。</p>
+<p>CMS 使得在整个收集的过程中只是很短的暂停应用的执行，可通过在 JVM 参数中设置 -XX:UseConcMarkSweepGC 来使用此收集器，不过此收集器仅用于 old 和 Perm（永生）的对象收集。CMS 减少了 stop the world 的次数，不可避免地让整体 GC 的时间拉长了。</p>
+<p>Full GC 的次数说的是 stop the world 的次数，所以一次 CMS 至少会让 Full GC 的次数+2，因为 CMS Initial mark 和 remark 都会 stop the world，记做2次。而 CMS 可能失败再引发一次 Full GC。</p>
+<p><img src="/images/af04e150-ec9e-11e7-a3aa-b3fbc77f24b9.png" alt="enter image description here"></p>
+<p>上图为线上某应用在进行 CMS GC 状态下的 GC 日志截图。</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2017</span><span class="number">-11</span><span class="number">-02</span>T09:<span class="number">27</span>:<span class="number">03.989</span>+<span class="number">0800</span>: <span class="number">558115.552</span>: [GC [<span class="number">1</span> CMS-initial-mark: <span class="number">1774783</span>K(<span class="number">1926784</span>K)] <span class="number">1799438</span>K(<span class="number">2068800</span>K), <span class="number">0.0123430</span> secs] [Times: user=<span class="number">0.01</span> sys=<span class="number">0.01</span>, real=<span class="number">0.02</span> secs] </span><br><span class="line"><span class="number">2017</span><span class="number">-11</span><span class="number">-02</span>T09:<span class="number">27</span>:<span class="number">04.001</span>+<span class="number">0800</span>: <span class="number">558115.565</span>: [CMS-concurrent-mark-start]</span><br><span class="line"><span class="number">2017</span><span class="number">-11</span><span class="number">-02</span>T09:<span class="number">27</span>:<span class="number">04.714</span>+<span class="number">0800</span>: <span class="number">558116.277</span>: [CMS-concurrent-mark: <span class="number">0.713</span>/<span class="number">0.713</span> secs] [Times: user=<span class="number">1.02</span> sys=<span class="number">0.03</span>, real=<span class="number">0.71</span> secs] </span><br><span class="line"><span class="number">2017</span><span class="number">-11</span><span class="number">-02</span>T09:<span class="number">27</span>:<span class="number">04.714</span>+<span class="number">0800</span>: <span class="number">558116.277</span>: [CMS-concurrent-preclean-start]</span><br><span class="line"><span class="number">2017</span><span class="number">-11</span><span class="number">-02</span>T09:<span class="number">27</span>:<span class="number">04.722</span>+<span class="number">0800</span>: <span class="number">558116.285</span>: [CMS-concurrent-preclean: <span class="number">0.008</span>/<span class="number">0.008</span> secs] [Times: user=<span class="number">0.01</span> sys=<span class="number">0.00</span>, real=<span class="number">0.01</span> secs] </span><br><span class="line"><span class="number">2017</span><span class="number">-11</span><span class="number">-02</span>T09:<span class="number">27</span>:<span class="number">04.722</span>+<span class="number">0800</span>: <span class="number">558116.286</span>: [CMS-concurrent-abortable-preclean-start]</span><br><span class="line"><span class="number">2017</span><span class="number">-11</span><span class="number">-02</span>T09:<span class="number">27</span>:<span class="number">04.836</span>+<span class="number">0800</span>: <span class="number">558116.399</span>: [GC2017<span class="number">-11</span><span class="number">-02</span>T09:<span class="number">27</span>:<span class="number">04.836</span>+<span class="number">0800</span>: <span class="number">558116.400</span>: [ParNew: <span class="number">138301</span>K-&gt;<span class="number">6543</span>K(<span class="number">142016</span>K), <span class="number">0.0155540</span> secs] <span class="number">1913085</span>K-&gt;<span class="number">1781327</span>K(<span class="number">2068800</span>K), <span class="number">0.0160610</span> secs] [Times: user=<span class="number">0.03</span> sys=<span class="number">0.01</span>, real=<span class="number">0.02</span> secs] </span><br><span class="line"><span class="number">2017</span><span class="number">-11</span><span class="number">-02</span>T09:<span class="number">27</span>:<span class="number">05.005</span>+<span class="number">0800</span>: <span class="number">558116.569</span>: [CMS-concurrent-abortable-preclean: <span class="number">0.164</span>/<span class="number">0.283</span> secs] [Times: user=<span class="number">0.46</span> sys=<span class="number">0.02</span>, real=<span class="number">0.28</span> secs] </span><br><span class="line"><span class="number">2017</span><span class="number">-11</span><span class="number">-02</span>T09:<span class="number">27</span>:<span class="number">05.006</span>+<span class="number">0800</span>: <span class="number">558116.570</span>: [GC[YG occupancy: <span class="number">72266</span> K (<span class="number">142016</span> K)]<span class="number">2017</span><span class="number">-11</span><span class="number">-02</span>T09:<span class="number">27</span>:<span class="number">05.006</span>+<span class="number">0800</span>: <span class="number">558116.570</span>: [Rescan (parallel) , <span class="number">0.2523940</span> secs]<span class="number">2017</span><span class="number">-11</span><span class="number">-02</span>T09:<span class="number">27</span>:<span class="number">05.259</span>+<span class="number">0800</span>: <span class="number">558116.822</span>: [weak <span class="built_in">ref</span>s processing, <span class="number">0.0011240</span> secs]<span class="number">2017</span><span class="number">-11</span><span class="number">-02</span>T09:<span class="number">27</span>:<span class="number">05.260</span>+<span class="number">0800</span>: <span class="number">558116.823</span>: [scrub <span class="built_in">string</span> table, <span class="number">0.0028570</span> secs] [<span class="number">1</span> CMS-remark: <span class="number">1774783</span>K(<span class="number">1926784</span>K)] <span class="number">1847049</span>K(<span class="number">2068800</span>K), <span class="number">0.2566410</span> secs] [Times: user=<span class="number">0.14</span> sys=<span class="number">0.00</span>, real=<span class="number">0.26</span> secs] </span><br><span class="line"><span class="number">2017</span><span class="number">-11</span><span class="number">-02</span>T09:<span class="number">27</span>:<span class="number">05.265</span>+<span class="number">0800</span>: <span class="number">558116.829</span>: [CMS-concurrent-sweep-start]</span><br><span class="line"><span class="number">2017</span><span class="number">-11</span><span class="number">-02</span>T09:<span class="number">27</span>:<span class="number">05.422</span>+<span class="number">0800</span>: <span class="number">558116.986</span>: [GC2017<span class="number">-11</span><span class="number">-02</span>T09:<span class="number">27</span>:<span class="number">05.423</span>+<span class="number">0800</span>: <span class="number">558116.986</span>: [ParNew: <span class="number">120207</span>K-&gt;<span class="number">2740</span>K(<span class="number">142016</span>K), <span class="number">0.0179330</span> secs] <span class="number">1885446</span>K-&gt;<span class="number">1767979</span>K(<span class="number">2068800</span>K), <span class="number">0.0183340</span> secs] [Times: user=<span class="number">0.03</span> sys=<span class="number">0.01</span>, real=<span class="number">0.02</span> secs] </span><br><span class="line"><span class="number">2017</span><span class="number">-11</span><span class="number">-02</span>T09:<span class="number">27</span>:<span class="number">06.240</span>+<span class="number">0800</span>: <span class="number">558117.804</span>: [GC2017<span class="number">-11</span><span class="number">-02</span>T09:<span class="number">27</span>:<span class="number">06.240</span>+<span class="number">0800</span>: <span class="number">558117.804</span>: [ParNew: <span class="number">116404</span>K-&gt;<span class="number">3657</span>K(<span class="number">142016</span>K), <span class="number">0.0134680</span> secs] <span class="number">1286444</span>K-&gt;<span class="number">1173697</span>K(<span class="number">2068800</span>K), <span class="number">0.0138460</span> secs] [Times: user=<span class="number">0.03</span> sys=<span class="number">0.00</span>, real=<span class="number">0.01</span> secs] </span><br><span class="line"><span class="number">2017</span><span class="number">-11</span><span class="number">-02</span>T09:<span class="number">27</span>:<span class="number">06.966</span>+<span class="number">0800</span>: <span class="number">558118.530</span>: [GC2017<span class="number">-11</span><span class="number">-02</span>T09:<span class="number">27</span>:<span class="number">06.966</span>+<span class="number">0800</span>: <span class="number">558118.530</span>: [ParNew: <span class="number">117321</span>K-&gt;<span class="number">2242</span>K(<span class="number">142016</span>K), <span class="number">0.0135210</span> secs] <span class="number">738838</span>K-&gt;<span class="number">623759</span>K(<span class="number">2068800</span>K), <span class="number">0.0140130</span> secs] [Times: user=<span class="number">0.03</span> sys=<span class="number">0.00</span>, real=<span class="number">0.02</span> secs] </span><br><span class="line"><span class="number">2017</span><span class="number">-11</span><span class="number">-02</span>T09:<span class="number">27</span>:<span class="number">07.144</span>+<span class="number">0800</span>: <span class="number">558118.708</span>: [CMS-concurrent-sweep: <span class="number">1.820</span>/<span class="number">1.879</span> secs] [Times: user=<span class="number">2.88</span> sys=<span class="number">0.14</span>, real=<span class="number">1.88</span> secs] </span><br><span class="line"><span class="number">2017</span><span class="number">-11</span><span class="number">-02</span>T09:<span class="number">27</span>:<span class="number">07.144</span>+<span class="number">0800</span>: <span class="number">558118.708</span>: [CMS-concurrent-reset-start]</span><br><span class="line"><span class="number">2017</span><span class="number">-11</span><span class="number">-02</span>T09:<span class="number">27</span>:<span class="number">07.149</span>+<span class="number">0800</span>: <span class="number">558118.713</span>: [CMS-concurrent-reset: <span class="number">0.005</span>/<span class="number">0.005</span> secs] [Times: user=<span class="number">0.01</span> sys=<span class="number">0.00</span>, real=<span class="number">0.00</span> secs]</span><br></pre></td></tr></table></figure>
+<p>如果你已掌握 CMS 的垃圾收集过程，那么上面的 GC 日志你应该很容易就能看的懂，这里我就不详细展开解释说明了。</p>
+<p>此外 CMS 进行垃圾回收时也有可能会发生失败的情况。</p>
+<p>异常情况有：</p>
+<p>伴随 prommotion failed，然后 Full GC：</p>
+<p>[prommotion failed：存活区内存不足，对象进入老年代，而此时老年代也仍然没有内存容纳对象，将导致一次Full GC]</p>
+<p>伴随 concurrent mode failed，然后 Full GC：</p>
+<p>[concurrent mode failed：CMS回收速度慢，CMS完成前，老年代已被占满，将导致一次Full GC]</p>
+<p>频繁 CMS GC：</p>
+<p>[内存吃紧，老年代长时间处于较满的状态]</p>
+<h2 id="八-常见问题分析-解答"><a class="markdownIt-Anchor" href="#八-常见问题分析-解答"></a> 八、常见问题分析、解答</h2>
+<p>**问：**生产环境里某个节点里的容器里面服务挂了，但是在预生产环境无法重现，而生产环境监控里面显示 cpu、内存、堆栈都正常。而那个节点重启之后就正常，但是过段时间又出现问题。这种情况有什么好的方法排查问题？</p>
+<p>**答：**这种情况首先需要排查内核版本，排查tomcat版本，可能自身应用存在 bug，真的没办法可以考虑降低日志等级，打印出更为详细有价值的启动/业务日志信息。</p>
+<hr>
+<p><strong>问</strong>：线上排查问题 dump 或 jstack 导出文件分析经常无响应导致无法导出查看内存问题和线程问题，有什么办法吗？</p>
+<p><strong>答：</strong> 增加 -F 强制，在 jmap-dump 使用，如果 pid 没有相应的回复。当然 -F 也可能没办法 dump 下来，那就只能去分析日志了。当然如果你决定手动 dump 内存时，dump 操作占据一定 CPU 时间片、内存资源、磁盘资源等，对系统的正常的运行可能会有一些影响。</p>
+<h2 id="九-案例分析"><a class="markdownIt-Anchor" href="#九-案例分析"></a> 九、案例分析</h2>
+<p>某工程消费ActiveMQ消息，该工程整合了Apache Camel，经过运维排查定位到Camel拉取到了消息，但收到消息后打印日志时却延迟了十几分钟，Camel配置了MySQL用于校验幂等，一些列初步排查下来，未找到原因，该如何排查？</p>
+<p>线上问题出错，而且只有线上环境能复现问题，在运维人员同意的情况下，将<strong>Alibaba Arthas</strong>拷贝进容器中，启动Arthas，开始跟踪，由于是Springboot工程，并且Camel作为消息入口，故先从配置开始跟踪，详细排查问题如下：</p>
+<h3 id="1-延迟场景首先排查有无死锁产生"><a class="markdownIt-Anchor" href="#1-延迟场景首先排查有无死锁产生"></a> 1、延迟场景，首先排查有无死锁产生</h3>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">thread -b</span><br></pre></td></tr></table></figure>
+<p><img src="/images/image-20200731172509079.png" alt="image-20200731172509079"></p>
+<p>仔细分析下来并不是死锁，那就从入口开始。</p>
+<h3 id="2-从camel配置开始跟踪"><a class="markdownIt-Anchor" href="#2-从camel配置开始跟踪"></a> 2、从Camel配置开始跟踪</h3>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">trace --skipJDKMethod true org.apache.camel.builder.RouteBuilder configure '#cost &gt; 20' -n 10</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>**注意：**skipJDKMethod：跟踪结果不包含JDK方法。</p>
+</blockquote>
+<p>开始构造延迟场景，但未能跟踪到相关信息。</p>
+<p><img src="/images/image-20200713103126878.png" alt="image-20200713103126878">于是调整策略，从消息派发器开始跟踪。</p>
+<h3 id="3-跟踪统一消息派发器messagedispatcher"><a class="markdownIt-Anchor" href="#3-跟踪统一消息派发器messagedispatcher"></a> 3、跟踪统一消息派发器MessageDispatcher</h3>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">trace com.test.messagedispatcher.MessageDispatcher onMessage -n 10</span><br></pre></td></tr></table></figure>
+<p>开始构造延迟场景，也没能跟踪到与延迟相关的信息，继续调整方向，下载了Apache Camel源代码，开始分析从JMS 消费者开始分析Camel核心入口方法，定位到创建监听器代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">createMessageListener</span><span class="params">(JmsEndpoint endpoint, Processor processor)</span> </span>&#123;</span><br><span class="line">        messageListener = <span class="keyword">new</span> EndpointMessageListener(endpoint, processor);</span><br><span class="line">        getEndpoint().getConfiguration().configureMessageListener(messageListener);</span><br><span class="line">        messageListener.setBinding(endpoint.getBinding());</span><br><span class="line">        messageListener.setAsync(endpoint.getConfiguration().isAsyncConsumer());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="4-分析camel创建监听器方法"><a class="markdownIt-Anchor" href="#4-分析camel创建监听器方法"></a> 4、分析Camel创建监听器方法</h3>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">trace org.apache.camel.component.jms.EndpointMessageListener *</span><br></pre></td></tr></table></figure>
+<p>继续构造延迟场景，结果如下：</p>
+<p><img src="/images/image-20200713103551014.png" alt="image-20200713103551014"></p>
+<p>上图红色部分出现了<strong>930027ms</strong>，初步定位到了延迟发生在Camel中间件，继续跟踪</p>
+<h3 id="5-跟踪asyncprocessorprocess方法"><a class="markdownIt-Anchor" href="#5-跟踪asyncprocessorprocess方法"></a> 5、跟踪AsyncProcessor:process方法</h3>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">trace org.apache.camel.AsyncProcessor process</span><br></pre></td></tr></table></figure>
+<p>继续构造延迟场景，跟踪结果如下、</p>
+<p><img src="/images/image-20200713104345005.png" alt="image-20200713104345005"></p>
+<p>原来是幂等消费阻塞了几分钟，最后的关键信息是，继续跟踪。</p>
+<h3 id="6-跟踪idempotentrepositoryadd方法"><a class="markdownIt-Anchor" href="#6-跟踪idempotentrepositoryadd方法"></a> 6、跟踪IdempotentRepository:add方法</h3>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">trace org.apache.camel.spi.IdempotentRepository add</span><br></pre></td></tr></table></figure>
+<p><img src="/images/image-20200713104647552.png" alt="image-20200713104647552"></p>
+<p>原来是数据库事务的问题，继续跟踪。</p>
+<h3 id="7-直至定位到原因"><a class="markdownIt-Anchor" href="#7-直至定位到原因"></a> 7、直至定位到原因</h3>
+<p><img src="/images/image-20200731173042239.png" alt="image-20200731173042239"></p>
+<p>原来是抓取JDBC连接的时候阻塞了</p>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://chuanyichuan.github.io/2020/07/31/Java线上故障排查方案/" title="" target="_blank" rel="external">http://chuanyichuan.github.io/2020/07/31/Java线上故障排查方案/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/luxiaowan" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="../../../../images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/luxiaowan" target="_blank"><span class="text-dark">串一串</span><small class="ml-1x">浪人</small></a></h3>
+        <div>断舍离</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="../../../08/17/使用fastjson将字符串转换为带泛型的Java对象/" title="使用fastjson将字符串转换为带泛型的Java对象"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="../../13/BUG列表1/" title="BUG列表1"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/luxiaowan" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="../../../../atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2021 cc
+        
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="../../../../js/plugin.min.js"></script>
+<script src="../../../../js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '../../../../content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="../../../../js/insight.js"></script>
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+
+
+
+
+
+
+</body>
+</html>
